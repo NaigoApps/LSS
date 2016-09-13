@@ -1,0 +1,3 @@
+google-api-php-client\src\Google\Http\CacheParser.php
+
+Nedded to bypass function "isExpired" with a "return false;"

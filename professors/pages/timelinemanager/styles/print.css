@@ -1,0 +1,26 @@
+
+@media print {
+    tr{
+        position:relative;
+        page-break-inside: avoid !important;
+    }
+    td{
+        border: 1px solid grey;
+    }
+    table{
+        margin: 1cm auto;
+        position: relative;
+    }
+    h1{
+        position:relative;
+        page-break-after: avoid;
+    }
+}
+
+.always-bottom{
+    display: block;
+    left: 0;
+    right: 0;
+    position: fixed;
+    bottom: 0px;
+}

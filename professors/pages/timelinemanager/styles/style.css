@@ -1,0 +1,28 @@
+
+.add-item{
+    display: block;
+    width: 300px;
+    margin: 10px auto;
+}
+
+
+.timeline-month{
+    overflow: auto;
+    margin-bottom: 50px;
+}
+
+.timeline-item{
+    padding: 5px;
+    margin: 5px;
+    background-color: #DDDDDD;
+    border-radius: 5px;
+    overflow: auto;
+}
+
+.always-bottom{
+    display: block;
+    left: 0;
+    right: 0;
+    position: fixed;
+    bottom: 0px;
+}

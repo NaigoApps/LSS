@@ -1,0 +1,235 @@
+<div class="col-sm-4">
+    <h2>Voci <small ng-show="argomenti.selected !== undefined">{{argomenti.selected.nome}}</small></h2>
+    
+
+    <input type="text" class="form-control" placeholder="ricerca"
+           ng-model="voci.searchString"
+           ng-keyup="onSearchItem()"/>
+
+    <ul class="list-group top-sep">
+        <div class="row" ng-repeat="item in voci.content">
+            <!-- Item -->
+            <li id="ite{{item.id}}" class="list-group-item col-sm-12"
+                data-toggle="tooltip"
+                title="{{item.descrizione}}">
+                {{item.nome}}
+                <!-- Functions -->
+                <div class="right btn-group" role="group" aria-label="...">
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentItem(item)"
+                       data-target="#fillItem">
+                        <span class="glyphicon glyphicon-link"></span>
+                    </a>
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentItem(item)"
+                       data-target="#editItem">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentItem(item)"
+                       data-target="#deleteItem">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </div>
+            </li>
+        </div>
+    </ul>
+
+    <!-- Add -->
+    <div class="row top-sep">
+        <button
+            class="btn btn-default col-sm-2 col-sm-offset-5"
+            data-toggle="modal"
+            ng-hide="linkMode"
+            ng-click="onCurrentItem()"
+            ng-disabled="selectedTopic === -1"
+            data-target="#addItem">
+            <span
+                class="glyphicon glyphicon-plus">
+            </span>
+        </button>
+    </div>
+
+    <!-- Add Modal -->
+    <div id="addItem" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Nuova voce</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="itemAddForm" novalidate>
+                        <input type="text" maxlength="50" class="title form-control" placeholder="nome" ng-model="voci.current.nome" autofocus required/>
+                        <textarea maxlength="500" rows="5" cols="50" class="description form-control" placeholder="descrizione" ng-model="voci.current.descrizione"></textarea>
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-5"
+                                ng-click="onConfirmAddItem()"
+                                ng-disabled='itemAddForm.$invalid'
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editItem" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Modifica voce {{voci.current.nome}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="itemEditForm" novalidate>
+                        <input type="text" maxlength="50" class="title form-control" placeholder="nome" ng-model="voci.current.nome" autofocus required/>
+                        <textarea maxlength="500" rows="5" cols="50" class="description form-control" placeholder="descrizione" ng-model="voci.current.descrizione"></textarea>
+
+                        <p><b>Collegamenti</b> (salvati automaticamente)</p>
+
+                        <p><b>Collegamenti esistenti</b></p>
+
+                        <ul class="list-group top-sep">
+                            <li class="list-group-item"
+                                ng-repeat="topic in argomentiVociConnected.content">
+                                {{topic.nome}}
+                                <button type="submit" class="right btn btn-xs btn-danger"
+                                        ng-click="onUnlinkTopic(topic)">
+                                    scollega
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <p><b>Collegamenti non effettuati</b></p>
+
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownItems" data-toggle="dropdown" aria-haspopup="true">
+                                {{itemSelectedModule.nome}}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownModules">
+                                <li ng-repeat="module in moduli.content"
+                                    ng-click="onSelectBaseModule(module)">
+                                    <a>{{module.nome}}</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <ul class="list-group top-sep">
+                            <li class="list-group-item"
+                                ng-repeat="topic in argomentiVociToConnect.content">
+                                {{topic.nome}}
+
+                                <button type="submit" class="right btn btn-xs btn-success"
+                                        ng-click="onLinkTopicItem(topic)">
+                                    collega
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-5"
+                                ng-click="onConfirmEditItem()"
+                                ng-disabled='itemEditForm.$invalid'
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteItem" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Elminazione voce {{voci.current.nome}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="itemDeleteForm" novalidate>
+                        <p>Confermare l'eliminazione?</p>
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-3"
+                                ng-click="onDeleteCurrentItem()"
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                        <button type="submit" class="btn btn-danger col-sm-2 col-sm-offset-1"
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Modal -->
+    <div id="fillItem" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Modifica materiale della voce {{voci.current.nome}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="itemURLFillForm" class="form-inline" novalidate>
+                        Link presenti:
+                        <div class="well well-sm" ng-class="{'has-warning' : link.modified}" ng-repeat="link in voci.current.links">
+                            <input type="text" class="form-control" placeholder="nome" ng-keypress="link.modified = true" ng-model="link.nome"/>
+                            <input type="text" class="form-control" placeholder="url" ng-keypress="link.modified = true" ng-model="link.link"/>
+                            <!-- Delete -->
+                            <a class="right btn btn-xs btn-default"
+                               ng-click="onDeleteItemURL(link)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                            <!-- Edit -->
+                            <a class="right btn btn-xs btn-default"
+                               ng-click="onEditItemURL(link)">
+                                <span class="glyphicon glyphicon-save"></span>
+                            </a>
+                        </div>
+                        <div>Nuovo link:</div>
+                        <input type="text" class="title form-control" placeholder="nome" ng-model="voci.newURL.nome"/>
+                        <input type="text" class="title form-control" placeholder="url" ng-model="voci.newURL.link"/>
+                        <button class="btn btn-default" ng-click="onAddItemURL()">Aggiungi link</button>
+
+                    </form>
+
+
+                    <div class="progress">
+                        <div id="progress-voci-{{voci.current.id}}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                        </div>
+                    </div>
+                    <form id="vociFileForm" name="itemDocumentsFillForm" enctype="multipart/form-data" class="form-inline" novalidate>
+                        Documenti presenti:
+                        <div class="well well-sm" ng-repeat="doc in voci.current.docs">
+                            {{doc}}
+                            <!-- Delete -->
+                            <a class="right btn btn-xs btn-default"
+                               ng-click="onDeleteItemDocument(doc)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        </div>
+                        <div>Nuovo documento:</div>
+                        <input id="itemFile" name="document" type="file" class="form-control"/>
+                        <button class="btn btn-default" ng-click="onAddItemDocument()">Carica</button>
+                        
+                        <button class="btn btn-success col-sm-2 col-sm-offset-5 top-sep"
+                                data-dismiss="modal">
+                            Chiudi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>		
+</div>

@@ -1,0 +1,32 @@
+ng-app="<nome>" definisce l'applicazione
+
+ng-controller="<nome>" definisce un controller
+
+ng-model="<nome variabile>" collega i controlli HTML (input ecc..) a variabili dell'applicazione
+
+ng-bind="<nome variabile>" collega le variabili alle viste (innerHTML)
+
+ng-init="<variabile>=<valore>" assegna un valore ad una variabile
+
+Se uso 'data-ng' invece di 'ng' la pagina HTML rimane valida
+
+{{ <espressione> }} definisce un'espressione. Può trovarsi ovunque e contenere variabili
+
+ng-repeat="<...>" permette di ripetere un elemento HTML (tipo lista) es: ng-repeat="<var> in <array>"
+
+I moduli definiscono un'applicazione:
+
+var app = angular.module('myApp', []);
+
+
+I controller controllano l'applicazione:
+
+app.controller('myCtrl', function($scope) {
+    $scope.firstName= "John";
+    $scope.lastName= "Doe";
+    $scope.get = function(){
+        return $scope.firstName + " " + $scope.lastName;
+    }
+});
+
+Un controller è quindi un oggetto javascript. Possono trovarsi in files diversi ed essere inclusi tramite <script>

@@ -1,0 +1,10 @@
+<div class="modules-wrapper">
+    <div ng-repeat="module in dbCtrl.modules">
+        <button 
+        class="btn btn-default module-name" 
+        data-toggle="tooltip" data-placement="right" title="{{module.description}}" 
+        ng-click="dbCtrl.moduleClicked(module.id)">
+        {{module.name}}
+        </button>
+    </div>
+</div>

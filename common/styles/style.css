@@ -1,0 +1,122 @@
+*{
+    padding:0px;
+    margin:0px;
+    box-sizing:border-box;
+}
+
+ul{
+    list-style-type:none;
+}
+
+.wrapper{
+    width:1000px;
+    min-height: 400px;
+    padding:15px;
+    margin:0px auto;
+    overflow: auto;
+}
+
+input.title{
+    display:block;
+    margin:10px auto;
+    text-align:center;
+}
+
+textarea.description{
+    margin:10px auto;
+    resize:none;
+}
+
+input.ng-invalid, textarea.ng-invalid{
+    border:1px solid #FF0000;
+}
+
+input.ng-valid, textarea.ng-valid{
+    border:1px solid #00FF00;
+}
+
+.well{
+    display:block;
+}
+
+.top-sep{
+    margin-top:10px;
+}
+
+.top-sep.more{
+    margin-top:30px;
+}
+
+.bot-sep{
+    margin-bottom:10px;
+}
+
+.both-sep{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.full{
+    width:100%;
+}
+
+form{
+    overflow:auto;
+}
+
+.left{
+    float:left;
+}
+
+.right{
+    float:right;
+    overflow: auto;
+}
+
+
+.current{
+    background-color: rgba(91, 192, 222, 0.5);
+}
+
+/*.error{
+    background-color: rgba(100, 0, 0, 0.5);
+}*/
+
+.list-group-item{
+    padding:5px;
+}
+
+.message{
+    position: absolute;
+    bottom: 0px;
+}
+
+.btn-fade-container{
+    display: block;
+    position: relative;
+    width:200px;
+    height:200px;
+    margin:50px auto;
+}
+
+
+
+.btn-fade{
+    float: left;
+    position: absolute;
+    border-radius: 50%;
+    left:0%;
+    top:0%;
+    width:100%;
+    height:100%;
+    background-color: rgba(255,255,255,0.3);
+    //-webkit-transition: top 0.5s, left 0.5s, height 0.5s, width 0.5s; /* Safari */
+    //transition: top 0.5s, left 0.5s, height 0.5s, width 0.5s;
+}
+/*
+.btn-fade:hover{
+    left:50%;
+    top:50%;
+    width:0%;
+    height:0%;
+}*/

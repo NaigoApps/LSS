@@ -1,0 +1,192 @@
+<div class="col-sm-4">
+
+    <h2>Moduli</h2>
+    <input type="text" class="form-control" placeholder="ricerca"
+           ng-model="moduli.searchString"
+           ng-keyup="onSearchModule()"/>
+    <ul class="list-group top-sep">
+        <div class="row" ng-repeat="modulo in moduli.content">
+            <!-- Module -->
+            <li id="mod{{modulo.id}}" class="list-group-item module-name col-sm-12"
+                ng-class="{'current': modulo === moduli.selected}"
+                data-toggle="tooltip"
+                title="{{modulo.descrizione}}"
+                ng-click="onSelectModule(modulo)">
+                {{modulo.nome}}
+                <!-- Functions -->
+                <div class="right btn-group" role="group" aria-label="...">
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentModule(modulo)"
+                       data-target="#fillModule">
+                        <span class="glyphicon glyphicon-link"></span>
+                    </a>
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentModule(modulo)"
+                       data-target="#editModule">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentModule(modulo)"
+                       data-target="#deleteModule">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </div>
+            </li>
+        </div>
+    </ul>
+
+    <!-- Add -->
+    <div class="row top-sep">
+        <button
+            class="btn btn-default col-sm-2 col-sm-offset-5"
+            data-toggle="modal"
+            ng-hide="linkMode"
+            ng-click="onCurrentModule()"
+            data-target="#addModule">
+            <span
+                class="glyphicon glyphicon-plus">
+            </span>
+        </button>
+    </div>
+
+    <!-- Add Modal -->
+    <div id="addModule" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Nuovo modulo</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="moduleAddForm" novalidate>
+                        <input type="text" maxlength="50" class="title form-control" placeholder="nome" ng-model="moduli.current.nome" autofocus required/>
+                        <textarea maxlength="500" rows="5" cols="50" class="description form-control" placeholder="descrizione" ng-model="moduli.current.descrizione"></textarea>
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-5"
+                                ng-click="onConfirmAddModule()"
+                                ng-disabled='moduleAddForm.$invalid'
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModule" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Modifica modulo {{moduli.current.nome}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="moduleEditForm" novalidate>
+                        <input type="text" maxlength="50" class="title form-control" placeholder="nome" ng-model="moduli.current.nome" autofocus required/>
+                        <textarea maxlength="500" rows="5" cols="50" class="description form-control" placeholder="descrizione" ng-model="moduli.current.descrizione"></textarea>
+
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-5"
+                                ng-click="onConfirmEditModule()"
+                                ng-disabled='moduleEditForm.$invalid'
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModule" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Elminazione modulo {{moduli.current.nome}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="moduleDeleteForm" novalidate>
+                        <p>Confermare l'eliminazione?</p>
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-3"
+                                ng-click="onDeleteCurrentModule()"
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                        <button type="submit" class="btn btn-danger col-sm-2 col-sm-offset-1"
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Modal -->
+    <div id="fillModule" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Modifica materiale del modulo {{moduli.current.nome}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="moduleURLFillForm" class="form-inline" novalidate>
+                        Link presenti:
+                        <div class="well well-sm" ng-class="{'has-warning' : link.modified}" ng-repeat="link in moduli.current.links">
+                            <input type="text" class="form-control" placeholder="nome" ng-keypress="link.modified = true" ng-model="link.nome"/>
+                            <input type="text" class="form-control" placeholder="url" ng-keypress="link.modified = true" ng-model="link.link"/>
+                            <!-- Delete -->
+                            <a class="right btn btn-xs btn-default"
+                               ng-click="onDeleteModuleURL(link)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                            <!-- Edit -->
+                            <a class="right btn btn-xs btn-default"
+                               ng-click="onEditModuleURL(link)">
+                                <span class="glyphicon glyphicon-save"></span>
+                            </a>
+                        </div>
+                        <div>Nuovo link:</div>
+                        <input type="text" class="title form-control" placeholder="nome" ng-model="moduli.newURL.nome"/>
+                        <input type="text" class="title form-control" placeholder="url" ng-model="moduli.newURL.link"/>
+                        <button class="btn btn-default" ng-click="onAddModuleURL()">Aggiungi link</button>
+
+                    </form>
+
+                    <div class="progress">
+                        <div id="progress-moduli-{{moduli.current.id}}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                        </div>
+                    </div>
+
+                    <form id="moduliFileForm" name="moduleDocumentsFillForm" enctype="multipart/form-data" class="form-inline" novalidate>
+                        Documenti presenti:
+                        <div class="well well-sm" ng-repeat="doc in moduli.current.docs">
+                            {{doc}}
+                            <!-- Delete -->
+                            <a class="right btn btn-xs btn-default"
+                               ng-click="onDeleteModuleDocument(doc)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        </div>
+                        <div>Nuovo documento:</div>
+                        <input id="moduleFile" name="document" type="file" class="form-control"/>
+                        <button class="btn btn-default" ng-click="onAddModuleDocument()">Carica</button>
+                        
+                        <button class="btn btn-success col-sm-2 col-sm-offset-5 top-sep"
+                                data-dismiss="modal">
+                            Chiudi
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>				
+</div>

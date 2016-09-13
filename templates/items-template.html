@@ -1,0 +1,10 @@
+<div class="items-wrapper" ng-show="dbCtrl.level > 1">
+    <div ng-repeat="item in dbCtrl.items">
+        <button 
+        class="btn btn-default item-name" 
+        data-toggle="tooltip" data-placement="right" title="{{item.description}}" 
+        ng-click="dbCtrl.itemClicked(item.id)">
+        {{item.name}}
+        </button>
+    </div>
+</div>
