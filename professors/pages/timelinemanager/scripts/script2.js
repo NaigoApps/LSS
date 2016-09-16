@@ -295,6 +295,50 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             };
         };
 
+        $scope.setDone = function (index) {
+            var today = new Date();
+            swal({
+                title: "Svolgimento",
+                text: "Inserisci la data di svolgimento",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                animation: "slide-from-top",
+                inputValue: today.getDay() + "/" + (today.getMonth() + 1)},
+            function (input) {
+                if (input === false) {
+                    return false;
+                }
+                var fields = input.split("/");
+                if (fields.length === 2) {
+                    fields[0] = parseInt(fields[0]);
+                    fields[1] = parseInt(fields[1]);
+                    var testDate;
+                    if (fields[1] < 6) {
+                        testDate = new Date(to, fields[1] - 1, fields[0]);
+                    } else {
+                        testDate = new Date(from, fields[1] - 1, fields[0]);
+                    }
+                    if (testDate && testDate.getMonth() === fields[1] - 1) {
+                        $scope.timeline[index].perfDay = testDate.getDay();
+                        $scope.timeline[index].perfMonth = testDate.getMonth();
+                        $scope.timeline[index].perfYear = testDate.getYear();
+                        $scope.timeline[index].performed = true;
+                        $scope.$apply();
+                    } else {
+                        swal.showInputError("Data non valida!");
+                        return false;
+                    }
+                } else {
+                    swal.showInputError("Data non valida!");
+                    return false;
+                }
+                swal("Registrazione completata");
+            });
+        };
+
+
+
         $scope.onAddToTimeline = function () {
             $scope.itemsToAdd = [];
             if ($scope.argomenti.selected) {
@@ -319,11 +363,21 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             if ($scope.findById($scope.timeline, $scope.itemsToAdd[i].id) === -1) {
                                 if ($scope.monthToAdd.numero < 6) {
                                     $scope.timeline.push({
-                                        id: $scope.itemsToAdd[i].id, content: $scope.itemsToAdd[i].nome, start: new Date(to, $scope.monthToAdd.numero, 1)
+                                        id: $scope.itemsToAdd[i].id,
+                                        content: $scope.itemsToAdd[i].nome,
+                                        perfDay: 1,
+                                        perfMonth: $scope.monthToAdd.numero,
+                                        perfYear: to,
+                                        start: new Date(to, $scope.monthToAdd.numero, 1)
                                     });
                                 } else {
                                     $scope.timeline.push({
-                                        id: $scope.itemsToAdd[i].id, content: $scope.itemsToAdd[i].nome, start: new Date(from, $scope.monthToAdd.numero, 1)
+                                        id: $scope.itemsToAdd[i].id,
+                                        content: $scope.itemsToAdd[i].nome,
+                                        perfDay: 1,
+                                        perfMonth: $scope.monthToAdd.numero,
+                                        perfYear: from,
+                                        start: new Date(from, $scope.monthToAdd.numero, 1)
                                     });
                                 }
                                 $scope.$apply();

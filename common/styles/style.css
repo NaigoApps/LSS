@@ -35,9 +35,6 @@ input.ng-valid, textarea.ng-valid{
     border:1px solid #00FF00;
 }
 
-.well{
-    display:block;
-}
 
 .top-sep{
     margin-top:10px;
@@ -70,6 +67,7 @@ form{
 
 .right{
     float:right;
+    margin: 5px;
     overflow: auto;
 }
 
@@ -90,33 +88,3 @@ form{
     position: absolute;
     bottom: 0px;
 }
-
-.btn-fade-container{
-    display: block;
-    position: relative;
-    width:200px;
-    height:200px;
-    margin:50px auto;
-}
-
-
-
-.btn-fade{
-    float: left;
-    position: absolute;
-    border-radius: 50%;
-    left:0%;
-    top:0%;
-    width:100%;
-    height:100%;
-    background-color: rgba(255,255,255,0.3);
-    //-webkit-transition: top 0.5s, left 0.5s, height 0.5s, width 0.5s; /* Safari */
-    //transition: top 0.5s, left 0.5s, height 0.5s, width 0.5s;
-}
-/*
-.btn-fade:hover{
-    left:50%;
-    top:50%;
-    width:0%;
-    height:0%;
-}*/

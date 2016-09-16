@@ -126,15 +126,38 @@ fclose($file);
                     <h1 class="glyphicon glyphicon-arrow-up"></h1>
                     <h1>Selezionare un mese...</h1>
                 </div>
-                
+
                 <div class="well timeline-month" ng-if="monthToAdd">
-                    <h3>{{monthToAdd.nome}}</h3>
-                    <div class="timeline-item" ng-repeat="element in timeline track by $index " ng-if="element.start.getMonth() === monthToAdd.numero">
+                    <h3>{{monthToAdd.nome}} <small>svolti</small></h3>
+                    <div class="timeline-item" ng-repeat="element in timeline track by $index" ng-if="element.start.getMonth() === monthToAdd.numero && element.performed">
                         {{element.content}}
                         <a class="btn btn-danger right" ng-click="removeFromTimeline($index)">
                             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                             Elimina
                         </a>
+                    </div>
+                </div>
+
+                <div class="row" ng-if="monthToAdd">
+                    <div class="col-sm-12 panel panel-default">
+                        <div class="row">
+                            <h3 class="panel-heading">{{monthToAdd.nome}} <small>non svolti</small></h3>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item clearfix" ng-repeat="element in timeline track by $index" ng-if="element.start.getMonth() === monthToAdd.numero && !element.performed">
+                                {{element.content}}
+                                <div class="btn-group pull-right">
+                                    <a class="btn btn-success" ng-click="setDone($index)">
+                                        <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                                        Svolgi
+                                    </a>
+                                    <a class="btn btn-danger" ng-click="removeFromTimeline($index)">
+                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                        Elimina
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
