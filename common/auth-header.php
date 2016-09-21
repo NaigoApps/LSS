@@ -4,8 +4,8 @@ session_start();
 /*
  * Makes a page secure.
  */
-require_once $_SERVER['DOCUMENT_ROOT'] . 'LSSPHP/common/google-api-php-client/src/Google/autoload.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . 'LSSPHP/common/functions.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/LSS/common/google-api-php-client/src/Google/autoload.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/LSS/common/functions.php';
 //require_once dirname(__FILE__).'/GoogleClientApi/contrib/Google_AnalyticsService.php';
 
 $client_id = '487942486199-ur74tmud23ud4fvdr7ao871ovomhg27l.apps.googleusercontent.com';
@@ -18,7 +18,7 @@ $client = new Google_Client();
 //$client->setAccessType('online'); // default: offline
 $client->setClientId($client_id);
 $client->setClientSecret($client_secret);
-$client->setRedirectUri('http://localhost/LSSPHP/index.php');
+$client->setRedirectUri('http://localhost/LSS/index.php');
 //$client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
 $client->setScopes('email');
 

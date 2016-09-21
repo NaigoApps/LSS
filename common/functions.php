@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'] . 'LSSPHP/consts.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/LSS/consts.php';
 /*
  * Unknown = 0
  * Professor = 1

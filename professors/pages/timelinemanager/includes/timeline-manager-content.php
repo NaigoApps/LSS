@@ -3,7 +3,7 @@
 <h1 class="text-center">Elenco delle timelines</h1>
 <div class="wrapper" ng-app="lss-db" ng-controller="timelineController as tCtrl">
     <?php
-    $dir = "../../" . $user_data->getId();
+    $dir = "../../timelines/" . $user_data->getId();
     if (!file_exists($dir)) {
         mkdir($dir);
     }
@@ -18,12 +18,13 @@
                 if (strpos($files[$j], ".json") !== false) {
                     $counter++;
                     $timeline = substr($files[$j], 0, strpos($files[$j], ".json"));
+                    $descr = explode("-", $timeline);
                     ?>
 
                     <div class="well col-sm-4">
                         <div class="col-sm-6">
                             <?php
-                            echo $timeline;
+                            echo $descr[3].$descr[1].$descr[0];
                             ?>
                         </div>
                         <a class="btn btn-default col-sm-2" ng-click="onEditTimeline('<?php echo $timeline; ?>')">
