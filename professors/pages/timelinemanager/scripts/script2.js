@@ -60,7 +60,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             searchString: ""
         };
         $scope.itemsToAdd = [];
-        $scope.timeline = data;
 
         $scope.materie = [
             {nome: "Fisica", color: "orange"},
@@ -69,15 +68,43 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             {nome: "Biologia", color: "green-lemon"},
         ];
 
-        //Init items performances
-        for (var i = 0; i < $scope.timeline.length; i++) {
-            $scope.timeline[i].start = new Date($scope.timeline[i].start);
-            $scope.timeline[i].performance = [];
-            for (var j = 0; j < $scope.materie.length; j++) {
-                $scope.timeline[i].performance.push({done: false});
+        $scope.timeline = [];
+
+        $scope.timeline.serialize = function () {
+            var serialized = [];
+            for (var i = 0; i < this.length; i++) {
+                var element = {
+                    id: this[i].id,
+                    content: this[i].content
+                };
+                element.date = this[i].date;
+                serialized.push(element);
             }
-            $scope.timeline[i].performed = false;
-        }
+            return serialized;
+        };
+
+        $scope.timeline.deserialize = function (data) {
+            for (var i = 0; i < data.length; i++) {
+                var element = {
+                    id: data[i].id,
+                    content: data[i].content,
+                    date: data[i].date,
+                    performed: false,
+                    performance: []
+                };
+                for (var j = 0; j < $scope.materie.length; j++) {
+                    element.performance.push(
+                            {
+                                done: false,
+                                on: undefined
+                            }
+                    );
+                }
+                this.push(element);
+            }
+        };
+
+        $scope.timeline.deserialize(data);
 
         $scope.monthToAdd = undefined;
 
@@ -104,7 +131,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                                 dataType: 'json',
                                 async: false,
                                 url: 'includes/timeline/save_data.php',
-                                data: {data: JSON.stringify($scope.timeline, null, 2)},
+                                data: {data: JSON.stringify($scope.timeline.serialize(), null, 1)},
                                 success: swal("File", "salvato correttamente", "success"),
                                 failure: function () {
                                     alert("Error!");
@@ -123,7 +150,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                                 dataType: 'json',
                                 async: false,
                                 url: 'includes/timeline/save_data.php',
-                                data: {data: JSON.stringify($scope.timeline, null, 2)},
+                                data: {data: JSON.stringify($scope.timeline.serialize(), null, 1)},
                                 success: window.location.replace("./index.php"),
                                 failure: function () {
                                     alert("Error!");
@@ -236,20 +263,14 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             done: false,
                             on: undefined
                         };
-                        $scope.timeline[index].start.setDate(1);
-                        $scope.timeline[index].performed = false;
 
-                        var done = false;
-                        for (var i = 0; i < $scope.performs.length && !done; i++) {
-                            if ($scope.performs[i].idvoce === $scope.timeline[index].id && $scope.performs[i].idmateria === subject_id) {
-                                $scope.performs.splice(i, 1);
-                                done = true;
-                            }
-                        }
+                        $scope.timeline[index].performed = false;
+                        $scope.timeline[index].date.day = 1;
 
                         $scope.$apply();
                     });
         };
+
         $scope.setDone = function (index) {
             var today = new Date();
             swal({
@@ -270,16 +291,24 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             fields[1] = parseInt(fields[1]);
                             var testDate;
                             if (fields[1] < 6) {
-                                testDate = new Date(to, fields[1] - 1, fields[0]);
+                                testDate = {
+                                    day: fields[0],
+                                    month: fields[1] - 1,
+                                    year: to
+                                };
                             } else {
-                                testDate = new Date(from, fields[1] - 1, fields[0]);
+                                testDate = {
+                                    day: fields[0],
+                                    month: fields[1] - 1,
+                                    year: from
+                                };
                             }
-                            if (testDate && testDate.getMonth() === fields[1] - 1) {
+                            if (new Date(testDate) && new Date(testDate).getMonth() === fields[1] - 1) {
                                 $scope.timeline[index].performance[subject_id - 1] = {
                                     done: true,
                                     on: testDate
                                 };
-                                $scope.timeline[index].start = testDate;
+                                $scope.timeline[index].date = testDate;
                                 $scope.timeline[index].performed = true;
                                 $scope.$apply();
                             } else {
@@ -293,6 +322,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         swal("Registrazione completata");
                     });
         };
+
         $scope.onAddToTimeline = function () {
             $scope.itemsToAdd = [];
             if ($scope.argomenti.selected) {
@@ -315,31 +345,33 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     prettyConfirm("Aggiunta elementi", str, function () {
                         for (var i = 0; i < $scope.itemsToAdd.length; i++) {
                             if ($scope.findById($scope.timeline, $scope.itemsToAdd[i].id) === -1) {
+                                var year;
                                 if ($scope.monthToAdd.numero < 6) {
-                                    var newItem = {
-                                        id: $scope.itemsToAdd[i].id,
-                                        content: $scope.itemsToAdd[i].nome,
-                                        start: new Date(to, $scope.monthToAdd.numero, 1),
-                                        performance: [],
-                                        performed: false
-                                    };
+                                    year = to;
                                 } else {
-                                    var newItem = {
-                                        id: $scope.itemsToAdd[i].id,
-                                        content: $scope.itemsToAdd[i].nome,
-                                        start: new Date(from, $scope.monthToAdd.numero, 1),
-                                        performance: [],
-                                        performed: false
-                                    };
+                                    year = from;
                                 }
+                                var element = {
+                                    id: $scope.itemsToAdd[i].id,
+                                    content: $scope.itemsToAdd[i].nome,
+                                    date: {
+                                        day: 1,
+                                        month: $scope.monthToAdd.numero,
+                                        year: year
+                                    },
+                                    performed: false,
+                                    performance: []
+                                };
                                 for (var j = 0; j < $scope.materie.length; j++) {
-                                    newItem.performance.push({done: false});
+                                    element.performance.push(
+                                            {
+                                                done: false,
+                                                on: undefined
+                                            }
+                                    );
                                 }
-                                $scope.timeline.push(newItem);
-                                for (var j = 0; j < $scope.performs.length; j++) {
-                                    $scope.assignPerformance($scope.performs[j]);
-                                }
-                                $scope.$apply();
+                                $scope.timeline.push(element);
+                                $scope.reloadPerformances();
                             }
                         }
                     });
@@ -396,22 +428,26 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 {
                     target: $scope.moduli
                 });
-        $http.post(
-                'includes/timeline/load_data.php',
-                {
-                    command: 'load_timeline'
-                }
-        ).then(
-                function (rx) {
-                    $scope.performs = rx.data;
-                    for (var i = 0; i < $scope.performs.length; i++) {
-                        $scope.assignPerformance($scope.performs[i]);
+                
+        $scope.reloadPerformances = function(){
+            $http.post(
+                    'includes/timeline/load_data.php',
+                    {
+                        command: 'load_timeline'
                     }
-                },
-                function (rx) {
-                    $scope.errorMessage(rx.data.msg);
-                }
-        );
+            ).then(
+                    function (rx) {
+                        $scope.performs = rx.data;
+                        for (var i = 0; i < $scope.performs.length; i++) {
+                            $scope.assignPerformance($scope.performs[i]);
+                        }
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data.msg);
+                    }
+            );
+        };
+
         $scope.assignPerformance = function (perf) {
             for (var i = 0; i < $scope.timeline.length; i++) {
                 if ($scope.timeline[i].id === perf.idvoce) {
@@ -419,7 +455,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         done: true,
                         on: new Date(perf.data)
                     };
-                    if(parseInt(perf.idmateria) === subject_id){
+                    if (parseInt(perf.idmateria) === subject_id) {
                         $scope.timeline[i].performed = true;
                     }
                 }
