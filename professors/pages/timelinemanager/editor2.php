@@ -3,11 +3,12 @@ require_once '../../../common/auth-header.php';
 
 $year = $_SESSION['timeline-year'];
 $subject = $_SESSION['timeline-subject'];
-$class = $_SESSION['timeline-class'];
+$class_a = $_SESSION['timeline-class-year'];
+$class_s = $_SESSION['timeline-class-section'];
 $subject_id = $_SESSION['timeline-subject-id'];
 $class_id = $_SESSION['timeline-class-id'];
 $folder = $_SESSION['timeline-folder'];
-$filename = "../../timelines/" . $folder . "/$year-$class-$class_id-$subject-$subject_id.json";
+$filename = "../../timelines/" . $folder . "/$year-$class_a-$class_s-$class_id-$subject-$subject_id.json";
 $file = fopen($filename, "r") or die("Unable to open file!");
 $content = str_replace(["\r\n", "\n", "\r"], ' ', fread($file, filesize($filename)));
 $content = json_encode($content);
@@ -27,8 +28,6 @@ fclose($file);
         <script src="includes/timeline/alert/dist/sweetalert.min.js"></script>
         <link href="includes/timeline/alert/dist/sweetalert.css" rel="stylesheet" type="text/css"/>
         <script src="includes/timeline/dist/timeline2.js"></script>
-        <script type="text/javascript" src="includes/timeline/dist/jsDatePick.min.1.3.js"></script>
-        <link rel="stylesheet" type="text/css" media="all" href="includes/timeline/dist/jsDatePick_ltr.min.css" />    
         <link rel="stylesheet" href="../../../common/styles/bootstrap.min.css">
         <link rel="stylesheet" href="../../../common/styles/style.css">
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
@@ -138,22 +137,24 @@ fclose($file);
                             <h3 class="panel-heading">{{monthToAdd.nome}} <small>svolti</small></h3>
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item clearfix" ng-repeat="element in timeline track by $index" ng-if="element.start.getMonth() === monthToAdd.numero && element.performed">
+                            <li class="list-group-item clearfix" ng-repeat="(i,element) in timeline" ng-if="element.date.month === monthToAdd.numero && element.performed">
                                 {{element.content}}
                                 <div class="btn-group pull-right">
-                                    <a class="btn btn-success" ng-click="setUndone($index)">
+                                    <a class="btn btn-success" ng-click="setUndone(i)">
                                         <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
                                         Elimina svolgimento
                                     </a>
-                                    <a class="btn btn-danger" ng-click="removeFromTimeline($index)">
+                                    <a class="btn btn-danger" ng-click="removeFromTimeline(i)">
                                         <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                                         Elimina
                                     </a>
                                 </div>
                                 <div class="subjects pull-right">
-                                    <div class="subject tooltip-base" ng-style="{'background-color':materia.color}" ng-if="element.performance[$index].done" ng-repeat="materia in materie track by $index">
-                                        <span class="tooltip">{{materia.nome}} : {{element.performance[$index].on.getDate()}}/{{element.performance[$index].on.getMonth() + 1}}/{{element.performance[$index].on.getFullYear()}}</span>
-                                    </div>
+                                    <span ng-repeat="(j,materia) in materie">
+                                        <div class="subject tooltip-base" ng-style="{'background-color':materia.color}" ng-if="element.performance[j].done">
+                                            <span class="tooltip">{{materia.nome}} : {{element.performance[j].on.day}}/{{element.performance[j].on.month}}/{{element.performance[j].on.year}}</span>
+                                        </div>
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -166,24 +167,26 @@ fclose($file);
                             <h3 class="panel-heading">{{monthToAdd.nome}} <small>non svolti</small></h3>
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item clearfix" ng-repeat="element in timeline track by $index" ng-if="element.start.getMonth() === monthToAdd.numero && !element.performed">
+                            <li class="list-group-item clearfix" ng-repeat="(i,element) in timeline" ng-if="element.date.month === monthToAdd.numero && !element.performed">
                                 {{element.content}}
                                 <div class="btn-group pull-right">
 
-                                    <a class="btn btn-success" ng-click="setDone($index)">
+                                    <a class="btn btn-success" ng-click="setDone(i)">
                                         <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
                                         Svolgi
                                     </a>
-                                    <a class="btn btn-danger" ng-click="removeFromTimeline($index)">
+                                    <a class="btn btn-danger" ng-click="removeFromTimeline(i)">
                                         <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                                         Elimina
                                     </a>
 
                                 </div>
                                 <div class="subjects pull-right">
-                                    <div class="subject tooltip-base" ng-style="{'background-color':materia.color}" ng-if="element.performance[$index].done" ng-repeat="materia in materie track by $index">
-                                        <span class="tooltip">{{materia.nome}} : {{element.performance[$index].on.getDate()}}/{{element.performance[$index].on.getMonth() + 1}}/{{element.performance[$index].on.getFullYear()}}</span>
-                                    </div>
+                                    <span ng-repeat="(j,materia) in materie">
+                                        <div class="subject tooltip-base" ng-style="{'background-color':materia.color}" ng-if="element.performance[j].done">
+                                            <span class="tooltip">{{materia.nome}} : {{element.performance[j].on.day}}/{{element.performance[j].on.month}}/{{element.performance[j].on.year}}</span>
+                                        </div>
+                                    </span>
                                 </div>
                             </li>
                         </ul>

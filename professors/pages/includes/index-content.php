@@ -13,7 +13,7 @@
         Gestisci programmazione
     </a>
 
-    <a class="col-sm-2 col-sm-offset-1 btn btn-lg btn-default" href="#">
+    <a class="col-sm-2 col-sm-offset-1 btn btn-lg btn-default" href="./pages/timelineviewer/index.php">
         <h1 class="text-info">
             <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
         </h1>

@@ -13,13 +13,15 @@ if ($request != null && isset($request->command)) {
 
     if ($request->command === "updateclass") {
         $id = mysqli_real_escape_string($connection, $request->obj->id);
-        $nome = mysqli_real_escape_string($connection, $request->obj->nome);
-        $query = "UPDATE classi SET nome = '$nome' WHERE id=$id";
+        $sezione = $request->obj->sezione;
+        $anno = $request->obj->anno;
+        $query = "UPDATE classi SET sezione = '$sezione', anno = $anno WHERE id = '$id'";
         std_update($connection, $query);
         
     }else if ($request->command === "addclass") {
-        $nome = mysqli_real_escape_string($connection, $request->obj->nome);
-        $query = "INSERT INTO classi (nome) VALUES ('$nome')";
+        $sezione = $request->obj->sezione;
+        $anno = $request->obj->anno;
+        $query = "INSERT INTO classi(sezione,anno) VALUES ('$sezione',$anno)";
         std_insert($connection, $query);
         
     }else if ($request->command === "deleteclass") {

@@ -16,6 +16,13 @@ ul{
     overflow: auto;
 }
 
+.always-bottom{
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 10px;
+    width:100%;
+}
+
 input.title{
     display:block;
     margin:10px auto;

@@ -1,6 +1,6 @@
 
 <?php require_once '../../../common/authentication-bar.php'; ?>
-<h1 class="text-center">Elenco delle timelines</h1>
+<h1 class="text-center">Elenco delle programmazioni</h1>
 <div class="wrapper" ng-app="lss-db" ng-controller="timelineController as tCtrl">
     <?php
     $dir = "../../timelines/" . $user_data->getId();
@@ -24,7 +24,7 @@
                     <div class="well col-sm-4">
                         <div class="col-sm-6">
                             <?php
-                            echo $descr[3].$descr[1].$descr[0];
+                            echo $descr[4].$descr[1].$descr[2].$descr[0];
                             ?>
                         </div>
                         <a class="btn btn-default col-sm-2" ng-click="onEditTimeline('<?php echo $timeline; ?>')">

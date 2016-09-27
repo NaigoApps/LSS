@@ -3,7 +3,8 @@ session_start();
 
 $year = $_SESSION['timeline-year'];
 $subject = $_SESSION['timeline-subject'];
-$class = $_SESSION['timeline-class'];
+$class_a = $_SESSION['timeline-class-year'];
+$class_s = $_SESSION['timeline-class-section'];
 $folder = $_SESSION['timeline-folder'];
 $file = "../../" . $folder . "/empty.json";
 ?>

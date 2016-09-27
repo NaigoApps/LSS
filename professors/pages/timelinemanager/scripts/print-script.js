@@ -8,16 +8,16 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         }
 
         $scope.mesi = [
-            {nome: 'Settembre', numero: 8},
-            {nome: 'Ottobre', numero: 9},
-            {nome: 'Novembre', numero: 10},
-            {nome: 'Dicembre', numero: 11},
-            {nome: 'Gennaio', numero: 0},
-            {nome: 'Febbraio', numero: 1},
-            {nome: 'Marzo', numero: 2},
-            {nome: 'Aprile', numero: 3},
-            {nome: 'Maggio', numero: 4},
-            {nome: 'Giugno', numero: 5}
+            {nome: 'Settembre', numero: 9},
+            {nome: 'Ottobre', numero: 10},
+            {nome: 'Novembre', numero: 11},
+            {nome: 'Dicembre', numero: 12},
+            {nome: 'Gennaio', numero: 1},
+            {nome: 'Febbraio', numero: 2},
+            {nome: 'Marzo', numero: 3},
+            {nome: 'Aprile', numero: 4},
+            {nome: 'Maggio', numero: 5},
+            {nome: 'Giugno', numero: 6}
         ];
 
         $scope.exit = function () {

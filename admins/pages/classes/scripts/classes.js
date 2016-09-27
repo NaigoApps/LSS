@@ -42,8 +42,11 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
          * @returns {undefined}
          */
         $scope.onAddClass = function () {
-            if ($scope.newClass && $scope.newClass.nome) {
-                $scope.classi.current = {nome: $scope.newClass.nome};
+            if ($scope.newClass && $scope.newClass.sezione && $scope.newClass.anno) {
+                $scope.classi.current = {
+                    anno: $scope.newClass.anno,
+                    sezione: $scope.newClass.sezione
+                };
                 $rootScope.$emit('add-class', {target: $scope.classi});
             }
         };

@@ -3,9 +3,16 @@
         <h2>Elenco dell classi:</h2>
         <ul class="list-group top-sep">
             <div class="row" ng-repeat="classe in classi.content">
-                <li class="list-group-item col-sm-6">
+                <li class="list-group-item col-sm-12">
                     <form class="form-inline" ng-class="{'has-warning' : classe.modified}" >
-                        <input type="text" class="form-control" placeholder="nome" ng-keypress="classe.modified = true" ng-model="classe.nome"/>
+                        <div class="form-group">
+                            <label for="{{classe.anno + classe.sezione + 'a'}}">Anno:</label>
+                            <input id="{{classe.anno + classe.sezione + 'a'}}" type="text" class="form-control" placeholder="anno" ng-keypress="classe.modified = true" ng-model="classe.anno"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{classe.anno + classe.sezione + 's'}}">Sezione:</label>
+                            <input id="{{classe.anno + classe.sezione + 's'}}" type="text" class="form-control" placeholder="sezione" ng-keypress="classe.modified = true" ng-model="classe.sezione"/>
+                        </div>
                         <!-- Delete -->
                         <a class="right btn btn-xs btn-default"
                            ng-click="onDeleteClass(classe)">
@@ -22,7 +29,8 @@
         </ul>
         <form class="form-inline">
             <div>Nuova classe:</div>
-            <input type="text" class="title form-control" placeholder="nome" ng-model="newClass.nome"/>
+            <input type="text" class="form-control" placeholder="anno" ng-keypress="classe.modified = true" ng-model="newClass.anno"/>
+            <input type="text" class="form-control" placeholder="nome" ng-keypress="classe.modified = true" ng-model="newClass.sezione"/>
             <button class="btn btn-default" ng-click="onAddClass()">Aggiungi classe</button>
         </form>
 
@@ -32,14 +40,14 @@
         <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             <span class="sr-only">Errore:</span>
-            {{lastErrorMessage}}
+            {{lastErrorMessage.msg}}
         </div>
     </div>
     <div class="row success message">
         <div class="alert alert-success success-message col-sm-12" role="alert" hidden>
             <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
             <span class="sr-only">Successo:</span>
-            {{lastSuccessMessage}}
+            {{lastSuccessMessage.msg}}
         </div>
     </div>
 </div>

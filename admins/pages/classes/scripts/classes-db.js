@@ -82,7 +82,7 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                     function (rx) {
                         data.target.current.id = rx.data;
                         data.target.content.push(JSON.parse(JSON.stringify(data.target.current)));
-                        $scope.successMessage(data.target.current.nome + " inserita");
+                        $scope.successMessage(data.target.current.anno + data.target.current.sezione  + " inserita");
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data);
@@ -109,10 +109,10 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                         var index = $scope.findById(data.target.content, data.target.current.id);
                         data.target.current.modified = false;
                         data.target.content[index] = JSON.parse(JSON.stringify(data.target.current));
-                        $scope.successMessage(data.target.current.nome + " modificato");
+                        $scope.successMessage(data.target.current.anno + data.target.current.sezione + " modificato");
                     },
                     function (rx) {
-                        $scope.errorMessage("Impossibile modificare " + data.target.current.nome);
+                        $scope.errorMessage("Impossibile modificare " + data.target.current.anno + data.target.current.sezione);
                     }
             );
         });
@@ -134,10 +134,10 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                     function (rx) {
                         var index = $scope.findById(data.target.content, data.target.current.id);
                         data.target.content.splice(index, 1);
-                        $scope.successMessage(data.target.current.nome + " eliminato");
+                        $scope.successMessage(data.target.current.anno + data.target.current.sezione + " eliminato");
                     },
                     function (rx) {
-                        $scope.errorMessage("Impossibile eliminare " + data.target.current.nome);
+                        $scope.errorMessage("Impossibile eliminare " + data.target.current.anno + data.target.current.sezione );
                     }
             );
         });

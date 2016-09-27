@@ -2,19 +2,19 @@
 <?php require_once '../../../common/authentication-bar.php'; ?>
 <div ng-app="lss-db" ng-controller="linkController as linkCtrl">
     <div class="wrapper" ng-app="lss-db" ng-controller="classesController as classCtrl">
-        <h1>Creazione di una timeline</h1>
+        <h1>Creazione di una programmazione</h1>
         <div class="row">
             <h4>Selezionare la classe:</h4>
             <ul class="list-group top-sep">
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownItems" data-toggle="dropdown" aria-haspopup="true">
-                        {{classi.selected.nome}}
+                        {{classi.selected.anno + classi.selected.sezione}}
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownModules">
                         <li ng-repeat="classe in classi.content"
                             ng-click="onSelectClass(classe)">
-                            <a>{{classe.nome}}</a>
+                            <a>{{classe.anno + classe.sezione}}</a>
                         </li>
                     </ul>
                 </div>

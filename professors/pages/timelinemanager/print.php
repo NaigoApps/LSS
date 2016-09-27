@@ -3,9 +3,12 @@ require_once '../../../common/auth-header.php';
 
 $year = $_SESSION['timeline-year'];
 $subject = $_SESSION['timeline-subject'];
-$class = $_SESSION['timeline-class'];
+$subject_id = $_SESSION['timeline-subject-id'];
+$class_a = $_SESSION['timeline-class-year'];
+$class_s = $_SESSION['timeline-class-section'];
+$class_id = $_SESSION['timeline-class-id'];
 $folder = $_SESSION['timeline-folder'];
-$filename = "../../" . $folder . "/$year-$class-$subject.json";
+$filename = "../../timelines/" . $folder . "/$year-$class_a-$class_s-$class_id-$subject-$subject_id.json";
 $file = fopen($filename, "r") or die("Unable to open file!");
 $content = str_replace(["\r\n", "\n", "\r"], ' ', fread($file, filesize($filename)));
 $content = json_encode($content);
@@ -23,7 +26,7 @@ fclose($file);
         <link rel="stylesheet" href="../../../common/styles/style.css">
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
-        <link rel="stylesheet"  href="styles/print.css" media="print"/>       
+        <link rel="stylesheet" href="styles/print.css" media="all"/>       
         <script src="scripts/print-script.js"></script>
 
 
@@ -38,17 +41,23 @@ fclose($file);
 
 
         <div class="wrapper" ng-app="lss-db" ng-controller="timelineController as timeCtrl">
-            <h1 class="text-center">Programmazione <?php echo $year . "/" . ($year + 1) . " - " . $class . " " . $subject; ?></h1>
+            <h1 class="text-center">Programmazione <?php echo $year . "/" . ($year + 1) . " - " . $class_a . $class_s . " " . $subject; ?></h1>
 
             <div>
-                <table class="table table-bordered table-condensed" ng-repeat="month in mesi">
-                    <tr><th>{{month.nome}}</th></tr>
-                    <tr ng-repeat="element in timeline track by $index" ng-if="element.start.getMonth() === month.numero">
-                        <td class="timeline-item">
+                <div ng-repeat="month in mesi">
+                    <h3>{{month.nome}}</h3>
+                    <div class="row" ng-repeat="element in timeline track by $index" ng-if="element.date.month === month.numero">
+                        <div class="col-sm-6 timeline-item">
                             {{element.content}}
-                        </td>
-                    </tr>
-                </table>
+                        </div>
+                        <div class="col-sm-6 timeline-item" ng-if="element.performed">
+                            Svolto in data {{element.date.day + '/' + element.date.month + '/' + element.date.year}}
+                        </div>
+                        <div class="col-sm-6 timeline-item" ng-if="!element.performed">
+                            Da svolgere
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="save-buttons row always-bottom">
                 <a class="btn btn-success col-xs-3 col-xs-offset-2 hidden-print" type="button" title="SALVA" ng-click="print()">Stampa</a>

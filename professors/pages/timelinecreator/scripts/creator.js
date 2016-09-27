@@ -47,7 +47,7 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
                         }
                 ).then(
                         function (rx) {
-                            window.location.replace("../timelinemanager/editor.php");
+                            window.location.replace("../timelinemanager/editor2.php");
                         },
                         function (rx) {
                             $scope.errorMessage(rx.data);
@@ -132,10 +132,10 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
 
         //MAIN
         $rootScope.$emit('load-table',{
-            target: $scope.classi,
+            target: $scope.classi
         });
         $rootScope.$emit('load-table',{
-            target: $scope.materie,
+            target: $scope.materie
         });
     }]);
 
