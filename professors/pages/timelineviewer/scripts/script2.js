@@ -97,7 +97,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     },
             searchString: ""
         };
-        $scope.itemsToAdd = [];
+
         $scope.materie = [
             {nome: "Fisica", color: "orange"},
             {nome: "Chimica", color: "cyan"},
@@ -233,6 +233,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 id: id,
                 content: name,
                 date: date,
+                start: new Date(date.year, date.month - 1, date.day),
                 performed: false,
                 performance: []
             };

@@ -23,16 +23,16 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
          * @param {object} timeline Selected timeline
          * @returns {undefined}
          */
-        $scope.onViewTimeline = function (timeline) {
+        $scope.onEditTimeline = function (timeline) {
             $http.post(
-                    './includes/timeline-viewer.php',
+                    '../includes/timeline-manager.php',
                     {
-                        command: 'view_timeline',
+                        command: 'edit_timeline',
                         timeline: timeline
                     }
             ).then(
                     function (rx) {
-                        window.location.replace("./viewer.php");
+                        window.location.replace("./editor2.php");
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data);
@@ -40,6 +40,43 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             );
         };
         
+        $scope.onPrintTimeline = function (timeline) {
+            $http.post(
+                    '../includes/timeline-manager.php',
+                    {
+                        command: 'edit_timeline',
+                        timeline: timeline
+                    }
+            ).then(
+                    function (rx) {
+                        window.location.replace("./print.php");
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
+        };
+        
+        /**
+         * 
+         * @returns {undefined}
+         */
+        $scope.onDeleteCurrentTimeline = function () {
+            $http.post(
+                    '../includes/timeline-manager.php',
+                    {
+                        command: 'delete_timeline',
+                        timeline: $scope.currentTimeline
+                    }
+            ).then(
+                    function (rx) {
+                        window.location.replace(".");
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
+        };
         
         $scope.errorMessage = function (message) {
             $scope.lastErrorMessage = message;
