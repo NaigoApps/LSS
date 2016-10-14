@@ -11,7 +11,7 @@
                         {{classi.selected.anno + classi.selected.sezione}}
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownModules">
+                    <ul class="dropdown-menu">
                         <li ng-repeat="classe in classi.content"
                             ng-click="onSelectClass(classe)">
                             <a>{{classe.anno + classe.sezione}}</a>
@@ -29,7 +29,7 @@
                         {{materie.selected.nome}}
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownModules">
+                    <ul class="dropdown-menu">
                         <li ng-repeat="materia in materie.content"
                             ng-click="onSelectSubject(materia)">
                             <a>{{materia.nome}}</a>
@@ -42,22 +42,21 @@
             <h4>Selezionare l'anno scolastico</h4>
             <ul class="list-group top-sep">
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true">
-                        {{classi.selected.anno + classi.selected.sezione}}
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" ng-if="!anni.selected">
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownModules">
-                        <li ng-repeat="y in anni"
-                            ng-click="onSelectYear(classe)">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" ng-if="anni.selected">
+                        {{anni.selected}}/{{anni.selected + 1}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="y in anni.content"
+                            ng-click="onSelectYear(y)">
                             <a>{{y}}/{{y + 1}}</a>
                         </li>
                     </ul>
                 </div>
             </ul>
-            <select name="singleSelect" ng-model="anno">
-                <option value="{{y}}" ng-repeat="y in anni">{{y}}/{{y + 1}}</option>
-            </select>
-            {{anno}}
         </div>
         <div class="row top-sep">
             <a class="btn btn-success" ng-click="onConfirmTimeline()">Conferma</a>

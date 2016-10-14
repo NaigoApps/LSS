@@ -12,12 +12,14 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
             selected : undefined
         };
         
-        $scope.anni = [];
+        $scope.anni = {
+            content : [],
+            selected : undefined
+        };
         var baseYear = new Date().getFullYear();
         for (var i = baseYear; i < baseYear + 10; i++) {
-            $scope.anni.push(i);
+            $scope.anni.content.push(i);
         }
-        $scope.anno = $scope.anni[0] + "/" + $scope.anni[1];
 
         /**
          * 
@@ -36,6 +38,15 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
         $scope.onSelectSubject = function (materia) {
             $scope.materie.selected = materia;
         };
+        
+        /**
+         * 
+         * @param {object} anno Selected year
+         * @returns {undefined}
+         */
+        $scope.onSelectYear = function (anno) {
+            $scope.anni.selected = anno;
+        };
 
         $scope.onConfirmTimeline = function () {
             if ($scope.anno !== "") {
@@ -43,7 +54,7 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
                         '../includes/timeline-manager.php',
                         {
                             command: 'create_timeline',
-                            year: $scope.anno,
+                            year: $scope.anni.selected,
                             class: $scope.classi.selected,
                             subject: $scope.materie.selected
                         }
