@@ -2,20 +2,22 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
 
         $scope.classi = {
             content : [],
-            name : "classi"
-        }
+            name : "classi",
+            selected : undefined
+        };
         
         $scope.materie = {
             content : [],
-            name : "materie"
-        }
+            name : "materie",
+            selected : undefined
+        };
         
         $scope.anni = [];
         var baseYear = new Date().getFullYear();
         for (var i = baseYear; i < baseYear + 10; i++) {
             $scope.anni.push(i);
         }
-        $scope.anno = "";
+        $scope.anno = $scope.anni[0] + "/" + $scope.anni[1];
 
         /**
          * 

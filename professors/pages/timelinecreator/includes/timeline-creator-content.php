@@ -7,7 +7,7 @@
             <h4>Selezionare la classe:</h4>
             <ul class="list-group top-sep">
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownItems" data-toggle="dropdown" aria-haspopup="true">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true">
                         {{classi.selected.anno + classi.selected.sezione}}
                         <span class="caret"></span>
                     </button>
@@ -25,7 +25,7 @@
 
             <ul class="list-group top-sep">
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownItems" data-toggle="dropdown" aria-haspopup="true">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true">
                         {{materie.selected.nome}}
                         <span class="caret"></span>
                     </button>
@@ -40,9 +40,24 @@
         </div>
         <div class="row">
             <h4>Selezionare l'anno scolastico</h4>
+            <ul class="list-group top-sep">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true">
+                        {{classi.selected.anno + classi.selected.sezione}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownModules">
+                        <li ng-repeat="y in anni"
+                            ng-click="onSelectYear(classe)">
+                            <a>{{y}}/{{y + 1}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </ul>
             <select name="singleSelect" ng-model="anno">
                 <option value="{{y}}" ng-repeat="y in anni">{{y}}/{{y + 1}}</option>
             </select>
+            {{anno}}
         </div>
         <div class="row top-sep">
             <a class="btn btn-success" ng-click="onConfirmTimeline()">Conferma</a>
