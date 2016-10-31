@@ -2,104 +2,68 @@
 
 require_once '../../../common/auth-header.php';
 
-require_once("../../../consts.php");
-$connection = mysqli_connect(HOST, USER, PASS, DB);
-
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);
 
 if ($request != null && isset($request->command)) {
     if ($request->command === "create_timeline") {
-        $year = $request->year;
-        $class_a = $request->class->anno;
-        $class_s = $request->class->sezione;
-        $class_id = $request->class->id;
-        $subject = $request->subject->nome;
-        $subject_id = $request->subject->id;
-        $myFile = "../../timelines/" . $user_data->getId();
-        if (!file_exists($myFile)) {
-            mkdir($myFile);
-        }
-        $myFile = $myFile . "/$year-$class_a-$class_s-$class_id-$subject-$subject_id.json";
-        if (!file_exists($myFile)) {
-            $fh = fopen($myFile, 'w') or die("can't open file");
-            fwrite($fh, "[]");
-            fclose($fh);
-            $_SESSION['timeline-year'] = $year;
-            $_SESSION['timeline-subject'] = $subject;
-            $_SESSION['timeline-class-year'] = $class_a;
-            $_SESSION['timeline-class-section'] = $class_s;
-            $_SESSION['timeline-subject-id'] = $subject_id;
-            $_SESSION['timeline-class-id'] = $class_id;
-            $_SESSION['timeline-folder'] = $user_data->getId();
-            exit_with_data("");
-        } else {
-            exit_with_error("Timeline esistente!");
-        }
-        //$stringData = $_POST["data"];
-        //fwrite($fh, $stringData);
-    } else if ($request->command === "edit_timeline") {
-        $timeline = $request->timeline;
-        $myFile = "../../timelines/" . $user_data->getId();
-        if (!file_exists($myFile)) {
-            mkdir($myFile);
-        }
-        $myFile = $myFile . "/$timeline.json";
-        if (file_exists($myFile)) {
-            $vars = explode("-", $timeline);
-            $_SESSION['timeline-year'] = $vars[0];
-            $_SESSION['timeline-class-year'] = $vars[1];
-            $_SESSION['timeline-class-section'] = $vars[2];
-            $_SESSION['timeline-class-id'] = $vars[3];
-            $_SESSION['timeline-subject'] = $vars[4];
-            $_SESSION['timeline-subject-id'] = $vars[5];
-            $_SESSION['timeline-folder'] = $user_data->getId();
-            exit_with_data("");
-        } else {
-            exit_with_error("Timeline inesistente!");
-        }
-        //$stringData = $_POST["data"];
-        //fwrite($fh, $stringData);
-    } else if ($request->command === "delete_timeline") {
-        $timeline = $request->timeline;
-        $myFile = "../../timelines/" . $user_data->getId();
-        if (!file_exists($myFile)) {
-            mkdir($myFile);
-        }
-        $myFile = $myFile . "/$timeline.json";
+        if (isset($request->year) && isset($request->class) && isset($request->subject)) {
+            $year = $request->year;
+            $class_a = $request->class->anno;
+            $class_s = $request->class->sezione;
+            $class_id = $request->class->id;
+            $subject = $request->subject->nome;
+            $subject_id = $request->subject->id;
+            $user_id = $user_data->getId();
 
-        if (file_exists($myFile)) {
-            $descr = explode("-", $timeline);
-            $delete_query = "DELETE FROM performed WHERE idclasse=$descr[3] AND idmateria=$descr[5] AND anno=$descr[0]";
-            var_dump($delete_query);
-            $connection = mysqli_connect(HOST, USER, PASS, DB);
-
-            if (mysqli_autocommit($connection, false)) {
-                if (mysqli_real_query($connection, $delete_query)) { 
-                    mysqli_commit($connection);
-                    unlink($myFile);
-                    exit_with_data("Programmazione eliminata correttamente");
+            $conn = db_transaction_connect();
+            if ($conn) {
+                $query = "INSERT INTO timeline(idmateria,iddocente,idclasse,anno) VALUES ($subject_id,$user_id,$class_id,$year)";
+                $insert_result = db_insert($conn, $query);
+                if ($insert_result->getOutcome() == QueryResult::SUCCESS) {
+                    if (db_transaction_close($conn)) {
+                        exit_with_data($insert_result->getContent());
+                    } else {
+                        exit_with_error("Cannot complete transaction");
+                    }
                 } else {
-                    mysqli_rollback($connection);
-                    exit_with_error($delete_query);
+                    exit_with_error($insert_result->message);
                 }
             }
         } else {
-            exit_with_error("Timeline inesistente!");
+            exit_with_error("Invalid input");
         }
-        //$stringData = $_POST["data"];
-        //fwrite($fh, $stringData);
+    } else if ($request->command === "edit_timeline") {
+        $timeline = $request->timeline;
+        $_SESSION['timeline-id'] = $timeline;
+        exit_with_data("");
+    } else if ($request->command === "delete_timeline") {
+        $timeline = $request->timeline;
+        $delete_query = "DELETE FROM timeline WHERE id=$timeline";
+        $conn = db_simple_connect();
+        $outcome = db_update($conn, $delete_query);
+        db_simple_close($conn);
+        if ($outcome->wasSuccessful()) {
+            exit_with_data("");
+        } else {
+            exit_with_error($outcome->getMessage());
+        }
+    } else if ($request->command === "list_timelines") {
+        $user_id = $user_data->getId();
+        $conn = db_simple_connect();
+        if ($conn) {
+            //id, classe, sezione, materia, anno
+            $query = "SELECT timeline.id as 'id', classi.anno as 'classe', classi.sezione as 'sezione', materie.nome as 'materia', timeline.anno as 'anno' "
+                    . "FROM classi, materie, timeline "
+                    . "WHERE classi.id = timeline.idclasse AND materie.id = timeline.idmateria AND "
+                    . "timeline.iddocente = $user_id";
+            $select_result = db_select($conn, $query);
+            if ($select_result->getOutcome() == QueryResult::SUCCESS) {
+                db_simple_close($conn);
+                exit_with_data($select_result->getContent());
+            } else {
+                exit_with_error($select_result->message);
+            }
+        }
     }
-}
-
-function exit_with_error($msg) {
-    $json_response = json_encode($msg);
-    http_response_code(400);
-    die($json_response);
-}
-
-function exit_with_data($data) {
-    $json_response = json_encode($data);
-    http_response_code(200);
-    die($json_response);
 }

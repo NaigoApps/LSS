@@ -23,6 +23,10 @@ function prettyPrompt(title, text, inputValue, callback) {
 
 app.controller("timelineController", ['$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
 
+        /*
+         * nome, descrizione, data, performance
+         */
+
         $scope.argomenti = {
             content: [],
             name: 'argomenti',
@@ -64,30 +68,17 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             {nome: "Fisica", color: "orange"},
             {nome: "Chimica", color: "cyan"},
             {nome: "Scienze della terra", color: "red"},
-            {nome: "Biologia", color: "green-lemon"},
+            {nome: "Biologia", color: "green-lemon"}
         ];
-        $scope.timeline = [];
-        $scope.timeline.serialize = function () {
-            var serialized = [];
-            for (var i = 0; i < this.length; i++) {
-                var element = {
-                    id: this[i].id,
-                    content: this[i].content
-                };
-                element.date = this[i].date;
-                element.start = new Date(this[i].date.year, this[i].date.month - 1, this[i].date.day);
-                element.performed = this[i].performed;
-                serialized.push(element);
-            }
-            return serialized;
-        };
-        $scope.timeline.deserialize = function (data) {
-            for (var i = 0; i < data.length; i++) {
-                var element = $scope.initElement(data[i].id, data[i].content, data[i].date);
-                this.push(element);
-            }
+        $scope.materie = {
+            content: [],
+            colors: ["orange", "cyan", "red", "green-lemon", "black"],
+            name: "materie",
+            selected: undefined
         };
 
+        $scope.elements = [];
+        $scope.timeline = {};
 
         $scope.monthToAdd = undefined;
         $scope.mesi = [
@@ -105,17 +96,19 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.saveData = function () {
             prettyConfirm("Salvataggio", "Salvare i dati?", function (ok) {
                 if (ok) {
-                    $.ajax(
+                    $http.post(
+                            'includes/timeline/save_data.php',
                             {
-                                type: "POST",
-                                dataType: 'json',
-                                async: false,
-                                url: 'includes/timeline/save_data.php',
-                                data: {data: JSON.stringify($scope.timeline.serialize(), null, 1)},
-                                success: swal("File", "salvato correttamente", "success"),
-                                failure: function () {
-                                    alert("Error!");
-                                }
+                                command: 'save_timeline',
+                                id: timeline_id,
+                                timeline: $scope.elements
+                            }
+                    ).then(
+                            function (rx) {
+                                swal("File", "salvato correttamente", "success")
+                            },
+                            function (rx) {
+                                $scope.errorMessage(rx.data.msg);
                             }
                     );
                 }
@@ -124,18 +117,22 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.saveDataExit = function () {
             prettyConfirm("Esci", "Salvare i dati ed uscire?", function (ok) {
                 if (ok) {
-                    $.ajax
-                            ({
-                                type: "POST",
-                                dataType: 'json',
-                                async: false,
-                                url: 'includes/timeline/save_data.php',
-                                data: {data: JSON.stringify($scope.timeline.serialize(), null, 1)},
-                                success: window.location.replace("./index.php"),
-                                failure: function () {
-                                    alert("Error!");
-                                }
-                            });
+                    $http.post(
+                            'includes/timeline/save_data.php',
+                            {
+                                command: 'save_timeline',
+                                id: timeline_id,
+                                timeline: $scope.elements
+                            }
+                    ).then(
+                            function (rx) {
+                                swal("File", "salvato correttamente", "success");
+                                window.location.replace("./index.php");
+                            },
+                            function (rx) {
+                                $scope.errorMessage(rx.data.msg);
+                            }
+                    );
                 }
             });
         };
@@ -228,6 +225,42 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.argomenti.selected = undefined;
             $scope.voci.selected = undefined;
         };
+
+        $scope.onSetDate = function (index) {
+            if ($scope.elements[index].settingDate) {
+                $scope.elements[index].settingDate = false;
+                var d = $("#picker" + index).datepicker("getDate");
+                swal({
+                    title: "Aggiornamento data",
+                    text: 'La data sarà settata al ' + d.getDate() + "/" + (d.getMonth() + 1) + '/' + d.getFullYear(),
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Ok",
+                    cancelButtonText: "Annulla"
+                },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $scope.elements[index].data = d;
+                                $("#picker" + index).datepicker("destroy");
+                                $scope.sortTimeline();
+                                $scope.$apply();
+                            } else {
+                                $("#picker" + index).datepicker("destroy");
+                            }
+                        });
+            } else {
+                $scope.elements[index].settingDate = true;
+                $("#picker" + index).datepicker();
+                $("#picker" + index).datepicker("setDate", $scope.elements[index].data);
+                $("#picker" + index).datepicker("option", "minDate", new Date($scope.timeline.anno, 9 - 1, 1));
+                $("#picker" + index).datepicker("option", "maxDate", new Date(parseInt($scope.timeline.anno) + 1, 6 - 1, 30));
+                //$("#picker" + index).datepicker("setDate",$scope.elements[index].data);
+                $("#picker" + index).css("top", $("#picker" + index).parent().css("height"));
+            }
+
+        };
+
         $scope.setUndone = function (index) {
             swal({
                 title: "Svolgimento",
@@ -236,66 +269,31 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 showCancelButton: true,
                 animation: "slide-from-top"},
                     function () {
-                        $scope.timeline[index].performance[subject_id - 1] = {
-                            done: false,
-                            on: undefined
-                        };
-                        $scope.timeline[index].performed = false;
-                        $scope.timeline[index].date.day = 1;
+                        var i = $scope.findById($scope.elements[index].performance, $scope.timeline.idmateria);
+                        if (i >= 0) {
+                            $scope.elements[index].performance.splice(i, 1);
+                            $scope.elements[index].performed = false;
+                        }
                         $scope.$apply();
                     });
         };
+
         $scope.setDone = function (index) {
-            var today = new Date();
             swal({
                 title: "Svolgimento",
-                text: "Inserisci la data di svolgimento",
-                type: "input",
+                text: "Settare l'argomento come svolto?",
+                type: "warning",
                 showCancelButton: true,
-                closeOnConfirm: false,
-                animation: "slide-from-top",
-                inputValue: today.getDate() + "/" + (today.getMonth() + 1)},
-                    function (input) {
-                        if (input === false) {
-                            return false;
-                        }
-                        var fields = input.split("/");
-                        if (fields.length === 2) {
-                            fields[0] = parseInt(fields[0]);
-                            fields[1] = parseInt(fields[1]);
-                            var date;
-                            if (fields[1] <= 6) {
-                                date = {
-                                    day: fields[0],
-                                    month: fields[1],
-                                    year: to
-                                };
-                            } else {
-                                date = {
-                                    day: fields[0],
-                                    month: fields[1],
-                                    year: from
-                                };
-                            }
-                            var testDate = new Date(date.year, date.month - 1, date.day);
-                            if (testDate && testDate.getMonth() === (fields[1] - 1)) {
-                                $scope.timeline[index].performance[subject_id - 1] = {
-                                    done: true,
-                                    on: date
-                                };
-                                $scope.timeline[index].date = date;
-                                $scope.timeline[index].performed = true;
-                                $scope.$apply();
-                            } else {
-                                swal.showInputError("Data non valida!");
-                                return false;
-                            }
-                        } else {
-                            swal.showInputError("Data non valida!");
-                            return false;
-                        }
-                        swal("Registrazione completata");
+                animation: "slide-from-top"},
+                    function () {
+                        $scope.elements[index].performance.push({
+                            id: $scope.timeline.idmateria,
+                            data: $scope.elements[index].data
+                        });
+                        $scope.elements[index].performed = true;
+                        $scope.$apply();
                     });
+
         };
 
         $scope.onAddToTimeline = function () {
@@ -311,7 +309,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 var str = "Confermare l'aggiunta dei seguenti elementi? ";
                 var atLeastOne = false;
                 for (var i = 0; i < $scope.itemsToAdd.length; i++) {
-                    if ($scope.findById($scope.timeline, $scope.itemsToAdd[i].id) === -1) {
+                    if ($scope.findById($scope.elements, $scope.itemsToAdd[i].id) === -1) {
                         str += " - " + $scope.itemsToAdd[i].nome;
                         atLeastOne = true;
                     }
@@ -319,23 +317,20 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 if (atLeastOne) {
                     prettyConfirm("Aggiunta elementi", str, function () {
                         for (var i = 0; i < $scope.itemsToAdd.length; i++) {
-                            if ($scope.findById($scope.timeline, $scope.itemsToAdd[i].id) === -1) {
+                            if ($scope.findById($scope.elements, $scope.itemsToAdd[i].id) === -1) {
                                 var year;
                                 if ($scope.monthToAdd.numero < 6) {
-                                    year = to;
+                                    year = parseInt($scope.timeline.anno) + 1;
                                 } else {
-                                    year = from;
+                                    year = $scope.timeline.anno;
                                 }
-                                var date = {
-                                    day: 1,
-                                    month: $scope.monthToAdd.numero,
-                                    year: year
-                                };
+                                var date = new Date(year, $scope.monthToAdd.numero - 1, 1);
                                 var element = $scope.initElement($scope.itemsToAdd[i].id, $scope.itemsToAdd[i].nome, date);
-                                $scope.timeline.push(element);
+                                $scope.elements.push(element);
                             }
                         }
                         $scope.reloadPerformances();
+                        $scope.sortTimeline();
                         $scope.$apply();
                     });
                 } else {
@@ -350,27 +345,19 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.initElement = function (id, name, date) {
             var element = {
                 id: id,
-                content: name,
-                date: date,
-                performed: false,
-                performance: []
+                nome: name,
+                data: date,
+                performance: [],
+                performed: false
             };
-            for (var j = 0; j < $scope.materie.length; j++) {
-                element.performance.push(
-                        {
-                            done: false,
-                            on: undefined
-                        }
-                );
-            }
             return element;
         };
 
 
-        $scope.removeFromTimeline = function (index) {
+        $scope.onRemoveFromTimeline = function (index) {
             prettyConfirm('Rimozione elemento', 'Vuoi davvero rimuovere l\'elemento?', function (ok) {
                 if (ok) {
-                    $scope.timeline.splice(index, 1);
+                    $scope.elements.splice(index, 1);
                     $scope.$apply();
                 }
             });
@@ -390,15 +377,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return undefined;
         };
-        $scope.copyObject = function (source, destination) {
-            destination.id = source.id;
-            destination.nome = source.nome;
-            destination.descrizione = source.descrizione;
-            destination.links = source.links;
-            if (destination.links === undefined) {
-                destination.links = [];
-            }
-        };
+
         $scope.errorMessage = function (message) {
             $scope.lastErrorMessage = message;
             $(".error-message").show();
@@ -416,14 +395,17 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $http.post(
                     'includes/timeline/load_data.php',
                     {
-                        command: 'load_timeline'
+                        command: 'load_performances',
+                        classe: $scope.timeline.idclasse,
+                        anno: $scope.timeline.anno
                     }
             ).then(
                     function (rx) {
-                        $scope.performs = rx.data;
-                        for (var i = 0; i < $scope.performs.length; i++) {
-                            $scope.assignPerformance($scope.performs[i]);
+                        var performances = rx.data;
+                        for (var i = 0; i < performances.length; i++) {
+                            $scope.assignPerformance(performances[i]);
                         }
+                        $scope.sortTimeline();
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data.msg);
@@ -431,20 +413,16 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             );
         };
         $scope.assignPerformance = function (perf) {
-            for (var i = 0; i < $scope.timeline.length; i++) {
-                if ($scope.timeline[i].id === perf.idvoce) {
-                    var date = perf.data.split("-");
-                    $scope.timeline[i].performance[perf.idmateria - 1] = {
-                        done: true,
-                        on: 
-                                {
-                                    year : date[0],
-                                    month : date[1],
-                                    day : date[2],
-                                }
-                    };
-                    if (parseInt(perf.idmateria) === subject_id) {
-                        $scope.timeline[i].performed = true;
+            for (var i = 0; i < $scope.elements.length; i++) {
+                if ($scope.elements[i].id === perf.id) {
+                    var d = new Date();
+                    d.setTime(perf.data * 1000);
+                    $scope.elements[i].performance.push({
+                        id: perf.idmateria,
+                        data: d
+                    });
+                    if (perf.idmateria === $scope.timeline.idmateria) {
+                        $scope.elements[i].performed = true;
                     }
                 }
             }
@@ -458,10 +436,45 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $(".success-message").show();
         };
 
-        //MAIN
-        $scope.timeline.deserialize(data);
-        $scope.reloadPerformances();
+        $scope.sortTimeline = function () {
+            $scope.elements.sort(function (a, b) {
+                if (a.data <= b.data) {
+                    return -1;
+                }
+                return 1;
+            });
+        };
 
+        $scope.loadTimeline = function () {
+            $http.post(
+                    'includes/timeline/load_data.php',
+                    {
+                        command: 'load_timeline',
+                        id: timeline_id
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.timeline = rx.data.timeline;
+                        $scope.elements = rx.data.elements;
+                        for (var i = 0; i < $scope.elements.length; i++) {
+                            var d = new Date();
+                            d.setTime($scope.elements[i].data * 1000);
+                            $scope.elements[i].data = d;
+                            $scope.elements[i].performance = [];
+                        }
+                        $scope.reloadPerformances();
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data.msg);
+                    }
+            );
+        }
+
+        //MAIN
+        $rootScope.$emit('load-table', {
+            target: $scope.materie
+        });
+        $scope.loadTimeline();
 
     }]);
 $(document).ready(function () {

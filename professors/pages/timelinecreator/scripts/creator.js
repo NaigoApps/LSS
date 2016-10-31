@@ -1,21 +1,26 @@
 app.controller("classesController", ['$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
 
         $scope.classi = {
-            content : [],
-            name : "classi",
-            selected : undefined
+            content: [],
+            name: "classi",
+            selected: undefined
         };
-        
+
         $scope.materie = {
-            content : [],
-            name : "materie",
-            selected : undefined
+            content: [],
+            name: "materie",
+            selected: undefined
         };
-        
+
         $scope.anni = {
-            content : [],
-            selected : undefined
+            content: [],
+            selected: undefined
         };
+
+        $scope.timelines = {
+            content: []
+        };
+
         var baseYear = new Date().getFullYear();
         for (var i = baseYear; i < baseYear + 10; i++) {
             $scope.anni.content.push(i);
@@ -38,7 +43,7 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
         $scope.onSelectSubject = function (materia) {
             $scope.materie.selected = materia;
         };
-        
+
         /**
          * 
          * @param {object} anno Selected year
@@ -49,7 +54,7 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
         };
 
         $scope.onConfirmTimeline = function () {
-            if ($scope.anno !== "") {
+            if ($scope.anni.selected && $scope.materie.selected && $scope.classi.selected) {
                 $http.post(
                         '../includes/timeline-manager.php',
                         {
@@ -60,78 +65,83 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
                         }
                 ).then(
                         function (rx) {
-                            window.location.replace("../timelinemanager/editor2.php");
+                            $scope.successMessage("Timeline creata con successo");
+                            $scope.reloadTimelines();
                         },
                         function (rx) {
                             $scope.errorMessage(rx.data);
                         }
                 );
+            } else {
+                $scope.errorMessage("Inserire parametri corretti");
             }
+        };
+
+        $scope.onManageTimeline = function (timeline) {
+            $http.post(
+                    '../includes/timeline-manager.php',
+                    {
+                        command: 'edit_timeline',
+                        timeline: timeline.id
+                    }
+            ).then(
+                    function (rx) {
+                        window.location = "../timelinemanager/editor2.php"
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
+        };
+
+        $scope.onDeleteTimeline = function (timeline) {
+            swal(
+                    {
+                        title: "Cancellazione programmazione",
+                        text: "Tutte le informazioni saranno perdute, continuare?",
+                        type: "warning", showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Sì",
+                        cancelButtonText: "No"
+                    },
+                    function () {
+                        $http.post(
+                                '../includes/timeline-manager.php',
+                                {
+                                    command: 'delete_timeline',
+                                    timeline: timeline.id
+                                }
+                        ).then(
+                                function (rx) {
+                                    $scope.reloadTimelines();
+                                },
+                                function (rx) {
+                                    $scope.errorMessage(rx.data);
+                                }
+                        );
+                    }
+            );
+
         };
 
         $scope.onCancelTimeline = function () {
             window.location.replace("../..");
         };
 
-
-        /**
-         * 
-         * @param {string} table Name of table in which search
-         * @param {object} object Object to search
-         * @returns {undefined}
-         */
-        $scope.searchObject = function (table, object) {
-            if (!$scope.searching) {
-                $scope.searching = true;
-                $http.post(
-                        '../../../common/db-manager.php',
-                        {
-                            command: 'search-object',
-                            table: table,
-                            obj: object
-                        }
-                ).then(
-                        function (rx) {
-                            $scope[table].splice(0, $scope[table].length);
-                            for (var i = 0; i < rx.data.length; i++) {
-                                $scope[table].push(rx.data[i]);
-                            }
-                            $scope.searching = false;
-                        },
-                        function (rx) {
-                            $scope.errorMessage(rx.data);
-                            $scope.searching = false;
-                        }
-                );
-            }
-        };
-
-
-        $scope.findById = function (vector, id) {
-            for (var i = 0; i < vector.length; i++) {
-                if (vector[i].id === id) {
-                    return i;
-                }
-            }
-            return -1;
-        };
-
-        $scope.findObjectById = function (vector, id) {
-            var index = $scope.findById(vector, id);
-            if (index !== -1) {
-                return vector[index];
-            }
-            return undefined;
-        };
-
-        $scope.copyObject = function (source, destination) {
-            destination.id = source.id;
-            destination.nome = source.nome;
-            destination.descrizione = source.descrizione;
-            destination.links = source.links;
-            if (destination.links === undefined) {
-                destination.links = [];
-            }
+        $scope.reloadTimelines = function () {
+            $http.post(
+                    '../includes/timeline-manager.php',
+                    {
+                        command: 'list_timelines'
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.timelines.content = rx.data;
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
         };
 
         $scope.errorMessage = function (message) {
@@ -144,12 +154,14 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
         };
 
         //MAIN
-        $rootScope.$emit('load-table',{
+        $rootScope.$emit('load-table', {
             target: $scope.classi
         });
-        $rootScope.$emit('load-table',{
+        $rootScope.$emit('load-table', {
             target: $scope.materie
         });
+
+        $scope.reloadTimelines();
     }]);
 
 $(document).ready(function () {

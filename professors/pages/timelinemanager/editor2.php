@@ -1,18 +1,7 @@
 <?php
 require_once '../../../common/auth-header.php';
 
-$year = $_SESSION['timeline-year'];
-$subject = $_SESSION['timeline-subject'];
-$class_a = $_SESSION['timeline-class-year'];
-$class_s = $_SESSION['timeline-class-section'];
-$subject_id = $_SESSION['timeline-subject-id'];
-$class_id = $_SESSION['timeline-class-id'];
-$folder = $_SESSION['timeline-folder'];
-$filename = "../../timelines/" . $folder . "/$year-$class_a-$class_s-$class_id-$subject-$subject_id.json";
-$file = fopen($filename, "r") or die("Unable to open file!");
-$content = str_replace(["\r\n", "\n", "\r"], ' ', fread($file, filesize($filename)));
-$content = json_encode($content);
-fclose($file);
+$id = $_SESSION['timeline-id'];
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -32,17 +21,19 @@ fclose($file);
         <link rel="stylesheet" href="../../../common/styles/style.css">
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
+        <link rel="stylesheet" href="../../../common/styles/jquery-ui.min.css">
+        <link rel="stylesheet" href="../../../common/styles/jquery-ui.structure.min.css">
+        <link rel="stylesheet" href="../../../common/styles/jquery-ui.theme.min.css">
+        <script src="../../../common/scripts/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
+            var timeline_id = <?php echo $id ?>;
+        </script>
+
         <script src="../../../common/scripts/links.js"></script>
         <script src="scripts/script2.js"></script>
         <link rel="stylesheet"  href="styles/style.css"/>
 
-        <script type="text/javascript">
-            var subject_id = <?php echo $subject_id ?>;
-            var class_id = <?php echo $class_id ?>;
-            var year = <?php echo $year ?>;
-            var data = JSON.parse(<?php echo $content; ?>);
-            var from = '<?php echo $year; ?>';
-            var to = '<?php echo ($year + 1); ?>';</script>
         <link href="includes/timeline/dist/timeline.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
@@ -51,7 +42,7 @@ fclose($file);
 
         <h1 class="text-center">Creazione programmazione</h1>
 
-        <div class="wrapper" ng-app="lss-db" ng-controller="linkController as linkCtrl">
+        <div class="container" ng-app="lss-db" ng-controller="linkController as linkCtrl">
             <div ng-app="lss-db" ng-controller="timelineController as timeCtrl">
                 <div class="row">
                     <div class="col-sm-3 bg-primary">
@@ -125,74 +116,82 @@ fclose($file);
                         Aggiungi
                     </button>
                 </div>
+                <div class="row" ng-repeat="mese in mesi">
 
-                <div class="alert alert-success" ng-if="!monthToAdd">
-                    <h1 class="glyphicon glyphicon-arrow-up"></h1>
-                    <h1>Selezionare un mese...</h1>
-                </div>
 
-                <div class="row" ng-if="monthToAdd">
-                    <div class="col-sm-12 panel panel-default">
-                        <div class="row">
-                            <h3 class="panel-heading">{{monthToAdd.nome}} <small>svolti</small></h3>
+                    <!--Argomenti non svolti-->
+                    <div class="col col-sm-6">
+                        <div class="col-sm-12 panel panel-default">
+                            <div class="row">
+                                <h3 class="panel-heading">{{mese.nome}} <small>non svolti</small></h3>
+                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item clearfix" ng-repeat="(i,element) in elements" ng-if="element.data.getMonth() + 1 === mese.numero && findById(element.performance, timeline.idmateria) === -1">
+                                    {{element.nome}}
+                                    <div class="btn-group pull-right">
+
+                                        <a class="btn btn-info btn-xs" ng-click="onSetDate(i)">
+                                            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                            {{element.data| date:'dd/MM/yyyy'}}
+                                        </a>
+                                        <div class="picker-container" id="picker{{i}}"></div>
+                                        <a class="btn btn-success btn-xs" ng-click="setDone(i)">
+                                            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                                            Svolgi
+                                        </a>
+                                        <a class="btn btn-danger btn-xs" ng-click="onRemoveFromTimeline(i)">
+                                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                            Elimina
+                                        </a>
+                                    </div>
+
+                                    <div class="subjects pull-right">
+                                        <span ng-repeat="(j,materia) in materie.content">
+                                            <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== -1">
+                                                <span class="tooltip">{{materia.nome}} : {{element.data| date:'dd/MM/yyyy'}}</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <ul class="list-group">
-                            <li class="list-group-item clearfix" ng-repeat="(i,element) in timeline" ng-if="element.date.month === monthToAdd.numero && element.performed">
-                                {{element.content}}
-                                <div class="btn-group pull-right">
-                                    <a class="btn btn-success" ng-click="setUndone(i)">
-                                        <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-                                        Elimina svolgimento
-                                    </a>
-                                    <a class="btn btn-danger" ng-click="removeFromTimeline(i)">
-                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                        Elimina
-                                    </a>
-                                </div>
-                                <div class="subjects pull-right">
-                                    <span ng-repeat="(j,materia) in materie">
-                                        <div class="subject tooltip-base" ng-style="{'background-color':materia.color}" ng-if="element.performance[j].done">
-                                            <span class="tooltip">{{materia.nome}} : {{element.performance[j].on.day}}/{{element.performance[j].on.month}}/{{element.performance[j].on.year}}</span>
-                                        </div>
-                                    </span>
-                                </div>
-                            </li>
-                        </ul>
+                    </div>
+                    <!--Argomenti svolti-->
+                    <div class="col col-sm-6">
+                        <div class="col-sm-12 panel panel-default">
+                            <div class="row">
+                                <h3 class="panel-heading">{{mese.nome}} <small>svolti</small></h3>
+                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item clearfix" ng-repeat="(i,element) in elements" ng-if="element.data.getMonth() + 1 === mese.numero && findById(element.performance, timeline.idmateria) !== -1">
+                                    {{element.nome}}
+                                    <div class="btn-group pull-right">
+                                        <a class="btn btn-info btn-xs" ng-click="onSetDate(i)">
+                                            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                            {{element.data| date:'dd/MM/yyyy'}}
+                                        </a>
+                                        <div class="picker-container" id="picker{{i}}"></div>
+                                        <a class="btn btn-success btn-xs" ng-click="setUndone(i)">
+                                            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                                            Elimina svolgimento
+                                        </a>
+                                        <a class="btn btn-danger btn-xs" ng-click="onRemoveFromTimeline(i)">
+                                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                            Elimina
+                                        </a>
+                                    </div>
+                                    <div class="subjects pull-right">
+                                        <span ng-repeat="(j,materia) in materie.content">
+                                            <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== -1">
+                                                <span class="tooltip">{{materia.nome}} : {{element.data| date:'dd/MM/yyyy'}}</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-
-                <div class="row" ng-if="monthToAdd">
-                    <div class="col-sm-12 panel panel-default">
-                        <div class="row">
-                            <h3 class="panel-heading">{{monthToAdd.nome}} <small>non svolti</small></h3>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item clearfix" ng-repeat="(i,element) in timeline" ng-if="element.date.month === monthToAdd.numero && !element.performed">
-                                {{element.content}}
-                                <div class="btn-group pull-right">
-
-                                    <a class="btn btn-success" ng-click="setDone(i)">
-                                        <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-                                        Svolgi
-                                    </a>
-                                    <a class="btn btn-danger" ng-click="removeFromTimeline(i)">
-                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                        Elimina
-                                    </a>
-
-                                </div>
-                                <div class="subjects pull-right">
-                                    <span ng-repeat="(j,materia) in materie">
-                                        <div class="subject tooltip-base" ng-style="{'background-color':materia.color}" ng-if="element.performance[j].done">
-                                            <span class="tooltip">{{materia.nome}} : {{element.performance[j].on.day}}/{{element.performance[j].on.month}}/{{element.performance[j].on.year}}</span>
-                                        </div>
-                                    </span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
 
                 <div class="row error message always-bottom">
                     <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>

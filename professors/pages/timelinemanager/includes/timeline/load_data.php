@@ -1,38 +1,51 @@
 <?php
 
 require_once("../../../../../common/auth-header.php");
-require_once("../../../../../consts.php");
+require_once("../../../../../common/functions.php");
+$connection = mysqli_connect(HOST, USER, PASS, DB);
 
-$year = $_SESSION['timeline-year'];
-$subject = $_SESSION['timeline-subject'];
-$class_a = $_SESSION['timeline-class-year'];
-$class_s = $_SESSION['timeline-class-section'];
-$subject_id = $_SESSION['timeline-subject-id'];
-$class_id = $_SESSION['timeline-class-id'];
+$postdata = file_get_contents("php://input");
+$request = json_decode($postdata);
 
-$query = "SELECT * FROM performed WHERE idclasse=$class_id AND anno=$year";
+if ($request != null && isset($request->command)) {
 
-$conn = mysqli_connect(HOST, USER, PASS, DB);
-std_select($conn, $query);
-
-$rows = std_select($conn, $query);
-if($rows !== null){
-    exit_with_data($rows);
-}else{
-    exit_with_error("Impossibile recuperare i dati");
+    if ($request->command === "load_timeline") {
+        $timeline_id = $request->id;
+        $query = "SELECT * FROM timeline WHERE id=$timeline_id";
+        $conn = db_simple_connect();
+        $outcome_1 = db_select($conn, $query);
+        $query = "SELECT v.id as id, v.nome, v.descrizione, UNIX_TIMESTAMP(te.data) as data, te.performed FROM timeline_element te, voci v WHERE te.idtimeline=$timeline_id AND te.idvoce = v.id";
+        $outcome_2 = db_select($conn, $query);
+        db_simple_close($conn);
+        if ($outcome_1->getOutcome() == QueryResult::SUCCESS) {
+            if ($outcome_2->getOutcome() == QueryResult::SUCCESS) {
+                $ret = array(
+                    "timeline" => $outcome_1->getContent()[0],
+                    "elements" => $outcome_2->getContent()
+                );
+                exit_with_data($ret);
+            } else {
+                exit_with_error($outcome_2->getMessage());
+            }
+        } else {
+            exit_with_error($outcome_1->getMessage());
+        }
+    } else if ($request->command === "load_performances") {
+        $timeline_year = $request->anno;
+        $timeline_class = $request->classe;
+        $conn = db_simple_connect();
+        $query = "SELECT te.idvoce as id, ti.idmateria, UNIX_TIMESTAMP(te.data) as data FROM timeline_element te, timeline ti WHERE "
+                . "te.idtimeline=ti.id AND "
+                . "ti.idclasse = $timeline_class AND "
+                . "ti.anno = $timeline_year AND "
+                . "te.performed = 1";
+        $outcome_2 = db_select($conn, $query);
+        db_simple_close($conn);
+        if ($outcome_2->getOutcome() == QueryResult::SUCCESS) {
+            exit_with_data($outcome_2->getContent());
+        } else {
+            exit_with_error($outcome_2->getMessage());
+        }
+    }
 }
-
-function exit_with_error($msg) {
-    $json_response = json_encode($msg);
-    http_response_code(400);
-    die($json_response);
-}
-
-function exit_with_data($data) {
-    $json_response = json_encode($data);
-    http_response_code(200);
-    die($json_response);
-}
-
-
 ?>

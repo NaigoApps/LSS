@@ -10,6 +10,8 @@ require_once '../../../common/auth-header.php';
         <script type="text/javascript" src="../../../common/scripts/jquery.js"></script>
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
+        <script src="../../../common/swal/sweetalert.min.js"></script>
+        <link href="../../../common/swal/sweetalert.css" rel="stylesheet" type="text/css"/>
         <script type="text/javascript" src="../../../common/scripts/links.js"></script>
         <script type="text/javascript" src="./scripts/creator.js"></script>
     </head>
