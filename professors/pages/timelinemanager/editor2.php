@@ -33,8 +33,6 @@ $id = $_SESSION['timeline-id'];
         <script src="../../../common/scripts/links.js"></script>
         <script src="scripts/script2.js"></script>
         <link rel="stylesheet"  href="styles/style.css"/>
-
-        <link href="includes/timeline/dist/timeline.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
 
@@ -148,7 +146,7 @@ $id = $_SESSION['timeline-id'];
                                     <div class="subjects pull-right">
                                         <span ng-repeat="(j,materia) in materie.content">
                                             <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== -1">
-                                                <span class="tooltip">{{materia.nome}} : {{element.data| date:'dd/MM/yyyy'}}</span>
+                                                <span class="tooltip">{{materia.nome}} : {{findObjectById(element.performance, materia.id).data| date:'dd/MM/yyyy'}}</span>
                                             </div>
                                         </span>
                                     </div>
@@ -183,7 +181,7 @@ $id = $_SESSION['timeline-id'];
                                     <div class="subjects pull-right">
                                         <span ng-repeat="(j,materia) in materie.content">
                                             <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== -1">
-                                                <span class="tooltip">{{materia.nome}} : {{element.data| date:'dd/MM/yyyy'}}</span>
+                                                <span class="tooltip">{{materia.nome}} : {{findObjectById(element.performance, materia.id).data | date:'dd/MM/yyyy'}}</span>
                                             </div>
                                         </span>
                                     </div>

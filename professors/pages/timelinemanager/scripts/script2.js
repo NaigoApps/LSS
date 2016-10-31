@@ -105,7 +105,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             }
                     ).then(
                             function (rx) {
-                                swal("File", "salvato correttamente", "success")
+                                swal("Programmazione", "salvata correttamente", "success")
                             },
                             function (rx) {
                                 $scope.errorMessage(rx.data.msg);
@@ -126,7 +126,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             }
                     ).then(
                             function (rx) {
-                                swal("File", "salvato correttamente", "success");
+                                swal("Programmaione", "salvata correttamente", "success");
                                 window.location.replace("./index.php");
                             },
                             function (rx) {
@@ -232,7 +232,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 var d = $("#picker" + index).datepicker("getDate");
                 swal({
                     title: "Aggiornamento data",
-                    text: 'La data sarà settata al ' + d.getDate() + "/" + (d.getMonth() + 1) + '/' + d.getFullYear(),
+                    text: 'La data sara\' settata al ' + d.getDate() + "/" + (d.getMonth() + 1) + '/' + d.getFullYear(),
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",

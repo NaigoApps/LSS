@@ -1,18 +1,5 @@
 <?php
 require_once '../../../common/auth-header.php';
-
-$year = $_SESSION['timeline-year'];
-$subject = $_SESSION['timeline-subject'];
-$subject_id = $_SESSION['timeline-subject-id'];
-$class_a = $_SESSION['timeline-class-year'];
-$class_s = $_SESSION['timeline-class-section'];
-$class_id = $_SESSION['timeline-class-id'];
-$folder = $_SESSION['timeline-folder'];
-$filename = "../../timelines/" . $folder . "/$year-$class_a-$class_s-$class_id-$subject-$subject_id.json";
-$file = fopen($filename, "r") or die("Unable to open file!");
-$content = str_replace(["\r\n", "\n", "\r"], ' ', fread($file, filesize($filename)));
-$content = json_encode($content);
-fclose($file);
 ?>
 <!DOCTYPE HTML>
 <html>

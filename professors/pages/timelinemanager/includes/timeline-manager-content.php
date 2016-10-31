@@ -1,51 +1,37 @@
 
-<?php require_once '../../../common/authentication-bar.php'; ?>
+<?php
+require_once '../../../common/authentication-bar.php';
+?>
 <h1 class="text-center">Elenco delle programmazioni</h1>
 <div class="wrapper" ng-app="lss-db" ng-controller="timelineController as tCtrl">
-    <?php
-    $dir = "../../timelines/" . $user_data->getId();
-    if (!file_exists($dir)) {
-        mkdir($dir);
-    }
 
-    $files = scandir($dir);
-    for ($i = 0; $i < count($files); $i+= $j) {
-        ?>
-        <div class="row">
-            <?php
-            $counter = 0;
-            for ($j = $i; $counter < 3 && $j < count($files); $j++) {
-                if (strpos($files[$j], ".json") !== false) {
-                    $counter++;
-                    $timeline = substr($files[$j], 0, strpos($files[$j], ".json"));
-                    $descr = explode("-", $timeline);
-                    ?>
+    <div class="row">
 
-                    <div class="well col-sm-4">
-                        <div class="col-sm-6">
-                            <?php
-                            echo $descr[4].$descr[1].$descr[2].$descr[0];
-                            ?>
+        <div class="col-sm-6">
+            <ul>
+                <li ng-repeat="timeline in timelines.content">
+                    <div class="well well-sm clearfix">
+                        {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
+                        <div class="pull-right">
+                            <a class="btn btn-xs btn-info tooltip-base" ng-click="onPrintTimeline(timeline.id)">
+                                <span class="tooltip-text">Stampa</span>
+                                <span class="glyphicon glyphicon-print"></span>
+                            </a>
+                            <a class="btn btn-xs btn-success tooltip-base" ng-click="onManageTimeline(timeline.id)">
+                                <span class="tooltip-text">Gestisci</span>
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </a>
+                            <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline.id)">
+                                <span class="tooltip-text">Rimuovi</span>
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
                         </div>
-                        <a class="btn btn-default col-sm-2" ng-click="onEditTimeline('<?php echo $timeline; ?>')">
-                            <span class="glyphicon glyphicon-edit"></span>
-                        </a>
-                        <a class="btn btn-default col-sm-2" ng-click="onPrintTimeline('<?php echo $timeline; ?>')">
-                            <span class="glyphicon glyphicon-print"></span>
-                        </a>
-                        <a class="btn btn-default col-sm-2" ng-click="onCurrentTimeline('<?php echo $timeline; ?>')" data-toggle="modal" data-target="#deleteTimeline">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </a>
                     </div>
-
-                    <?php
-                }
-            }
-            ?>
+                </li>
+            </ul>
         </div>
-        <?php
-    }
-    ?>
+
+    </div>
     <button class="btn btn-warning col-sm-2 col-sm-offset-5" ng-click="onExit()">
         Esci
     </button>
