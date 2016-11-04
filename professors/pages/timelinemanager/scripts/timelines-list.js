@@ -21,45 +21,6 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.onCurrentTimeline = function (timeline) {
             $scope.currentTimeline = timeline;
         };
-
-        /**
-         * 
-         * @param {object} timeline Selected timeline
-         * @returns {undefined}
-         */
-        $scope.onEditTimeline = function (timeline) {
-            $http.post(
-                    '../includes/timeline-manager.php',
-                    {
-                        command: 'edit_timeline',
-                        timeline: timeline
-                    }
-            ).then(
-                    function (rx) {
-                        window.location.replace("./editor2.php");
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data);
-                    }
-            );
-        };
-        
-        $scope.onPrintTimeline = function (timeline) {
-            $http.post(
-                    '../includes/timeline-manager.php',
-                    {
-                        command: 'edit_timeline',
-                        timeline: timeline
-                    }
-            ).then(
-                    function (rx) {
-                        window.location.replace("./print.php");
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data);
-                    }
-            );
-        };
         
         /**
          * 

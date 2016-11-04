@@ -85,16 +85,17 @@
                     <li ng-repeat="timeline in timelines.content">
                         <div class="well well-sm clearfix">
                             {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
-                            <div class="pull-right">
-                                <a class="btn btn-xs btn-success tooltip-base" ng-click="onManageTimeline(timeline)">
+                            <form class="pull-right dummy-form" action="../timelinemanager/editor2.php" method="POST">  
+                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/>   
+                                <button type="submit" class="btn btn-xs btn-success tooltip-base">
                                     <span class="tooltip-text">Gestisci</span>
                                     <span class="glyphicon glyphicon-edit"></span>
-                                </a>
+                                </button>
                                 <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline)">
                                     <span class="tooltip-text">Rimuovi</span>
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
-                            </div>
+                            </form> 
                         </div>
                     </li>
                 </ul>

@@ -242,6 +242,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         function (isConfirm) {
                             if (isConfirm) {
                                 $scope.elements[index].data = d;
+                                var performance = $scope.findObjectById($scope.elements[index].performance, $scope.timeline.idmateria);
+                                if(performance !== undefined){
+                                    performance.data = d;
+                                }
                                 $("#picker" + index).datepicker("destroy");
                                 $scope.sortTimeline();
                                 $scope.$apply();

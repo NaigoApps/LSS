@@ -77,23 +77,6 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
             }
         };
 
-        $scope.onManageTimeline = function (timeline) {
-            $http.post(
-                    '../includes/timeline-manager.php',
-                    {
-                        command: 'edit_timeline',
-                        timeline: timeline.id
-                    }
-            ).then(
-                    function (rx) {
-                        window.location = "../timelinemanager/editor2.php"
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data);
-                    }
-            );
-        };
-
         $scope.onDeleteTimeline = function (timeline) {
             swal(
                     {

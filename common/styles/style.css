@@ -145,3 +145,10 @@ form{
     position: absolute;
     z-index: 9999;
 }
+
+.dummy-form{
+    display: inline;
+    overflow: visible;
+    padding: 0px;
+    margin:0px;
+}

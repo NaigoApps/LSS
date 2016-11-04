@@ -1,7 +1,7 @@
 <?php
 require_once '../../../common/auth-header.php';
 
-$id = $_SESSION['timeline-id'];
+$id = $_POST['timelineid'];
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -27,8 +27,7 @@ $id = $_SESSION['timeline-id'];
         <script src="../../../common/scripts/jquery-ui.min.js"></script>
 
         <script type="text/javascript">
-            var timeline_id = <?php echo $id ?>;
-        </script>
+                    var timeline_id = <?php echo $id ?>;</script>
 
         <script src="../../../common/scripts/links.js"></script>
         <script src="scripts/script2.js"></script>
@@ -37,11 +36,30 @@ $id = $_SESSION['timeline-id'];
     <body>
 
         <?php require_once '../../../common/authentication-bar.php'; ?>
-
-        <h1 class="text-center">Creazione programmazione</h1>
-
         <div class="container" ng-app="lss-db" ng-controller="linkController as linkCtrl">
             <div ng-app="lss-db" ng-controller="timelineController as timeCtrl">
+                <div class="row">
+                    <h1 class="text-center col-sm-12">Creazione programmazione
+                        <div class="pull-right">
+                            <a class="btn btn-success tooltip-base" type="button" ng-click="saveData()">
+                                <span class="tooltip">Salva</span>
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                                Salva
+                            </a>
+                            <a class="btn btn-success tooltip-base" type="button" ng-click="saveDataExit()">
+                                <span class="tooltip">Salva ed esci</span>
+                                <span class="glyphicon glyphicon-floppy-remove"></span>
+                                Salva ed esci
+                            </a>
+                            <a class="btn btn-warning tooltip-base" type="button" ng-click="exit()">
+                                <span class="tooltip">Esci senza salvare</span>
+                                <span class="glyphicon glyphicon-remove"></span>
+                                Esci senza salvare
+                            </a>
+                        </div>
+                    </h1>
+                </div>
+
                 <div class="row">
                     <div class="col-sm-3 bg-primary">
                         <h4 class="text-center">Mese:</h4>
@@ -115,8 +133,6 @@ $id = $_SESSION['timeline-id'];
                     </button>
                 </div>
                 <div class="row" ng-repeat="mese in mesi">
-
-
                     <!--Argomenti non svolti-->
                     <div class="col col-sm-6">
                         <div class="col-sm-12 panel panel-default">
@@ -124,29 +140,31 @@ $id = $_SESSION['timeline-id'];
                                 <h3 class="panel-heading">{{mese.nome}} <small>non svolti</small></h3>
                             </div>
                             <ul class="list-group">
-                                <li class="list-group-item clearfix" ng-repeat="(i,element) in elements" ng-if="element.data.getMonth() + 1 === mese.numero && findById(element.performance, timeline.idmateria) === -1">
+                                <li class="list-group-item clearfix" ng-repeat="(i,element) in elements" ng-if="element.data.getMonth() + 1 === mese.numero && findById(element.performance, timeline.idmateria) === - 1">
                                     {{element.nome}}
                                     <div class="btn-group pull-right">
 
-                                        <a class="btn btn-info btn-xs" ng-click="onSetDate(i)">
+                                        <a class="btn btn-info btn-sm tooltip-base" ng-click="onSetDate(i)">
+                                            <span class="tooltip" ng-if="element.settingDate">Conferma data</span>
+                                            <span class="tooltip" ng-if="!element.settingDate">Imposta data</span>
                                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                             {{element.data| date:'dd/MM/yyyy'}}
                                         </a>
                                         <div class="picker-container" id="picker{{i}}"></div>
-                                        <a class="btn btn-success btn-xs" ng-click="setDone(i)">
-                                            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-                                            Svolgi
+                                        <a class="btn btn-success btn-sm tooltip-base" ng-click="setDone(i)">
+                                            <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                                            <span class="tooltip">Svolgi</span>
                                         </a>
-                                        <a class="btn btn-danger btn-xs" ng-click="onRemoveFromTimeline(i)">
+                                        <a class="btn btn-danger btn-sm tooltip-base" ng-click="onRemoveFromTimeline(i)">
                                             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                            Elimina
+                                            <span class="tooltip">Elimina</span>
                                         </a>
                                     </div>
 
                                     <div class="subjects pull-right">
                                         <span ng-repeat="(j,materia) in materie.content">
-                                            <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== -1">
-                                                <span class="tooltip">{{materia.nome}} : {{findObjectById(element.performance, materia.id).data| date:'dd/MM/yyyy'}}</span>
+                                            <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== - 1">
+                                                <span class="tooltip">{{materia.nome}} : {{findObjectById(element.performance, materia.id).data | date:'dd/MM/yyyy'}}</span>
                                             </div>
                                         </span>
                                     </div>
@@ -161,26 +179,26 @@ $id = $_SESSION['timeline-id'];
                                 <h3 class="panel-heading">{{mese.nome}} <small>svolti</small></h3>
                             </div>
                             <ul class="list-group">
-                                <li class="list-group-item clearfix" ng-repeat="(i,element) in elements" ng-if="element.data.getMonth() + 1 === mese.numero && findById(element.performance, timeline.idmateria) !== -1">
+                                <li class="list-group-item clearfix" ng-repeat="(i,element) in elements" ng-if="element.data.getMonth() + 1 === mese.numero && findById(element.performance, timeline.idmateria) !== - 1">
                                     {{element.nome}}
                                     <div class="btn-group pull-right">
-                                        <a class="btn btn-info btn-xs" ng-click="onSetDate(i)">
+                                        <a class="btn btn-info btn-sm" ng-click="onSetDate(i)">
                                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                             {{element.data| date:'dd/MM/yyyy'}}
                                         </a>
                                         <div class="picker-container" id="picker{{i}}"></div>
-                                        <a class="btn btn-success btn-xs" ng-click="setUndone(i)">
-                                            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-                                            Elimina svolgimento
+                                        <a class="btn btn-warning btn-sm tooltip-base" ng-click="setUndone(i)">
+                                            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                                            <span class="tooltip">Annulla svolgimento</span>
                                         </a>
-                                        <a class="btn btn-danger btn-xs" ng-click="onRemoveFromTimeline(i)">
+                                        <a class="btn btn-danger btn-sm tooltip-base" ng-click="onRemoveFromTimeline(i)">
                                             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                            Elimina
+                                            <span class="tooltip">Elimina</span>
                                         </a>
                                     </div>
                                     <div class="subjects pull-right">
                                         <span ng-repeat="(j,materia) in materie.content">
-                                            <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== -1">
+                                            <div class="subject tooltip-base" ng-style="{'background-color':materie.colors[j]}" ng-if="findById(element.performance, materia.id) !== - 1">
                                                 <span class="tooltip">{{materia.nome}} : {{findObjectById(element.performance, materia.id).data | date:'dd/MM/yyyy'}}</span>
                                             </div>
                                         </span>
@@ -189,8 +207,8 @@ $id = $_SESSION['timeline-id'];
                             </ul>
                         </div>
                     </div>
-                </div>
 
+                </div>
                 <div class="row error message always-bottom">
                     <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>
                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -204,11 +222,6 @@ $id = $_SESSION['timeline-id'];
                         <span class="sr-only">Successo:</span>
                         {{lastSuccessMessage}}
                     </div>
-                </div>
-                <div class="save-buttons row always-bottom">
-                    <a class="btn btn-success col-sm-3 col-sm-offset-1" type="button" title="SALVA" ng-click="saveData()">Salva</a>
-                    <a class="btn btn-success col-sm-2 col-sm-offset-1" type="button" title="SALVA" ng-click="saveDataExit()">Salva ed esci</a>
-                    <a class="btn btn-warning col-sm-3 col-sm-offset-1" type="button" title="SALVA" ng-click="exit()">Esci senza salvare</a>
                 </div>
             </div>
 

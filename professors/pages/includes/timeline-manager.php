@@ -33,10 +33,6 @@ if ($request != null && isset($request->command)) {
         } else {
             exit_with_error("Invalid input");
         }
-    } else if ($request->command === "edit_timeline") {
-        $timeline = $request->timeline;
-        $_SESSION['timeline-id'] = $timeline;
-        exit_with_data("");
     } else if ($request->command === "delete_timeline") {
         $timeline = $request->timeline;
         $delete_query = "DELETE FROM timeline WHERE id=$timeline";

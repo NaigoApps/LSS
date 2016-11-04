@@ -1,5 +1,6 @@
 <?php
 require_once '../../../common/auth-header.php';
+$id = $_POST['timelineid'];
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -13,14 +14,12 @@ require_once '../../../common/auth-header.php';
         <link rel="stylesheet" href="../../../common/styles/style.css">
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
-        <link rel="stylesheet" href="styles/print.css" media="all"/>       
+        <link rel="stylesheet" href="styles/print.css" media="all"/>      
+        
+        <script type="text/javascript">
+                    var timeline_id = <?php echo $id ?>;</script>
         <script src="scripts/print-script.js"></script>
 
-
-        <script type="text/javascript">
-                    var data = JSON.parse(<?php echo $content; ?>);
-                    var from = '<?php echo $year; ?>';
-                    var to = '<?php echo ($year + 1); ?>';</script>
     </head>
     <body>
 
@@ -28,7 +27,7 @@ require_once '../../../common/auth-header.php';
 
 
         <div class="wrapper" ng-app="lss-db" ng-controller="timelineController as timeCtrl">
-            <h1 class="text-center">Programmazione <?php echo $year . "/" . ($year + 1) . " - " . $class_a . $class_s . " " . $subject; ?></h1>
+            <h1 class="text-center">Programmazione {{timeline.annoclasse + timeline.sezione + " " + timeline.anno}}</h1>
 
             <div>
                 <div ng-repeat="month in mesi">

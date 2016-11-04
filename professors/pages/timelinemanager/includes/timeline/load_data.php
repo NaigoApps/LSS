@@ -11,7 +11,15 @@ if ($request != null && isset($request->command)) {
 
     if ($request->command === "load_timeline") {
         $timeline_id = $request->id;
-        $query = "SELECT * FROM timeline WHERE id=$timeline_id";
+        //Caricare tutti i dati, anche delle tabelle derivate es: annoclasse, sezione
+        $query = "SELECT ti.id as id, "
+                . "ti.idmateria as idmateria, "
+                . "ti.idclasse as idclasse, "
+                . "ti.anno as anno, "
+                . "ti.iddocente as iddocente, "
+                . "cl.annoclasse as annoclasse, "
+                . "cl.sezione as sezione "
+                . "FROM timeline ti, classi cl WHERE id=$timeline_id AND ti.idclasse = cl.id";
         $conn = db_simple_connect();
         $outcome_1 = db_select($conn, $query);
         $query = "SELECT v.id as id, v.nome, v.descrizione, UNIX_TIMESTAMP(te.data) as data, te.performed FROM timeline_element te, voci v WHERE te.idtimeline=$timeline_id AND te.idvoce = v.id";

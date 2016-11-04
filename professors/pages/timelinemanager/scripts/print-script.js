@@ -2,11 +2,6 @@ var app = angular.module('lss-db', []);
 
 app.controller("timelineController", ['$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
 
-        $scope.timeline = data;
-        for (var i = 0; i < $scope.timeline.length; i++) {
-            $scope.timeline[i].start = new Date($scope.timeline[i].start);
-        }
-
         $scope.mesi = [
             {nome: 'Settembre', numero: 9},
             {nome: 'Ottobre', numero: 10},
@@ -37,11 +32,32 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $(".success-message").show();
         };
 
-        //MAIN
-        $rootScope.$emit('load-table',
-                {
-                    target: $scope.moduli
-                });
+        $scope.loadTimeline = function () {
+            $http.post(
+                    'includes/timeline/load_data.php',
+                    {
+                        command: 'load_timeline',
+                        id: timeline_id
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.timeline = rx.data.timeline;
+                        $scope.elements = rx.data.elements;
+                        for (var i = 0; i < $scope.elements.length; i++) {
+                            var d = new Date();
+                            d.setTime($scope.elements[i].data * 1000);
+                            $scope.elements[i].data = d;
+                            $scope.elements[i].performance = [];
+                        }
+                        $scope.reloadPerformances();
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data.msg);
+                    }
+            );
+        };
+        
+        $scope.loadTimeline();
     }]);
 
 $(document).ready(function () {
