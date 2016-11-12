@@ -76,6 +76,31 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
                 $scope.errorMessage("Inserire parametri corretti");
             }
         };
+        
+        $scope.onCopyTimeline = function (id) {
+            if ($scope.anni.selected && $scope.materie.selected && $scope.classi.selected) {
+                $http.post(
+                        '../includes/timeline-manager.php',
+                        {
+                            command: 'copy_timeline',
+                            timeline: id,
+                            year: $scope.anni.selected,
+                            class: $scope.classi.selected,
+                            subject: $scope.materie.selected
+                        }
+                ).then(
+                        function (rx) {
+                            $scope.successMessage("Timeline copiata con successo");
+                            $scope.reloadTimelines();
+                        },
+                        function (rx) {
+                            $scope.errorMessage(rx.data);
+                        }
+                );
+            } else {
+                $scope.errorMessage("Inserire parametri corretti");
+            }
+        };
 
         $scope.onDeleteTimeline = function (timeline) {
             swal(
@@ -105,10 +130,6 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
                     }
             );
 
-        };
-
-        $scope.onCancelTimeline = function () {
-            window.location.replace("../..");
         };
 
         $scope.reloadTimelines = function () {

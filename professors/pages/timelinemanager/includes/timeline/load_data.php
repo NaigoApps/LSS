@@ -17,9 +17,13 @@ if ($request != null && isset($request->command)) {
                 . "ti.idclasse as idclasse, "
                 . "ti.anno as anno, "
                 . "ti.iddocente as iddocente, "
-                . "cl.annoclasse as annoclasse, "
-                . "cl.sezione as sezione "
-                . "FROM timeline ti, classi cl WHERE id=$timeline_id AND ti.idclasse = cl.id";
+                . "cl.anno as annoclasse, "
+                . "cl.sezione as sezione, "
+                . "ma.nome as nomemateria "
+                . "FROM timeline ti, classi cl, materie ma "
+                . "WHERE ti.id=$timeline_id AND "
+                . "ti.idclasse = cl.id AND "
+                . "ti.idmateria = ma.id";
         $conn = db_simple_connect();
         $outcome_1 = db_select($conn, $query);
         $query = "SELECT v.id as id, v.nome, v.descrizione, UNIX_TIMESTAMP(te.data) as data, te.performed FROM timeline_element te, voci v WHERE te.idtimeline=$timeline_id AND te.idvoce = v.id";

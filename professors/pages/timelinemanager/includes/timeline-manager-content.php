@@ -1,9 +1,29 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <span class="glyphicon glyphicon-cloud"></span>
+            </a>
+        </div>
 
-<?php
-require_once '../../../common/authentication-bar.php';
-?>
-<h1 class="text-center">Elenco delle programmazioni</h1>
-<div class="wrapper" ng-app="lss-db" ng-controller="timelineController as tCtrl">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../..">Esci</a></li>
+                    </ul>
+                </li>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a>Elenco delle programmazioni</a>
+                    </li>
+                </ul>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container under-nav" ng-app="lss-db" ng-controller="timelineController as tCtrl">
 
     <div class="row">
 
@@ -27,6 +47,14 @@ require_once '../../../common/authentication-bar.php';
                                     <span class="glyphicon glyphicon-edit"></span>
                                 </button>
                             </form>
+                            <form class="dummy-form" action="../timelinecreator/index.php" method="POST">
+                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/> 
+                                <input type="hidden" name="copy" value="true"/>    
+                                <button type="submit" class="btn btn-xs btn-warning tooltip-base">
+                                    <span class="tooltip-text">Duplica</span>
+                                    <span class="glyphicon glyphicon-duplicate"></span>
+                                </button>
+                            </form>
                             <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline.id)">
                                 <span class="tooltip-text">Rimuovi</span>
                                 <span class="glyphicon glyphicon-remove"></span>
@@ -38,9 +66,6 @@ require_once '../../../common/authentication-bar.php';
         </div>
 
     </div>
-    <button class="btn btn-warning col-sm-2 col-sm-offset-5" ng-click="onExit()">
-        Esci
-    </button>
 
     <!-- Delete Modal -->
     <div id="deleteTimeline" class="modal fade" role="dialog">

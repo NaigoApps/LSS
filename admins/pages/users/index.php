@@ -13,9 +13,27 @@
         <script type="text/javascript" src="./scripts/users.js"></script>
     </head>
     <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        <span class="glyphicon glyphicon-cloud"></span>
+                    </a>
+                </div>
 
-        <?php require_once '../../../common/authentication-bar.php'; ?>
-        <div class="wrapper" ng-app="lss-db" ng-controller="userController as userCtrl">
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="../..">Esci</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <div class="container under-nav" ng-app="lss-db" ng-controller="userController as userCtrl">
 
             <table class="table table-striped table-bordered">
                 <tr>

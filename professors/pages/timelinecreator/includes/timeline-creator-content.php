@@ -1,7 +1,27 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <span class="glyphicon glyphicon-cloud"></span>
+            </a>
+        </div>
 
-<?php require_once '../../../common/authentication-bar.php'; ?>
-<div ng-app="lss-db" ng-controller="linkController as linkCtrl">
-    <div class="container" ng-app="lss-db" ng-controller="classesController as classCtrl">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../..">Esci</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="under-nav" ng-app="lss-db" ng-controller="linkController
+            as linkCtrl">
+    <div class="container" ng-app="lss-db" ng-controller="classesController
+                as classCtrl">
         <div class="row">
             <div class="col-sm-6">
                 <h1>Creazione di una programmazione</h1>
@@ -61,41 +81,50 @@
                     </ul>
                 </div>
                 <div class="row top-sep">
-                    <a class="btn btn-success" ng-click="onConfirmTimeline()">Conferma</a>
-                    <a class="btn btn-warning" ng-click="onCancelTimeline()">Annulla</a>
+                    <?php
+                    if (isset($_POST['copy'])) {
+                        ?>
+                        <a class="btn btn-success" ng-click="onCopyTimeline(<?php echo $_POST['timelineid']; ?>)">Copia</a>
+                        <?php
+                    } else {
+                        ?>
+                        <a class="btn btn-success" ng-click="onConfirmTimeline()">Conferma</a>
+                        <?php
+                    }
+                    ?>
                 </div>
-                <div class="row error-message top-sep">
-                    <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Errore:</span>
+                <div class = "row error-message top-sep">
+                    <div class = "alert alert-danger error-message col-sm-12" role = "alert" hidden>
+                        <span class = "glyphicon glyphicon-exclamation-sign" aria-hidden = "true"></span>
+                        <span class = "sr-only">Errore:</span>
                         {{lastErrorMessage}}
                     </div>
                 </div>
-                <div class="row success-message top-sep">
-                    <div class="alert alert-success success-message col-sm-12" role="alert" hidden>
-                        <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Successo:</span>
+                <div class = "row success-message top-sep">
+                    <div class = "alert alert-success success-message col-sm-12" role = "alert" hidden>
+                        <span class = "glyphicon glyphicon-ok-sign" aria-hidden = "true"></span>
+                        <span class = "sr-only">Successo:</span>
                         {{lastSuccessMessage}}
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class = "col-sm-6">
                 <h1>Lista delle programmazioni</h1>
                 <ul>
-                    <li ng-repeat="timeline in timelines.content">
-                        <div class="well well-sm clearfix">
+                    <li ng-repeat = "timeline in timelines.content">
+                        <div class = "well well-sm clearfix">
                             {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
-                            <form class="pull-right dummy-form" action="../timelinemanager/editor2.php" method="POST">  
-                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/>   
-                                <button type="submit" class="btn btn-xs btn-success tooltip-base">
-                                    <span class="tooltip-text">Gestisci</span>
-                                    <span class="glyphicon glyphicon-edit"></span>
+                            <form class = "pull-right dummy-form" action = "../timelinemanager/editor2.php" method = "POST">
+                                <input type = "hidden" name = "timelineid" value = "{{timeline.id}}"/>
+                                <button type = "submit" class = "btn btn-xs btn-success tooltip-base">
+                                    <span class = "tooltip-text">Gestisci</span>
+                                    <span class = "glyphicon glyphicon-edit"></span>
                                 </button>
-                                <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline)">
-                                    <span class="tooltip-text">Rimuovi</span>
-                                    <span class="glyphicon glyphicon-remove"></span>
+                                <a class = "btn btn-xs btn-danger tooltip-base" ng-click = "onDeleteTimeline(timeline)">
+                                    <span class = "tooltip-text">Rimuovi</span>
+                                    <span class = "glyphicon glyphicon-remove"></span>
                                 </a>
-                            </form> 
+                            </form>
                         </div>
                     </li>
                 </ul>

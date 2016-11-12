@@ -239,20 +239,20 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     confirmButtonText: "Ok",
                     cancelButtonText: "Annulla"
                 },
-                        function (isConfirm) {
-                            if (isConfirm) {
-                                $scope.elements[index].data = d;
-                                var performance = $scope.findObjectById($scope.elements[index].performance, $scope.timeline.idmateria);
-                                if(performance !== undefined){
-                                    performance.data = d;
-                                }
-                                $("#picker" + index).datepicker("destroy");
-                                $scope.sortTimeline();
-                                $scope.$apply();
-                            } else {
-                                $("#picker" + index).datepicker("destroy");
-                            }
-                        });
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $scope.elements[index].data = d;
+                        var performance = $scope.findObjectById($scope.elements[index].performance, $scope.timeline.idmateria);
+                        if (performance !== undefined) {
+                            performance.data = d;
+                        }
+                        $("#picker" + index).datepicker("destroy");
+                        $scope.sortTimeline();
+                        $scope.$apply();
+                    } else {
+                        $("#picker" + index).datepicker("destroy");
+                    }
+                });
             } else {
                 $scope.elements[index].settingDate = true;
                 $("#picker" + index).datepicker();
@@ -272,14 +272,14 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 type: "warning",
                 showCancelButton: true,
                 animation: "slide-from-top"},
-                    function () {
-                        var i = $scope.findById($scope.elements[index].performance, $scope.timeline.idmateria);
-                        if (i >= 0) {
-                            $scope.elements[index].performance.splice(i, 1);
-                            $scope.elements[index].performed = false;
-                        }
-                        $scope.$apply();
-                    });
+            function () {
+                var i = $scope.findById($scope.elements[index].performance, $scope.timeline.idmateria);
+                if (i >= 0) {
+                    $scope.elements[index].performance.splice(i, 1);
+                    $scope.elements[index].performed = false;
+                }
+                $scope.$apply();
+            });
         };
 
         $scope.setDone = function (index) {
@@ -289,14 +289,14 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 type: "warning",
                 showCancelButton: true,
                 animation: "slide-from-top"},
-                    function () {
-                        $scope.elements[index].performance.push({
-                            id: $scope.timeline.idmateria,
-                            data: $scope.elements[index].data
-                        });
-                        $scope.elements[index].performed = true;
-                        $scope.$apply();
-                    });
+            function () {
+                $scope.elements[index].performance.push({
+                    id: $scope.timeline.idmateria,
+                    data: $scope.elements[index].data
+                });
+                $scope.elements[index].performed = true;
+                $scope.$apply();
+            });
 
         };
 
@@ -441,13 +441,36 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
 
         $scope.sortTimeline = function () {
-            $scope.elements.sort(function (a, b) {
-                if (a.data <= b.data) {
-                    return -1;
-                }
-                return 1;
-            });
+            $scope.elements = $scope.mergeSort($scope.elements);
         };
+
+        $scope.mergeSort = function (arr) {
+            if (arr.length < 2) {
+                return arr;
+            }
+            var middle = parseInt(arr.length / 2);
+            var left = arr.slice(0, middle);
+            var right = arr.slice(middle, arr.length);
+            return merge(mergeSort(left), mergeSort(right));
+        };
+
+        $scope.merge = function (left, right) {
+            var result = [];
+            while (left.length && right.length) {
+                if (left[0].data <= right[0].data) {
+                    result.push(left.shift());
+                } else {
+                    result.push(right.shift());
+                }
+            }
+            while (left.length) {
+                result.push(left.shift());
+            }
+            while (right.length) {
+                result.push(right.shift());
+            }
+            return result;
+        }
 
         $scope.loadTimeline = function () {
             $http.post(
@@ -465,6 +488,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             d.setTime($scope.elements[i].data * 1000);
                             $scope.elements[i].data = d;
                             $scope.elements[i].performance = [];
+                            $scope.elements[i].performed = false;
                         }
                         $scope.reloadPerformances();
                     },

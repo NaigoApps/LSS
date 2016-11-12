@@ -8,10 +8,6 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.timelines = {
             content: []
         };
-        
-        $scope.onExit = function(){
-            window.location.replace("../..");
-        };
 
         /**
          * 

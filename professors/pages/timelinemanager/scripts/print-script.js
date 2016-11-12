@@ -32,6 +32,53 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $(".success-message").show();
         };
 
+        $scope.assignPerformance = function (perf) {
+            for (var i = 0; i < $scope.elements.length; i++) {
+                if ($scope.elements[i].id === perf.id) {
+                    var d = new Date();
+                    d.setTime(perf.data * 1000);
+                    $scope.elements[i].performance.push({
+                        id: perf.idmateria,
+                        data: d
+                    });
+                    if (perf.idmateria === $scope.timeline.idmateria) {
+                        $scope.elements[i].performed = true;
+                    }
+                }
+            }
+        };
+        
+        $scope.reloadPerformances = function () {
+            $http.post(
+                    'includes/timeline/load_data.php',
+                    {
+                        command: 'load_performances',
+                        classe: $scope.timeline.idclasse,
+                        anno: $scope.timeline.anno
+                    }
+            ).then(
+                    function (rx) {
+                        var performances = rx.data;
+                        for (var i = 0; i < performances.length; i++) {
+                            $scope.assignPerformance(performances[i]);
+                        }
+                        $scope.sortTimeline();
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data.msg);
+                    }
+            );
+        };
+
+        $scope.sortTimeline = function () {
+            $scope.elements.sort(function (a, b) {
+                if (a.data <= b.data) {
+                    return -1;
+                }
+                return 1;
+            });
+        };
+
         $scope.loadTimeline = function () {
             $http.post(
                     'includes/timeline/load_data.php',
@@ -48,6 +95,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             d.setTime($scope.elements[i].data * 1000);
                             $scope.elements[i].data = d;
                             $scope.elements[i].performance = [];
+                            $scope.elements[i].performed = false;
                         }
                         $scope.reloadPerformances();
                     },

@@ -1,5 +1,25 @@
-<div ng-app="lss-db" ng-controller="linkController as linkCtrl">
-    <div class="wrapper" ng-app="lss-db" ng-controller="classesController as classCtrl">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <span class="glyphicon glyphicon-cloud"></span>
+            </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../..">Esci</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="under-nav" ng-app="lss-db" ng-controller="linkController as linkCtrl">
+    <div class="container" ng-app="lss-db" ng-controller="classesController as classCtrl">
         <h2>Elenco dell classi:</h2>
         <ul class="list-group top-sep">
             <div class="row" ng-repeat="classe in classi.content">

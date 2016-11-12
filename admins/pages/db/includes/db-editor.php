@@ -142,16 +142,4 @@ function std_update($connection, $query) {
     }
 }
 
-function exit_with_error($msg) {
-    $json_response = json_encode('{msg:' . $msg . '}');
-    http_response_code(400);
-    die($json_response);
-}
-
-function exit_with_data($data) {
-    $json_response = json_encode($data);
-    http_response_code(200);
-    die($json_response);
-}
-
 ?>

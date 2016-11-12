@@ -208,6 +208,15 @@ function db_insert($mysqli, $query) {
     }
 }
 
+function db_multi_insert($mysqli, $query) {
+    $result = $mysqli->real_query($query);
+    if ($result !== false) {
+        return new QueryResult(QueryResult::SUCCESS, NULL, NULL);
+    } else {
+        return new QueryResult(QueryResult::FAILURE, $mysqli->error, NULL);
+    }
+}
+
 /**
  * 
  * @param type $mysqli

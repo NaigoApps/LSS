@@ -3,6 +3,7 @@
 <!doctype html>
 <html>
     <head>
+        <meta charset="utf-8"/>
         <link rel="stylesheet" href="../../../common/styles/bootstrap.min.css"></link>
         <link rel="stylesheet" href="../../../common/styles/style.css"></link>
         <script type="text/javascript" src="../../../common/scripts/jquery.js"></script>
