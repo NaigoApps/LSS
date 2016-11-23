@@ -129,14 +129,6 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
             $scope.netGetDocs(table, element);
         };
 
-        $scope.errorMessage = function (message) {
-            $scope.lastErrorMessage = message;
-            $(".error-message").show();
-        };
-        $scope.successMessage = function (message) {
-            $scope.lastSuccessMessage = message;
-            $(".success-message").show();
-        };
 
         //MAIN
         $rootScope.$emit('load-table', {target: $scope.classi});

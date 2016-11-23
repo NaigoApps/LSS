@@ -183,7 +183,7 @@ function db_simple_connect(){
 }
 
 function db_simple_close($mysqli){
-    $mysqli->close();
+    return $mysqli->close();
 }
 
 function db_transaction_abort($mysqli){

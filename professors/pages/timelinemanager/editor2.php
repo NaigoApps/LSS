@@ -40,7 +40,7 @@ $id = $_POST['timelineid'];
                     <div class="container-fluid">
                         <div class="navbar-header">
                             <a class="navbar-brand" href="#">
-                                <span class="glyphicon glyphicon-cloud"></span>
+                                <span class="glyphicon glyphicon-pencil"></span>
                             </a>
                         </div>
 

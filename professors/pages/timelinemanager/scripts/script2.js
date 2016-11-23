@@ -440,19 +440,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $(".success-message").show();
         };
 
-        $scope.sortTimeline = function () {
-            $scope.elements = $scope.mergeSort($scope.elements);
-        };
-
-        $scope.mergeSort = function (arr) {
-            if (arr.length < 2) {
-                return arr;
-            }
-            var middle = parseInt(arr.length / 2);
-            var left = arr.slice(0, middle);
-            var right = arr.slice(middle, arr.length);
-            return merge(mergeSort(left), mergeSort(right));
-        };
 
         $scope.merge = function (left, right) {
             var result = [];
@@ -470,8 +457,22 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 result.push(right.shift());
             }
             return result;
-        }
+        };
 
+        $scope.mergeSort = function (arr) {
+            if (arr.length < 2) {
+                return arr;
+            }
+            var middle = parseInt(arr.length / 2);
+            var left = arr.slice(0, middle);
+            var right = arr.slice(middle, arr.length);
+            return $scope.merge($scope.mergeSort(left), $scope.mergeSort(right));
+        };
+
+        $scope.sortTimeline = function () {
+            $scope.elements = $scope.mergeSort($scope.elements);
+        };
+        
         $scope.loadTimeline = function () {
             $http.post(
                     'includes/timeline/load_data.php',

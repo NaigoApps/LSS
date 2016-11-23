@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">
-                <span class="glyphicon glyphicon-cloud"></span>
+                <span class="glyphicon glyphicon-calendar"></span>
             </a>
         </div>
 
@@ -14,6 +14,11 @@
                         <li><a href="../..">Esci</a></li>
                     </ul>
                 </li>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a>Creazione programmazione</a>
+                    </li>
+                </ul>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -23,9 +28,10 @@
     <div class="container" ng-app="lss-db" ng-controller="classesController
                 as classCtrl">
         <div class="row">
-            <div class="col-sm-6">
-                <h1>Creazione di una programmazione</h1>
+
+            <div class="col-sm-6 col-sm-offset-3">
                 <div class="row">
+                    <h1 class="text-center">Dati della programmazione</h1>
                     <h4>Selezionare la classe:</h4>
                     <ul class="list-group top-sep">
                         <div class="dropdown">
@@ -61,6 +67,7 @@
                     </ul>
                 </div>
                 <div class="row">
+
                     <h4>Selezionare l'anno scolastico</h4>
                     <ul class="list-group top-sep">
                         <div class="dropdown">
@@ -93,41 +100,43 @@
                     }
                     ?>
                 </div>
-                <div class = "row error-message top-sep">
-                    <div class = "alert alert-danger error-message col-sm-12" role = "alert" hidden>
-                        <span class = "glyphicon glyphicon-exclamation-sign" aria-hidden = "true"></span>
-                        <span class = "sr-only">Errore:</span>
-                        {{lastErrorMessage}}
-                    </div>
-                </div>
-                <div class = "row success-message top-sep">
-                    <div class = "alert alert-success success-message col-sm-12" role = "alert" hidden>
-                        <span class = "glyphicon glyphicon-ok-sign" aria-hidden = "true"></span>
-                        <span class = "sr-only">Successo:</span>
-                        {{lastSuccessMessage}}
-                    </div>
-                </div>
-            </div>
-            <div class = "col-sm-6">
-                <h1>Lista delle programmazioni</h1>
-                <ul>
-                    <li ng-repeat = "timeline in timelines.content">
-                        <div class = "well well-sm clearfix">
-                            {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
-                            <form class = "pull-right dummy-form" action = "../timelinemanager/editor2.php" method = "POST">
-                                <input type = "hidden" name = "timelineid" value = "{{timeline.id}}"/>
-                                <button type = "submit" class = "btn btn-xs btn-success tooltip-base">
-                                    <span class = "tooltip-text">Gestisci</span>
-                                    <span class = "glyphicon glyphicon-edit"></span>
-                                </button>
-                                <a class = "btn btn-xs btn-danger tooltip-base" ng-click = "onDeleteTimeline(timeline)">
-                                    <span class = "tooltip-text">Rimuovi</span>
-                                    <span class = "glyphicon glyphicon-remove"></span>
-                                </a>
-                            </form>
+
+                <div class="row top-sep">
+                    <h1>Lista delle programmazioni</h1>
+                    <ul>
+                        <li ng-repeat = "timeline in timelines.content">
+                            <div class = "well well-sm clearfix">
+                                {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
+                                <form class = "pull-right dummy-form" action = "../timelinemanager/editor2.php" method = "POST">
+                                    <input type = "hidden" name = "timelineid" value = "{{timeline.id}}"/>
+                                    <button type = "submit" class = "btn btn-xs btn-success tooltip-base">
+                                        <span class = "tooltip-text">Gestisci</span>
+                                        <span class = "glyphicon glyphicon-edit"></span>
+                                    </button>
+                                    <a class = "btn btn-xs btn-danger tooltip-base" ng-click = "onDeleteTimeline(timeline)">
+                                        <span class = "tooltip-text">Rimuovi</span>
+                                        <span class = "glyphicon glyphicon-remove"></span>
+                                    </a>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class = "row error-message top-sep">
+                        <div class = "alert alert-danger error-message col-sm-12" role = "alert" hidden>
+                            <span class = "glyphicon glyphicon-exclamation-sign" aria-hidden = "true"></span>
+                            <span class = "sr-only">Errore:</span>
+                            {{lastErrorMessage}}
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                    <div class = "row success-message top-sep">
+                        <div class = "alert alert-success success-message col-sm-12" role = "alert" hidden>
+                            <span class = "glyphicon glyphicon-ok-sign" aria-hidden = "true"></span>
+                            <span class = "sr-only">Successo:</span>
+                            {{lastSuccessMessage}}
+                        </div>
+                    </div> 
+                </div>
             </div>
         </div>
     </div>

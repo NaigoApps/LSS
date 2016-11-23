@@ -27,6 +27,7 @@ $client->setScopes('email');
  */
 if (isset($_REQUEST['logout'])) {
     unset($_SESSION['access_token']);
+    unset($user_data);
 }
 
 if (isset($_GET['code'])) {

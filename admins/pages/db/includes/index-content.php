@@ -2,7 +2,8 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">
-                <span class="glyphicon glyphicon-cloud"></span>
+                <span class="glyphicon glyphicon-book"></span>
+                
             </a>
         </div>
 
@@ -14,6 +15,11 @@
                         <li><a href="../..">Esci</a></li>
                     </ul>
                 </li>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a>Gestione del database</a>
+                    </li>
+                </ul>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

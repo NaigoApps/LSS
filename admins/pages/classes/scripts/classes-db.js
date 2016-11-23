@@ -82,10 +82,10 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                     function (rx) {
                         data.target.current.id = rx.data;
                         data.target.content.push(JSON.parse(JSON.stringify(data.target.current)));
-                        $scope.successMessage(data.target.current.anno + data.target.current.sezione  + " inserita");
+                        swal("Inserimento", data.target.current.anno + data.target.current.sezione + " inserito", "success");
                     },
                     function (rx) {
-                        $scope.errorMessage(rx.data);
+                        swal("Inserimento", data.target.current.anno + data.target.current.sezione + " non inserito", "success");
                     }
             );
         });
@@ -109,10 +109,10 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                         var index = $scope.findById(data.target.content, data.target.current.id);
                         data.target.current.modified = false;
                         data.target.content[index] = JSON.parse(JSON.stringify(data.target.current));
-                        $scope.successMessage(data.target.current.anno + data.target.current.sezione + " modificato");
+                        swal("Aggiornamento", data.target.current.anno + data.target.current.sezione + " modificato", "success");
                     },
                     function (rx) {
-                        $scope.errorMessage("Impossibile modificare " + data.target.current.anno + data.target.current.sezione);
+                        swal("Aggiornamento", data.target.current.anno + data.target.current.sezione + " non modificato", "success");
                     }
             );
         });
@@ -134,10 +134,10 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                     function (rx) {
                         var index = $scope.findById(data.target.content, data.target.current.id);
                         data.target.content.splice(index, 1);
-                        $scope.successMessage(data.target.current.anno + data.target.current.sezione + " eliminato");
+                        swal("Eliminazione", data.target.current.anno + data.target.current.sezione + " eliminato", "success");
                     },
                     function (rx) {
-                        $scope.errorMessage("Impossibile eliminare " + data.target.current.anno + data.target.current.sezione );
+                        swal("Eliminazione", data.target.current.anno + data.target.current.sezione + " non eliminato", "error");
                     }
             );
         });
@@ -169,12 +169,12 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
             }
         };
 
-        $scope.errorMessage = function (message) {
-            $scope.lastErrorMessage = message;
+        $rootScope.errorMessage = function (message) {
+            $rootScope.lastErrorMessage = message;
             $(".error-message").show();
         };
-        $scope.successMessage = function (message) {
-            $scope.lastSuccessMessage = message;
+        $rootScope.successMessage = function (message) {
+            $rootScope.lastSuccessMessage = message;
             $(".success-message").show();
         };
 

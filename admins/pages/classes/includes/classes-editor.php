@@ -1,7 +1,7 @@
 <?php
+
 require_once("../../../../common/auth-header.php");
 require_once("../../../../consts.php");
-$connection = mysqli_connect(HOST, USER, PASS, DB);
 
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);
@@ -10,59 +10,46 @@ if ($request != null && isset($request->command)) {
     /*
       GESTIONE DI CLASSI
      */
-
     if ($request->command === "updateclass") {
-        $id = mysqli_real_escape_string($connection, $request->obj->id);
+        $id = $request->obj->id;
         $sezione = $request->obj->sezione;
         $anno = $request->obj->anno;
         $query = "UPDATE classi SET sezione = '$sezione', anno = $anno WHERE id = '$id'";
-        std_update($connection, $query);
-        
-    }else if ($request->command === "addclass") {
+        $conn = db_simple_connect();
+        $outcome = db_update($conn, $query);
+        if ($outcome->getOutcome() == QueryResult::SUCCESS) {
+            if (db_simple_close($conn)) {
+                exit_with_data("Classe aggiornata");
+            } else {
+                exit_with_error("Errore durante l'aggiornamento");
+            }
+        }
+    } else if ($request->command === "addclass") {
         $sezione = $request->obj->sezione;
         $anno = $request->obj->anno;
         $query = "INSERT INTO classi(sezione,anno) VALUES ('$sezione',$anno)";
-        std_insert($connection, $query);
-        
-    }else if ($request->command === "deleteclass") {
-        $id = mysqli_real_escape_string($connection, $request->obj->id);
+        $conn = db_simple_connect();
+        $outcome = db_insert($conn, $query);
+        if ($outcome->getOutcome() == QueryResult::SUCCESS) {
+            if (db_simple_close($conn)) {
+                exit_with_data($outcome->content);
+            } else {
+                exit_with_error("Errore durante l'inserimento");
+            }
+        }
+    } else if ($request->command === "deleteclass") {
+        $id = $request->obj->id;
         $query = "DELETE FROM classi WHERE id=$id";
-        std_update($connection, $query);
-        
-    }
-}
-mysqli_close($connection);
-
-function std_insert($connection, $query) {
-    if (mysqli_autocommit($connection, false)) {
-        if (mysqli_real_query($connection, $query) && ($last_id = mysqli_insert_id($connection)) != 0) {
-            mysqli_commit($connection);
-            exit_with_data($last_id);
-        } else {
-            mysqli_rollback($connection);
-            exit_with_error($query);
+        $conn = db_simple_connect();
+        $outcome = db_update($conn, $query);
+        if ($outcome->getOutcome() == QueryResult::SUCCESS) {
+            if (db_simple_close($conn)) {
+                exit_with_data("Classe eliminata");
+            } else {
+                exit_with_error("Errore durante l'eliminazione");
+            }
         }
     }
-}
-
-function std_update($connection, $query) {
-    if (mysqli_real_query($connection, $query)) {
-        exit(200);
-    } else {
-        exit_with_error(mysqli_error($connection));
-    }
-}
-
-function exit_with_error($msg) {
-    $json_response = json_encode('{msg:' . $msg . '}');
-    http_response_code(400);
-    die($json_response);
-}
-
-function exit_with_data($data) {
-    $json_response = json_encode($data);
-    http_response_code(200);
-    die($json_response);
 }
 
 ?>

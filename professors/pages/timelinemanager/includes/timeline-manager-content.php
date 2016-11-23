@@ -2,7 +2,8 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">
-                <span class="glyphicon glyphicon-cloud"></span>
+                <span class="glyphicon glyphicon-list"></span>
+                Elenco delle programmazioni
             </a>
         </div>
 
@@ -14,11 +15,6 @@
                         <li><a href="../..">Esci</a></li>
                     </ul>
                 </li>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a>Elenco delle programmazioni</a>
-                    </li>
-                </ul>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -27,7 +23,7 @@
 
     <div class="row">
 
-        <div class="col-sm-6">
+        <div class="col-sm-6 col-sm-offset-3">
             <ul>
                 <li ng-repeat="timeline in timelines.content">
                     <div class="well well-sm clearfix">
