@@ -1,46 +1,73 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <span class="glyphicon glyphicon-list"></span>
+                Elenco delle programmazioni
+            </a>
+        </div>
 
-<?php require_once '../../../common/authentication-bar.php'; ?>
-<h1 class="text-center">Elenco delle programmazioni</h1>
-<div class="wrapper" ng-app="lss-db" ng-controller="timelineController as tCtrl">
-    <?php
-    $dir = "../../timelines/" . $user_data->getId();
-    if (!file_exists($dir)) {
-        mkdir($dir);
-    }
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../..">Esci</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container under-nav" ng-app="lss-db" ng-controller="timelineController as tCtrl">
 
-    $files = scandir($dir);
-    for ($i = 0; $i < count($files); $i+= $j) {
-        ?>
-        <div class="row">
-            <?php
-            $counter = 0;
-            for ($j = $i; $counter < 3 && $j < count($files); $j++) {
-                if (strpos($files[$j], ".json") !== false) {
-                    $counter++;
-                    $timeline = substr($files[$j], 0, strpos($files[$j], ".json"));
-                    $descr = explode("-", $timeline);
-                    ?>
+    <div class="row">
 
-                    <div class="well col-sm-4 btn btn-lg" ng-click="onViewTimeline()">
-                        <div class="col-sm-6">
-                            <?php
-                            echo $descr[4] . $descr[1] . $descr[2] . $descr[0];
-                            ?>
+        <div class="col-sm-6 col-sm-offset-3">
+            <ul>
+                <li ng-repeat="timeline in timelines.content">
+                    <div class="well well-sm clearfix">
+                        {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
+                        <div class="pull-right">
+                            <form class="dummy-form" action="../timelineviewer/viewer.php" method="POST">
+                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
+                                <button type="submit" class="btn btn-xs btn-success tooltip-base">
+                                    <span class="tooltip-text">Visualizza</span>
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                </button>
+                            </form>
                         </div>
                     </div>
-
-                    <?php
-                }
-            }
-            ?>
+                </li>
+            </ul>
         </div>
-        <?php
-    }
-    ?>
-    <a class="btn btn-warning col-sm-2 col-sm-offset-5" ng-click="onExit()">
-        Esci
-    </a>
+
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteTimeline" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Elminazione timeline</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="timelineDeleteForm" novalidate>
+                        <p>Confermare l'eliminazione?</p>
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-3"
+                                ng-click="onDeleteCurrentTimeline()"
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                        <button type="submit" class="btn btn-danger col-sm-2 col-sm-offset-1"
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </div>
-

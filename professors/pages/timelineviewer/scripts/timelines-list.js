@@ -5,9 +5,9 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
 
         $scope.currentTimeline = "";
 
-        $scope.onExit = function(){
-            window.location.replace("../..");
-        }
+        $scope.timelines = {
+            content: []
+        };
 
         /**
          * 
@@ -17,30 +17,23 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.onCurrentTimeline = function (timeline) {
             $scope.currentTimeline = timeline;
         };
-
-        /**
-         * 
-         * @param {object} timeline Selected timeline
-         * @returns {undefined}
-         */
-        $scope.onViewTimeline = function (timeline) {
+        
+        $scope.reloadTimelines = function () {
             $http.post(
-                    './includes/timeline-viewer.php',
+                    '../includes/timeline-manager.php',
                     {
-                        command: 'view_timeline',
-                        timeline: timeline
+                        command: 'list_timelines'
                     }
             ).then(
                     function (rx) {
-                        window.location.replace("./viewer.php");
+                        $scope.timelines.content = rx.data;
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data);
                     }
             );
         };
-        
-        
+
         $scope.errorMessage = function (message) {
             $scope.lastErrorMessage = message;
             $(".error-message").show();
@@ -49,6 +42,8 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             $scope.lastSuccessMessage = message;
             $(".success-message").show();
         };
+
+        $scope.reloadTimelines();
 
     }]);
 

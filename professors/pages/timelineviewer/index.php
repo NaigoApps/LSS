@@ -5,7 +5,6 @@ require_once '../../../common/auth-header.php';
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="../../../common/styles/jquery.svg.css"></link>
         <link rel="stylesheet" href="../../../common/styles/bootstrap.min.css"></link>
         <link rel="stylesheet" href="../../../common/styles/style.css"></link>
         <script type="text/javascript" src="../../../common/scripts/jquery.js"></script>

@@ -50,7 +50,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         
         $scope.reloadPerformances = function () {
             $http.post(
-                    'includes/timeline/load_data.php',
+                    'includes/load_data.php',
                     {
                         command: 'load_performances',
                         classe: $scope.timeline.idclasse,
@@ -81,7 +81,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 
         $scope.loadTimeline = function () {
             $http.post(
-                    'includes/timeline/load_data.php',
+                    'includes/load_data.php',
                     {
                         command: 'load_timeline',
                         id: timeline_id

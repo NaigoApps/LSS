@@ -97,7 +97,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             prettyConfirm("Salvataggio", "Salvare i dati?", function (ok) {
                 if (ok) {
                     $http.post(
-                            'includes/timeline/save_data.php',
+                            'includes/save_data.php',
                             {
                                 command: 'save_timeline',
                                 id: timeline_id,
@@ -118,7 +118,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             prettyConfirm("Esci", "Salvare i dati ed uscire?", function (ok) {
                 if (ok) {
                     $http.post(
-                            'includes/timeline/save_data.php',
+                            'includes/save_data.php',
                             {
                                 command: 'save_timeline',
                                 id: timeline_id,
@@ -397,7 +397,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 });
         $scope.reloadPerformances = function () {
             $http.post(
-                    'includes/timeline/load_data.php',
+                    'includes/load_data.php',
                     {
                         command: 'load_performances',
                         classe: $scope.timeline.idclasse,
@@ -475,7 +475,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         
         $scope.loadTimeline = function () {
             $http.post(
-                    'includes/timeline/load_data.php',
+                    'includes/load_data.php',
                     {
                         command: 'load_timeline',
                         id: timeline_id
