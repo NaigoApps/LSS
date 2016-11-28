@@ -1,4 +1,3 @@
-var app = angular.module('lss-db', []);
 
 app.controller("timelineController", ['$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
 
@@ -47,7 +46,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 }
             }
         };
-        
+
         $scope.reloadPerformances = function () {
             $http.post(
                     'includes/load_data.php',
@@ -89,6 +88,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             ).then(
                     function (rx) {
                         $scope.timeline = rx.data.timeline;
+                        $scope.timeline.anno2 = parseInt($scope.timeline.anno) + 1;
                         $scope.elements = rx.data.elements;
                         for (var i = 0; i < $scope.elements.length; i++) {
                             var d = new Date();
@@ -96,6 +96,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             $scope.elements[i].data = d;
                             $scope.elements[i].performance = [];
                             $scope.elements[i].performed = false;
+                            $rootScope.$emit('find-topics-by-item', {
+                                item: $scope.elements[i],
+                                target: $scope.elements[i]
+                            });
                         }
                         $scope.reloadPerformances();
                     },
@@ -104,7 +108,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     }
             );
         };
-        
+
         $scope.loadTimeline();
     }]);
 

@@ -13,10 +13,10 @@ $id = $_POST['timelineid'];
                 font-family: sans-serif;
             }
         </style>
+        <meta charset="utf-8">
         <script src="../../../common/scripts/jquery.js"></script>
-        <script src="includes/timeline/alert/dist/sweetalert.min.js"></script>
-        <link href="includes/timeline/alert/dist/sweetalert.css" rel="stylesheet" type="text/css"/>
-        <script src="includes/timeline/dist/timeline2.js"></script>
+        <script src="../../../common/swal/sweetalert.min.js"></script>
+        <link href="../../../common/swal/sweetalert.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="../../../common/styles/bootstrap.min.css">
         <link rel="stylesheet" href="../../../common/styles/style.css">
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
@@ -31,7 +31,7 @@ $id = $_POST['timelineid'];
 
         <script src="../../../common/scripts/links.js"></script>
         <script src="scripts/script2.js"></script>
-        <link rel="stylesheet"  href="styles/style.css"/>
+        <link rel="stylesheet"  href="../../../common/styles/style.css"/>
     </head>
     <body>
         <div ng-app="lss-db" ng-controller="linkController as linkCtrl">
@@ -52,8 +52,8 @@ $id = $_POST['timelineid'];
                                         <li>
                                             <a ng-click="saveData()">Salva</a>
                                         </li>
-                                        <li><a ng-click="saveDataExit()">Salva ed esci</a></li>
-                                        <li><a ng-click="exit()">Esci</a></li>
+                                        <li><a ng-click="saveDataExit()">Salva e torna al menu</a></li>
+                                        <li><a ng-click="exit()">Torna al menu</a></li>
                                     </ul>
                                 </li>
                                 <ul class="nav navbar-nav navbar-right">
@@ -131,14 +131,14 @@ $id = $_POST['timelineid'];
                         </div>
                     </div>
 
-                    <div class="top-sep">
-                        <button class="btn btn-lg btn-success add-item"
+                    <div class="row top-sep">
+                        <button class="btn btn-lg btn-success add-item col-sm-2 col-sm-offset-5"
                                 ng-disabled="mesi.selected == undefined"
                                 ng-click="onAddToTimeline()">
                             Aggiungi
                         </button>
                     </div>
-                    <div class="row" ng-repeat="mese in mesi">
+                    <div class="row top-sep" ng-repeat="mese in mesi">
                         <!--Argomenti non svolti-->
                         <div class="col col-sm-6">
                             <div class="col-sm-12 panel panel-default">
@@ -151,7 +151,6 @@ $id = $_POST['timelineid'];
                                         <div class="btn-group pull-right">
 
                                             <a class="btn btn-info btn-sm tooltip-base" ng-click="onSetDate(i)">
-                                                <span class="tooltip" ng-if="element.settingDate">Conferma data</span>
                                                 <span class="tooltip" ng-if="!element.settingDate">Imposta data</span>
                                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                                 {{element.data| date:'dd/MM/yyyy'}}

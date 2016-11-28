@@ -71,7 +71,29 @@ if ($request != null && isset($request->command)) {
         } else {
             exit_with_error("Invalid input");
         }
-    } else if ($request->command === "delete_timeline") {
+    } else if ($request->command === "store_timeline") {
+        $timeline = $request->timeline;
+        $delete_query = "UPDATE timeline SET archiviata=1 WHERE id=$timeline";
+        $conn = db_simple_connect();
+        $outcome = db_update($conn, $delete_query);
+        db_simple_close($conn);
+        if ($outcome->wasSuccessful()) {
+            exit_with_data("");
+        } else {
+            exit_with_error($outcome->getMessage());
+        }
+    } else if ($request->command === "unstore_timeline") {
+        $timeline = $request->timeline;
+        $delete_query = "UPDATE timeline SET archiviata=0 WHERE id=$timeline";
+        $conn = db_simple_connect();
+        $outcome = db_update($conn, $delete_query);
+        db_simple_close($conn);
+        if ($outcome->wasSuccessful()) {
+            exit_with_data("");
+        } else {
+            exit_with_error($outcome->getMessage());
+        }
+    }else if ($request->command === "delete_timeline") {
         $timeline = $request->timeline;
         $delete_query = "DELETE FROM timeline WHERE id=$timeline";
         $conn = db_simple_connect();
@@ -90,6 +112,44 @@ if ($request != null && isset($request->command)) {
             $query = "SELECT timeline.id as 'id', classi.anno as 'classe', classi.sezione as 'sezione', materie.nome as 'materia', timeline.anno as 'anno' "
                     . "FROM classi, materie, timeline "
                     . "WHERE classi.id = timeline.idclasse AND materie.id = timeline.idmateria AND "
+                    . "timeline.iddocente = $user_id";
+            $select_result = db_select($conn, $query);
+            if ($select_result->getOutcome() == QueryResult::SUCCESS) {
+                db_simple_close($conn);
+                exit_with_data($select_result->getContent());
+            } else {
+                exit_with_error($select_result->message);
+            }
+        }
+    }else if ($request->command === "list_not_stored_timelines") {
+        $user_id = $user_data->getId();
+        $conn = db_simple_connect();
+        if ($conn) {
+            //id, classe, sezione, materia, anno
+            $query = "SELECT timeline.id as 'id', classi.anno as 'classe', classi.sezione as 'sezione', materie.nome as 'materia', timeline.anno as 'anno' "
+                    . "FROM classi, materie, timeline "
+                    . "WHERE classi.id = timeline.idclasse AND "
+                    . "materie.id = timeline.idmateria AND "
+                    . "archiviata = 0 AND "
+                    . "timeline.iddocente = $user_id";
+            $select_result = db_select($conn, $query);
+            if ($select_result->getOutcome() == QueryResult::SUCCESS) {
+                db_simple_close($conn);
+                exit_with_data($select_result->getContent());
+            } else {
+                exit_with_error($select_result->message);
+            }
+        }
+    }else if ($request->command === "list_stored_timelines") {
+        $user_id = $user_data->getId();
+        $conn = db_simple_connect();
+        if ($conn) {
+            //id, classe, sezione, materia, anno
+            $query = "SELECT timeline.id as 'id', classi.anno as 'classe', classi.sezione as 'sezione', materie.nome as 'materia', timeline.anno as 'anno' "
+                    . "FROM classi, materie, timeline "
+                    . "WHERE classi.id = timeline.idclasse AND "
+                    . "materie.id = timeline.idmateria AND "
+                    . "archiviata = 1 AND "
                     . "timeline.iddocente = $user_id";
             $select_result = db_select($conn, $query);
             if ($select_result->getOutcome() == QueryResult::SUCCESS) {

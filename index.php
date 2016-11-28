@@ -18,7 +18,7 @@
         <?php
         if (isset($user_data)) {
             if ($user_data->isAdmin()) {
-                $redirect = "./admins/index.php";
+                $redirect = "./professors/index.php";
             } elseif ($user_data->isProfessor()) {
                 $redirect = "./professors/index.php";
             } elseif ($user_data->isStudent()) {

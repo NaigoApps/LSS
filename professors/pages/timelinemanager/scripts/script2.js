@@ -64,22 +64,14 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             searchString: ""
         };
         $scope.itemsToAdd = [];
-        $scope.materie = [
-            {nome: "Fisica", color: "orange"},
-            {nome: "Chimica", color: "cyan"},
-            {nome: "Scienze della terra", color: "red"},
-            {nome: "Biologia", color: "green-lemon"}
-        ];
         $scope.materie = {
             content: [],
-            colors: ["orange", "cyan", "red", "green-lemon", "black"],
+            colors: ["orange", "cyan", "red", "green", "black"],
             name: "materie",
             selected: undefined
         };
-
         $scope.elements = [];
         $scope.timeline = {};
-
         $scope.monthToAdd = undefined;
         $scope.mesi = [
             {nome: 'Settembre', numero: 9},
@@ -105,7 +97,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             }
                     ).then(
                             function (rx) {
-                                swal("Programmazione", "salvata correttamente", "success")
+                                swal("Programmazione", "salvata correttamente", "success");
                             },
                             function (rx) {
                                 $scope.errorMessage(rx.data.msg);
@@ -225,46 +217,46 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.argomenti.selected = undefined;
             $scope.voci.selected = undefined;
         };
-
         $scope.onSetDate = function (index) {
             if ($scope.elements[index].settingDate) {
+                $("#picker" + index).datepicker("destroy");
                 $scope.elements[index].settingDate = false;
-                var d = $("#picker" + index).datepicker("getDate");
-                swal({
-                    title: "Aggiornamento data",
-                    text: 'La data sara\' settata al ' + d.getDate() + "/" + (d.getMonth() + 1) + '/' + d.getFullYear(),
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Ok",
-                    cancelButtonText: "Annulla"
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        $scope.elements[index].data = d;
-                        var performance = $scope.findObjectById($scope.elements[index].performance, $scope.timeline.idmateria);
-                        if (performance !== undefined) {
-                            performance.data = d;
-                        }
-                        $("#picker" + index).datepicker("destroy");
-                        $scope.sortTimeline();
-                        $scope.$apply();
-                    } else {
-                        $("#picker" + index).datepicker("destroy");
-                    }
-                });
             } else {
                 $scope.elements[index].settingDate = true;
                 $("#picker" + index).datepicker();
                 $("#picker" + index).datepicker("setDate", $scope.elements[index].data);
                 $("#picker" + index).datepicker("option", "minDate", new Date($scope.timeline.anno, 9 - 1, 1));
                 $("#picker" + index).datepicker("option", "maxDate", new Date(parseInt($scope.timeline.anno) + 1, 6 - 1, 30));
-                //$("#picker" + index).datepicker("setDate",$scope.elements[index].data);
                 $("#picker" + index).css("top", $("#picker" + index).parent().css("height"));
+                $("#picker" + index).datepicker("option","onSelect",
+                         function (date, picker) {
+                                var d = $("#picker" + index).datepicker("getDate");
+                                swal({
+                                    title: "Aggiornamento data",
+                                    text: 'La data sara\' settata al ' + d.getDate() + "/" + (d.getMonth() + 1) + '/' + d.getFullYear(),
+                                    type: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "Ok",
+                                    cancelButtonText: "Annulla"
+                                },
+                                function (isConfirm) {
+                                    if (isConfirm) {
+                                        $scope.elements[index].settingDate = false;
+                                        $scope.elements[index].data = d;
+                                        var performance = $scope.findObjectById($scope.elements[index].performance, $scope.timeline.idmateria);
+                                        if (performance !== undefined) {
+                                            performance.data = d;
+                                        }
+                                        $("#picker" + index).datepicker("destroy");
+                                        $scope.sortTimeline();
+                                        $scope.$apply();
+                                    }
+                                });
+                            }
+                        );
             }
-
         };
-
         $scope.setUndone = function (index) {
             swal({
                 title: "Svolgimento",
@@ -281,7 +273,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 $scope.$apply();
             });
         };
-
         $scope.setDone = function (index) {
             swal({
                 title: "Svolgimento",
@@ -297,9 +288,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 $scope.elements[index].performed = true;
                 $scope.$apply();
             });
-
         };
-
         $scope.onAddToTimeline = function () {
             $scope.itemsToAdd = [];
             if ($scope.argomenti.selected) {
@@ -345,7 +334,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 swal("Errore", "Selezionare le voci da aggiungere", "warning");
             }
         };
-
         $scope.initElement = function (id, name, date) {
             var element = {
                 id: id,
@@ -356,8 +344,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             };
             return element;
         };
-
-
         $scope.onRemoveFromTimeline = function (index) {
             prettyConfirm('Rimozione elemento', 'Vuoi davvero rimuovere l\'elemento?', function (ok) {
                 if (ok) {
@@ -381,7 +367,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return undefined;
         };
-
         $scope.errorMessage = function (message) {
             $scope.lastErrorMessage = message;
             $(".error-message").show();
@@ -439,8 +424,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.lastSuccessMessage = message;
             $(".success-message").show();
         };
-
-
         $scope.merge = function (left, right) {
             var result = [];
             while (left.length && right.length) {
@@ -458,7 +441,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return result;
         };
-
         $scope.mergeSort = function (arr) {
             if (arr.length < 2) {
                 return arr;
@@ -468,11 +450,9 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             var right = arr.slice(middle, arr.length);
             return $scope.merge($scope.mergeSort(left), $scope.mergeSort(right));
         };
-
         $scope.sortTimeline = function () {
             $scope.elements = $scope.mergeSort($scope.elements);
         };
-        
         $scope.loadTimeline = function () {
             $http.post(
                     'includes/load_data.php',
@@ -499,12 +479,11 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             );
         }
 
-        //MAIN
+//MAIN
         $rootScope.$emit('load-table', {
             target: $scope.materie
         });
         $scope.loadTimeline();
-
     }]);
 $(document).ready(function () {
     $(".success-message").click(function () {

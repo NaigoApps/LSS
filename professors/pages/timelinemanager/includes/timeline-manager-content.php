@@ -12,7 +12,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="../..">Esci</a></li>
+                        <li><a href="../..">Home</a></li>
                     </ul>
                 </li>
             </ul>
@@ -24,38 +24,74 @@
     <div class="row">
 
         <div class="col-sm-6 col-sm-offset-3">
+            <div id="bar-timeline" class="progress top-sep" hidden>
+                <div class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
+                </div>
+            </div>
             <ul>
                 <li ng-repeat="timeline in timelines.content">
                     <div class="well well-sm clearfix">
-                        {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
+                        Programmazione di {{timeline.materia}}, <b>{{timeline.classe}}{{timeline.sezione}}</b> - {{timeline.anno}}/{{timeline.anno2}}
                         <div class="pull-right">
-                            <form class="dummy-form" action="../timelinemanager/print.php" method="POST">
-                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
-                                <button class="btn btn-xs btn-info tooltip-base">
-                                    <span class="tooltip-text">Stampa</span>
-                                    <span class="glyphicon glyphicon-print"></span>
-                                </button>
-                            </form>
                             <form class="dummy-form" action="../timelinemanager/editor2.php" method="POST">
                                 <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
                                 <button type="submit" class="btn btn-xs btn-success tooltip-base">
-                                    <span class="tooltip-text">Gestisci</span>
+                                    <span class="tooltip">Gestisci</span>
                                     <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                            </form>
+                            <form class="dummy-form" action="../timelinemanager/print.php" method="POST">
+                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
+                                <button class="btn btn-xs btn-info tooltip-base">
+                                    <span class="tooltip">Stampa</span>
+                                    <span class="glyphicon glyphicon-print"></span>
                                 </button>
                             </form>
                             <form class="dummy-form" action="../timelinecreator/index.php" method="POST">
                                 <input type="hidden" name="timelineid" value="{{timeline.id}}"/> 
                                 <input type="hidden" name="copy" value="true"/>    
-                                <button type="submit" class="btn btn-xs btn-warning tooltip-base">
-                                    <span class="tooltip-text">Duplica</span>
+                                <button type="submit" class="btn btn-xs btn-info tooltip-base">
+                                    <span class="tooltip">Duplica</span>
                                     <span class="glyphicon glyphicon-duplicate"></span>
                                 </button>
                             </form>
-                            <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline.id)">
-                                <span class="tooltip-text">Rimuovi</span>
+                            <a class="btn btn-xs btn-warning tooltip-base" ng-click="onStoreTimeline(timeline)">
+                                <span class="tooltip">Archivia</span>
+                                <span class="glyphicon glyphicon-cloud-download"></span>
+                            </a>
+                            <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline)">
+                                <span class="tooltip">Rimuovi</span>
                                 <span class="glyphicon glyphicon-remove"></span>
                             </a>
                         </div>
+                    </div>
+                </li>
+            </ul>
+            <a id="btn-stored" class="btn btn-info" ng-click="onShowStored()">Mostra archiviate</a>
+            <div id="bar-stored" class="progress top-sep" hidden>
+                <div class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
+                </div>
+            </div>
+            <ul class="list-group" ng-hide="storedTimelines.hidden">
+                <h3>Programmazioni archiviate</h3>
+                <li class="list-group-item" ng-repeat="timeline in storedTimelines.content">
+                    Programmazione di {{timeline.materia}}, <b>{{timeline.classe}}{{timeline.sezione}}</b> - {{timeline.anno}}/{{timeline.anno2}}                    <div class="pull-right">
+                        <form class="dummy-form" action="../timelinecreator/index.php" method="POST">
+                            <input type="hidden" name="timelineid" value="{{timeline.id}}"/> 
+                            <input type="hidden" name="copy" value="true"/>    
+                            <button type="submit" class="btn btn-xs btn-info tooltip-base">
+                                <span class="tooltip">Duplica</span>
+                                <span class="glyphicon glyphicon-duplicate"></span>
+                            </button>
+                        </form>
+                        <a class="btn btn-xs btn-success tooltip-base" ng-click="onUnStoreTimeline(timeline)">
+                            <span class="tooltip">Togli dall'archivio</span>
+                            <span class="glyphicon glyphicon-cloud-upload"></span>
+                        </a>
+                        <a class="btn btn-xs btn-danger tooltip-base" ng-click="onDeleteTimeline(timeline)">
+                            <span class="tooltip">Rimuovi</span>
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
                     </div>
                 </li>
             </ul>

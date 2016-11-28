@@ -96,20 +96,48 @@ form{
     bottom: 0px;
 }
 
-/* Tooltip container */
+.subjects{
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.subject{
+    display:inline-block;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    width:20px;
+    height:20px;
+    border-radius: 10px;
+}
+
+.subject.red{
+    background-color: red;
+}
+.subject.orange{
+    background-color: orange;
+}
+.subject.blue{
+    background-color: cyan;
+}
+.subject.green{
+    background-color: greenyellow;
+}
+.subject.gray{
+    background-color: gray;
+}
+
 .tooltip-base{
     position: relative;
 }
 
-/* Tooltip text */
-.tooltip-base .tooltip-text {
+.tooltip-base .tooltip{
     visibility: hidden;
     width: 120px;
     background-color: #555;
     color: #fff;
     text-align: center;
     padding: 5px 0;
-    border-radius: 2px;
+    border-radius: 6px;
 
     /* Position the tooltip text */
     position: absolute;
@@ -123,8 +151,7 @@ form{
     transition: opacity 1s;
 }
 
-/* Tooltip arrow */
-.tooltip-base .tooltip-text::after {
+.tooltip-base .tooltip::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -135,8 +162,7 @@ form{
     border-color: #555 transparent transparent transparent;
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip-base:hover .tooltip-text {
+.tooltip-base:hover .tooltip {
     visibility: visible;
     opacity: 1;
 }

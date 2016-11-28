@@ -27,14 +27,6 @@ function zoom(percentage) {
     });
 }
 
-function logEvent(event, properties) {
-    var log = document.getElementById('log');
-    var msg = document.createElement('div');
-    /*msg.innerHTML = 'event=' + JSON.stringify(event) + ', ' +
-     'properties=' + JSON.stringify(properties); */
-    log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
-}
-
 
 function prettyConfirm(title, text, callback) {
     swal({
@@ -97,54 +89,22 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     },
             searchString: ""
         };
-
-        $scope.materie = [
-            {nome: "Fisica", color: "orange"},
-            {nome: "Chimica", color: "cyan"},
-            {nome: "Scienze della terra", color: "red"},
-            {nome: "Biologia", color: "green-lemon"},
-        ];
+        $scope.materie = {
+            content: [],
+            colors: ["orange", "cyan", "red", "green-lemon", "black"],
+            name: "materie",
+            selected: undefined
+        };
+        $scope.elements = [];
         $scope.timeline = [];
-        $scope.timeline.serialize = function () {
-            var serialized = [];
-            for (var i = 0; i < this.length; i++) {
-                var element = {
-                    id: this[i].id,
-                    content: this[i].content
-                };
-                element.date = this[i].date;
-                element.start = new Date(this[i].date.year, this[i].date.month - 1, this[i].date.day);
-                element.performed = this[i].performed;
-                serialized.push(element);
-            }
-            return serialized;
+        $scope.selected = {
+            name: "voci",
+            current: undefined
         };
-        $scope.timeline.deserialize = function (data) {
-            for (var i = 0; i < data.length; i++) {
-                var element = $scope.initElement(data[i].id, data[i].content, data[i].date);
-                this.push(element);
-            }
-        };
-
-
-        $scope.monthToAdd = undefined;
-        $scope.mesi = [
-            {nome: 'Settembre', numero: 9},
-            {nome: 'Ottobre', numero: 10},
-            {nome: 'Novembre', numero: 11},
-            {nome: 'Dicembre', numero: 12},
-            {nome: 'Gennaio', numero: 1},
-            {nome: 'Febbraio', numero: 2},
-            {nome: 'Marzo', numero: 3},
-            {nome: 'Aprile', numero: 4},
-            {nome: 'Maggio', numero: 5},
-            {nome: 'Giugno', numero: 6}
-        ];
 
         $scope.exit = function () {
             window.location.replace("./index.php");
         };
-
         $scope.initElement = function (id, name, date) {
             var element = {
                 id: id,
@@ -164,7 +124,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return element;
         };
-
         $scope.findById = function (vector, id) {
             for (var i = 0; i < vector.length; i++) {
                 if (vector[i].id === id) {
@@ -173,7 +132,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return -1;
         };
-
         $scope.findObjectById = function (vector, id) {
             var index = $scope.findById(vector, id);
             if (index !== -1) {
@@ -181,15 +139,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return undefined;
         };
-        $scope.copyObject = function (source, destination) {
-            destination.id = source.id;
-            destination.nome = source.nome;
-            destination.descrizione = source.descrizione;
-            destination.links = source.links;
-            if (destination.links === undefined) {
-                destination.links = [];
-            }
-        };
+
         $scope.errorMessage = function (message) {
             $scope.lastErrorMessage = message;
             $(".error-message").show();
@@ -198,14 +148,34 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.lastSuccessMessage = message;
             $(".success-message").show();
         };
-        //MAIN
-        $rootScope.$emit('load-table',
-                {
-                    target: $scope.moduli
-                });
+        $scope.loadTimeline = function () {
+            $http.post(
+                    '../timelinemanager/includes/load_data.php',
+                    {
+                        command: 'load_timeline',
+                        id: timeline_id
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.timeline = rx.data.timeline;
+                        $scope.elements = rx.data.elements;
+                        for (var i = 0; i < $scope.elements.length; i++) {
+                            var d = new Date();
+                            d.setTime($scope.elements[i].data * 1000);
+                            $scope.elements[i].data = d;
+                            $scope.elements[i].performance = [];
+                            $scope.elements[i].performed = false;
+                        }
+                        $scope.reloadPerformances();
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data.msg);
+                    }
+            );
+        };
         $scope.reloadPerformances = function () {
             $http.post(
-                    'includes/load_data.php',
+                    '../timelinemanager/includes/load_data.php',
                     {
                         command: 'load_performances',
                         classe: $scope.timeline.idclasse,
@@ -218,6 +188,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             $scope.assignPerformance(performances[i]);
                         }
                         $scope.buildView();
+                        $(".progress").hide();
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data.msg);
@@ -239,30 +210,83 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 }
             }
         };
-
+        $scope.buildContent = function (element) {
+            var content = "";
+            content += element.nome + " - ";
+            for (var i = 0; i < $scope.materie.content.length; i++) {
+                var materia = $scope.materie.content[i];
+                if ($scope.findById(element.performance, materia.id) !== -1) {
+                    content += '<span><div class="subject tooltip-base" style="background-color : ' + $scope.materie.colors[i] + ';">';
+                    content += '<span class="tooltip">' + materia.nome + ' : ' + $scope.simpleDateFormat($scope.findObjectById(element.performance, materia.id).data) + '</span>';
+                    content += '</div>';
+                    content += '</span>';
+                }
+            }
+            return content;
+        };
         $scope.buildView = function () {
             var data = [];
             for (var i = 0; i < $scope.elements.length; i++) {
                 data.push(
                         {
                             id: $scope.elements[i].id,
-                            content: $scope.elements[i].nome,
-                            start: $scope.elements[i].date
+                            content: $scope.buildContent($scope.elements[i]),
+                            start: $scope.elements[i].data
                         }
                 );
             }
 
             var container = document.getElementById('visualization');
-
             var options = {
                 editable: false,
-                min: new Date($scope.timeline.anno, 8, 1),
+                min: new Date($scope.timeline.anno, 7, 1),
                 max: new Date(parseInt($scope.timeline.anno) + 1, 6, 1),
                 zoomMin: 1000 * 60 * 60 * 24 * 12
             };
             timeline = new vis.Timeline(container, data, options);
+            timeline.on('select', function (properties) {
+                $scope.selected.current = $scope.findObjectById($scope.elements, properties.items[0]);
+                $scope.loadAttachments($scope.selected);
+            });
         };
-
+        $scope.loadAttachments = function (table) {
+            
+            var data1 = {
+                item: table.current,
+                target: table.current
+            };
+            $rootScope.$emit('find-topics-by-item', data1);
+            $http.post(
+                    '../../../common/attachments-loader.php',
+                    {
+                        command: 'geturl',
+                        table: table.name,
+                        obj: table.current
+                    }
+            ).then(
+                    function (rx) {
+                        table.current.links = rx.data;
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
+//            $http.post(
+//                    '../../../common/attachments-loader.php',
+//                    {
+//                        command: 'getdocs',
+//                        table: table.name,
+//                        obj: table.current
+//                    }
+//            ).then(
+//                    function (rx) {
+//                        table.current.docs = rx.data;
+//                    },
+//                    function (rx) {
+//                        $scope.errorMessage(rx.data);
+//                    }
+//            );
+        };
         $scope.errorMessage = function (message) {
             $scope.lastErrorMessage = message;
             $(".error-message").show();
@@ -271,37 +295,32 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.lastSuccessMessage = message;
             $(".success-message").show();
         };
-
-
-
+        $scope.simpleDateFormat = function (date) {
+            return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+        };
 // attach events to the navigation buttons
-        document.getElementById('zoomIn').onclick = function () {
-            zoom(-0.2);
-        };
-        document.getElementById('zoomOut').onclick = function () {
-            zoom(0.2);
-        };
-        document.getElementById('moveLeft').onclick = function () {
-            move(0.2);
-        };
-        document.getElementById('moveRight').onclick = function () {
-            move(-0.2);
-        };
+//        document.getElementById('zoomIn').onclick = function () {
+//            zoom(-0.2);
+//        };
+//        document.getElementById('zoomOut').onclick = function () {
+//            zoom(0.2);
+//        };
+//        document.getElementById('moveLeft').onclick = function () {
+//            move(0.2);
+//        };
+//        document.getElementById('moveRight').onclick = function () {
+//            move(-0.2);
+//        };
 
         //alert(obj1.month + "-" + obj1.day + "-" + obj1.year);
         //alert(obj2.month + "-" + obj2.day + "-" + obj2.year);
         //timeline.setWindow(obj1.month + "-" + obj1.day + "-" + obj1.year, obj2.month + "-" + obj2.day + "-" + obj2.year);
-
-        items.on('*', function (event, properties) {
-            logEvent(event, properties);
-        });
 
         //MAIN
         $rootScope.$emit('load-table', {
             target: $scope.materie
         });
         $scope.loadTimeline();
-
     }]);
 $(document).ready(function () {
     $(".success-message").click(function () {

@@ -45,6 +45,14 @@ if ($request != null && isset($request->command)) {
         $module = mysqli_real_escape_string($connection, $request->module->id);
         $query = "SELECT * FROM argomenti a WHERE EXISTS (SELECT * FROM moduliargomenti ma WHERE ma.id1 = $module AND ma.id2 = a.id) AND NOT EXISTS (SELECT * FROM argomentivoci WHERE id1 = a.id AND id2 = $item)";
         std_select($connection, $query);
+    }else if ($request->command == "find-topics-by-item") {
+        $item = mysqli_real_escape_string($connection, $request->obj->id);
+        $query = "SELECT * FROM argomenti a WHERE EXISTS (SELECT * FROM argomentivoci av WHERE av.id2 = $item) LIMIT 1";
+        std_select($connection, $query);
+    }else if ($request->command == "find-modules-by-topic") {
+        $topic = mysqli_real_escape_string($connection, $request->obj->id);
+        $query = "SELECT * FROM moduli m WHERE EXISTS (SELECT * FROM moduliargomenti ma WHERE ma.id2 = $topic) LIMIT 1";
+        std_select($connection, $query);
     }else if ($request->command == "search_object") {
         $table = mysqli_real_escape_string($connection, $request->table);
         $name = mysqli_real_escape_string($connection, $request->hint);

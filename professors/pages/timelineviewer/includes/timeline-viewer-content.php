@@ -12,7 +12,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="../..">Esci</a></li>
+                        <li><a href="../..">Home</a></li>
                     </ul>
                 </li>
             </ul>
@@ -29,10 +29,10 @@
                     <div class="well well-sm clearfix">
                         {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
                         <div class="pull-right">
-                            <form class="dummy-form" action="../timelineviewer/viewer.php" method="POST">
+                            <form class="dummy-form" action="viewer.php" method="POST">
                                 <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
                                 <button type="submit" class="btn btn-xs btn-success tooltip-base">
-                                    <span class="tooltip-text">Visualizza</span>
+                                    <span class="tooltip">Visualizza</span>
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </button>
                             </form>

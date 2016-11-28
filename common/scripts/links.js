@@ -207,7 +207,7 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                     }
             );
         });
-        
+
 
         /**
          * Deletes an element from specified table
@@ -261,6 +261,37 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                         ).then(
                                 function (rx2) {
                                     data.connectedTable.content = rx2.data;
+                                },
+                                function (rx2) {
+                                    $scope.errorMessage("Errore durante il caricamento dei collegamenti");
+                                }
+                        );
+                    },
+                    function (rx1) {
+                        $scope.errorMessage("Errore durante il caricamento dei collegamenti");
+                    }
+            );
+        });
+
+        $rootScope.$on('find-topics-by-item', function (event, data) {
+            $http.post(
+                    '../../../common/db-manager.php',
+                    {
+                        command: 'find-topics-by-item',
+                        obj: data.item
+                    }
+            ).then(
+                    function (rx1) {
+                        data.target.topic = rx1.data[0];
+                        $http.post(
+                                '../../../common/db-manager.php',
+                                {
+                                    command: 'find-modules-by-topic',
+                                    obj: rx1.data[0]
+                                }
+                        ).then(
+                                function (rx2) {
+                                    data.target.module = rx2.data[0];
                                 },
                                 function (rx2) {
                                     $scope.errorMessage("Errore durante il caricamento dei collegamenti");
@@ -429,10 +460,10 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                 },
                 success: function (rx) {
                     $scope.successMessage("Trasferimento completato");
-                    $rootScope.$emit('load-urls',{
+                    $rootScope.$emit('load-urls', {
                         target: data.target
                     });
-                    $rootScope.$emit('load-docs',{
+                    $rootScope.$emit('load-docs', {
                         target: data.target
                     });
                 },
@@ -447,7 +478,7 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
         });
 
 
-        $rootScope.$on('remove-document',function(event,data){
+        $rootScope.$on('remove-document', function (event, data) {
             $http.post(
                     './includes/attachments.php',
                     {

@@ -5,13 +5,8 @@ $id = $_POST['timelineid'];
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>Timeline | Basic demo</title>
+        <title>Visualizzazione</title>
 
-        <style type="text/css">
-            body, html {
-                font-family: sans-serif;
-            }
-        </style>
         <script src="../../../common/scripts/jquery.js"></script>
         <script src="../../../common/swal/sweetalert.min.js"></script>
         <link href="../../../common/swal/sweetalert.css" rel="stylesheet" type="text/css"/>
@@ -21,45 +16,96 @@ $id = $_POST['timelineid'];
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
         <script src="../../../common/scripts/links.js"></script>
-        <script src="scripts/script.js"></script>
+        <script src="./scripts/script.js"></script>
 
         <script type="text/javascript">
                     var timeline_id = <?php echo $id; ?>;</script>
         <link href="../../../common/timeline/timeline.css" rel="stylesheet" type="text/css" />
+        <link href="../../../common/styles/style.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        <span class="glyphicon glyphicon-list"></span>
+                    </a>
+                </div>
 
-        <h1 class="text-center">Visualizzazione programmazione</h1>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="index.php">Indietro</a></li>
+                            </ul>
+                        </li>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a>Visualizzazione programmazione</a>
+                            </li>
+                        </ul>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
 
         <div ng-app="lss-db" ng-controller="linkController as linkCtrl">
-            <div class="container" ng-app="lss-db" ng-controller="timelineController as tCtrl">
-
-                <div class="row top-sep more">
-                    <button class="btn btn-sm btn-default col-sm-1" id="moveLeft" value="Muovi indietro">
-                        <span class="glyphicon glyphicon-arrow-left"></span>
-                    </button>
-                    <div id="visualization" class="col-sm-10 top-sep"></div>
-                    <button class="btn btn-sm btn-default col-sm-1" id="moveRight" value="Muovi avanti">
-                        <span class="glyphicon glyphicon-arrow-right"></span>
-                    </button>
-                </div>
-                <div id="loading">loading...</div>
-                <p></p>
-                <div id="log"></div>
-
-                <div class="row top-sep">
-                    <!--TODO: INSERIRE CALENDAR-->
-                    <div class="col-sm-1 col-sm-offset-3">
-                        <button class="btn btn-sm btn-default" id="zoomOut" value="Zoom -">
-                            <span class="glyphicon glyphicon-zoom-out"></span>
-                        </button>
-                    </div>
-                    <div class="col-sm-1">
-                        <button class="btn btn-sm btn-default" id="zoomIn" value="Zoom +">
-                            <span class="glyphicon glyphicon-zoom-in"></span>
-                        </button>
+            <div class="container under-nav" ng-app="lss-db" ng-controller="timelineController as tCtrl">
+                <div class="progress">
+                    <div id="bar-timeline" class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
                     </div>
                 </div>
+                <div id="visualization" class="row top-sep clearfix"></div>
+                <div class="row top-sep well" ng-if="selected.current">
+
+                    <h4>{{selected.current.nome}}<small> da {{selected.current.topic.nome}} in {{selected.current.module.nome}}</small></h4>
+                    <p>{{selected.current.descrizione}}</p>
+
+                </div>
+                <div class="row top-sep well" ng-if="selected.current.links && selected.current.links.length > 0">
+                    <h3>Collegamenti</h3>
+                    <div ng-repeat="link in selected.current.links">
+                        <a class="text-success" href="{{link.link}}" target="blank">
+                            <span class="glyphicon glyphicon-link"></span>
+                            {{link.nome}}
+                        </a>
+                    </div>
+                </div>
+                <!--                <div class="row top-sep well" ng-if="selected.current.docs && selected.current.docs.length > 0">
+                                    <h3>Documenti</h3>
+                                    <div ng-repeat="doc in selected.current.docs">
+                                        <a class="text-success" target="blank">
+                                            <span class="glyphicon glyphicon-download"></span>
+                                            {{doc}}
+                                        </a>
+                                    </div>
+                                </div>-->
+                <!--                <div class="row top-sep more">
+                                    <button class="btn btn-sm btn-default col-sm-1" id="moveLeft" value="Muovi indietro">
+                                        <span class="glyphicon glyphicon-arrow-left"></span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default col-sm-1" id="moveRight" value="Muovi avanti">
+                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                </div>
+                                <div id="loading">loading...</div>
+                                <p></p>
+                                <div id="log"></div>-->
+
+                <!--                <div class="row top-sep">
+                                    TODO: INSERIRE CALENDAR
+                                    <div class="col-sm-1 col-sm-offset-3">
+                                        <button class="btn btn-sm btn-default" id="zoomOut" value="Zoom -">
+                                            <span class="glyphicon glyphicon-zoom-out"></span>
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <button class="btn btn-sm btn-default" id="zoomIn" value="Zoom +">
+                                            <span class="glyphicon glyphicon-zoom-in"></span>
+                                        </button>
+                                    </div>
+                                </div>-->
 
                 <div class="row error message always-bottom">
                     <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>
