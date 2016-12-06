@@ -148,12 +148,12 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.lastSuccessMessage = message;
             $(".success-message").show();
         };
-        $scope.loadTimeline = function () {
+        $scope.loadTimeline = function (id) {
             $http.post(
                     '../timelinemanager/includes/load_data.php',
                     {
                         command: 'load_timeline',
-                        id: timeline_id
+                        id: id
                     }
             ).then(
                     function (rx) {
@@ -167,6 +167,25 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             $scope.elements[i].performed = false;
                         }
                         $scope.reloadPerformances();
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data.msg);
+                    }
+            );
+        };
+        $scope.loadTimelines = function () {
+            $http.post(
+                    '../timelinemanager/includes/load_data.php',
+                    {
+                        command: 'load_timeline_sameclass',
+                        id: timeline_id
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.timelines = rx.data;
+                        for (var i = 0; i < $scope.timelines.length; i++) {
+                            $scope.loadTimeline($scope.timelines(i));
+                        }
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data.msg);
@@ -231,26 +250,41 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         {
                             id: $scope.elements[i].id,
                             content: $scope.buildContent($scope.elements[i]),
-                            start: $scope.elements[i].data
+                            start: $scope.elements[i].data,
+                            group: $scope.timeline.nomemateria
                         }
                 );
             }
-
+            var groups = new vis.DataSet([
+                    {"content": "Fisica", "id": "Fisica", "value": 1},
+                    {"content": "Chimica", "id": "Chimica", "value": 2},
+                    {"content": "Biologia", "id": "Biologia", "value": 3}
+              ]);
             var container = document.getElementById('visualization');
             var options = {
-                editable: false,
-                min: new Date($scope.timeline.anno, 7, 1),
-                max: new Date(parseInt($scope.timeline.anno) + 1, 6, 1),
-                zoomMin: 1000 * 60 * 60 * 24 * 12
-            };
-            timeline = new vis.Timeline(container, data, options);
-            timeline.on('select', function (properties) {
-                $scope.selected.current = $scope.findObjectById($scope.elements, properties.items[0]);
-                $scope.loadAttachments($scope.selected);
-            });
+            editable: false,
+            min: new Date($scope.timeline.anno, 7, 1),
+            max: new Date(parseInt($scope.timeline.anno) + 1, 6, 1),
+            zoomMin: 1000 * 60 * 60 * 24 * 12,
+            groupOrder: function (a, b) {
+                return a.value - b.value;
+            },
+            groupOrderSwap: function (a, b, groups) {
+            var v = a.value;
+            a.value = b.value;
+            b.value = v;
+            },
+            groupEditable: true
+        };
+        timeline = new vis.Timeline(container, data, options);
+        timeline.setGroups(groups);
+        timeline.on('select', function (properties) {
+            $scope.selected.current = $scope.findObjectById($scope.elements, properties.items[0]);
+            $scope.loadAttachments($scope.selected);
+        });
         };
         $scope.loadAttachments = function (table) {
-            
+
             var data1 = {
                 item: table.current,
                 target: table.current

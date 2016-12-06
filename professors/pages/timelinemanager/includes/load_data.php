@@ -43,6 +43,7 @@ if ($request != null && isset($request->command)) {
             exit_with_error($outcome_1->getMessage());
         }
     } else if ($request->command === "load_performances") {
+        
         $timeline_year = $request->anno;
         $timeline_class = $request->classe;
         $conn = db_simple_connect();
@@ -57,6 +58,30 @@ if ($request != null && isset($request->command)) {
             exit_with_data($outcome_2->getContent());
         } else {
             exit_with_error($outcome_2->getMessage());
+        }
+    } else if($request->command === "load_timeline_sameclass"){
+        $timeline_id = $request->id;
+        //Caricare tutti i dati, anche delle tabelle derivate es: annoclasse, sezione
+        $query = "WITH timelineBase as (SELECT * from timeline WHERE id=$timeline_id) SELECT ti.id as id, "
+                . "ti.idmateria as idmateria, "
+                . "ti.idclasse as idclasse, "
+                . "ti.anno as anno, "
+                . "ti.iddocente as iddocente, "
+                . "cl.anno as annoclasse, "
+                . "cl.sezione as sezione, "
+                . "ma.nome as nomemateria "
+                . "FROM timeline ti, classi cl, materie ma, timeline t2"
+                . "WHERE "
+                . "ti.idclasse = timelineclasse.idclasse AND "
+                . "ti.anno = timelinebase.anno";
+        $conn = db_simple_connect();
+        $outcome_1 = db_select($conn, $query);
+        db_simple_close($conn);
+        if ($outcome_1->getOutcome() == QueryResult::SUCCESS) {  
+            $ret = $outcome_1->getContent();
+            exit_with_data($ret);
+        } else {
+            exit_with_error($outcome_1->getMessage());
         }
     }
 }
