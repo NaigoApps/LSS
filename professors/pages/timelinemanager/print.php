@@ -57,19 +57,19 @@ $id = $_POST['timelineid'];
                             <tr><th class="h4" colspan="4">{{month.nome}}</th></tr>
                             <tr><th>Modulo</th><th>Argomento</th><th>Voce</th><th>Data di svolgimento</th></tr>
                             <tr ng-repeat="element in elements track by $index" ng-if="element.data.getMonth() + 1 === month.numero">
-                                <td>
+                                <td class="col-xs-3">
                                     {{element.module.nome}}
                                 </td>
-                                <td>
+                                <td class="col-xs-3">
                                     {{element.topic.nome}}
                                 </td>
-                                <td>
+                                <td class="col-xs-3">
                                     {{element.nome}}
                                 </td>
-                                <td class="text-success" ng-if="element.performed">
+                                <td class="text-success col-xs-3" ng-if="element.performed">
                                     {{element.data| date:'dd/MM/yyyy'}}
                                 </td>
-                                <td class="text-danger" ng-if="!element.performed">
+                                <td class="text-danger col-xs-3" ng-if="!element.performed">
                                     {{element.data| date:'dd/MM/yyyy'}} (previsto)
                                 </td>
                             </tr>

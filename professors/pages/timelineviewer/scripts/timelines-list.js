@@ -22,7 +22,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             $http.post(
                     '../includes/timeline-manager.php',
                     {
-                        command: 'list_timelines'
+                        command: 'list_not_stored_timelines'
                     }
             ).then(
                     function (rx) {

@@ -23,39 +23,51 @@ $id = $_POST['timelineid'];
         <link href="../../../common/timeline/timeline.css" rel="stylesheet" type="text/css" />
         <link href="../../../common/styles/style.css" rel="stylesheet" type="text/css" />
     </head>
-    <body>
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">
-                        <span class="glyphicon glyphicon-list"></span>
-                    </a>
-                </div>
+    <body ng-app="lss-db" ng-controller="linkController as linkCtrl">
+        <div ng-app="lss-db" ng-controller="timelineController as tCtrl">
+            <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">
+                            <span class="glyphicon glyphicon-list"></span>
+                        </a>
+                    </div>
 
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="index.php">Indietro</a></li>
-                            </ul>
-                        </li>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li>
-                                <a>Visualizzazione programmazione</a>
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a ng-if="!singleMode" ng-click="onSingleMode()">Singola programmazione</a></li>
+                                    <li><a ng-if="singleMode" ng-click="onMultiMode()">Tutte le programmazioni</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a ng-if="!doneElements" ng-click="onDoneItems()">Argomenti svolti</a></li>
+                                    <li><a ng-if="doneElements" ng-click="onUndoneItems()">Tutti gli argomenti</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="index.php">Indietro</a></li>
+                                </ul>
                             </li>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li>
+                                    <a>Visualizzazione programmazione</a>
+                                </li>
+                            </ul>
                         </ul>
-                    </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
+            </nav>
 
-        <div ng-app="lss-db" ng-controller="linkController as linkCtrl">
-            <div class="container under-nav" ng-app="lss-db" ng-controller="timelineController as tCtrl">
+            <div class="container under-nav">
                 <div class="progress">
                     <div id="bar-timeline" class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
                     </div>
                 </div>
+                <h1>A.S. {{timelines[0].metadata.anno}}/{{timelines[0].metadata.anno2}} - Classe {{timelines[0].metadata.annoclasse}}{{timelines[0].metadata.sezione}}:
+                    <span class="small" ng-repeat="timeline in timelines | filter: {visible : true}">
+                        <span>{{timeline.metadata.nomemateria}}</span>
+                        <span ng-if="!$last">, </span>
+                    </span>
+                </h1>
                 <div id="visualization" class="row top-sep clearfix"></div>
                 <div class="row top-sep well" ng-if="selected.current">
 
@@ -123,7 +135,6 @@ $id = $_POST['timelineid'];
                 </div>
             </div>
         </div>
-
 
 
     </body>

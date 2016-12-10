@@ -62,7 +62,7 @@ if ($request != null && isset($request->command)) {
     } else if($request->command === "load_timeline_sameclass"){
         $timeline_id = $request->id;
         //Caricare tutti i dati, anche delle tabelle derivate es: annoclasse, sezione
-        $query = "WITH timelineBase as (SELECT * from timeline WHERE id=$timeline_id) SELECT ti.id as id, "
+        $query = "SELECT ti.id as id, "
                 . "ti.idmateria as idmateria, "
                 . "ti.idclasse as idclasse, "
                 . "ti.anno as anno, "
@@ -70,10 +70,12 @@ if ($request != null && isset($request->command)) {
                 . "cl.anno as annoclasse, "
                 . "cl.sezione as sezione, "
                 . "ma.nome as nomemateria "
-                . "FROM timeline ti, classi cl, materie ma, timeline t2"
+                . "FROM timeline ti, classi cl, materie ma "
                 . "WHERE "
-                . "ti.idclasse = timelineclasse.idclasse AND "
-                . "ti.anno = timelinebase.anno";
+                . "ti.idclasse = cl.id AND "
+                . "ti.idmateria = ma.id AND "
+                . "ti.idclasse in (SELECT t2.idclasse from timeline t2 WHERE t2.id=$timeline_id) AND "
+                . "ti.anno in (SELECT t2.anno from timeline t2 WHERE t2.id=$timeline_id)";
         $conn = db_simple_connect();
         $outcome_1 = db_select($conn, $query);
         db_simple_close($conn);

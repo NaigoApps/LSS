@@ -58,7 +58,7 @@ $id = $_POST['timelineid'];
                                 </li>
                                 <ul class="nav navbar-nav navbar-right">
                                     <li>
-                                        <a>Programmazione {{timeline.annoclasse + timeline.sezione + " " + timeline.anno}} ({{timeline.nomemateria}})</a>
+                                        <a>Programmazione {{timeline.annoclasse + timeline.sezione + " " + timeline.anno}}/{{timeline.anno2}} ({{timeline.nomemateria}})</a>
                                     </li>
                                 </ul>
                             </ul>

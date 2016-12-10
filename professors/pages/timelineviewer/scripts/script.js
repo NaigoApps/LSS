@@ -91,15 +91,41 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
         $scope.materie = {
             content: [],
-            colors: ["orange", "cyan", "red", "green-lemon", "black"],
+            colors: ["orange", "cyan", "red", "green", "black"],
             name: "materie",
             selected: undefined
         };
-        $scope.elements = [];
-        $scope.timeline = [];
+
+        $scope.singleMode = true;
+
+        $scope.doneElements = true;
+        
+        $scope.loaded = 0;
+        $scope.timelines = [];
+
         $scope.selected = {
             name: "voci",
             current: undefined
+        };
+
+        $scope.onSingleMode = function () {
+            $scope.singleMode = true;
+            $scope.buildView();
+        };
+
+        $scope.onMultiMode = function () {
+            $scope.singleMode = false;
+            $scope.buildView();
+        };
+
+        $scope.onDoneItems = function () {
+            $scope.doneElements = true;
+            $scope.buildView();
+        };
+
+        $scope.onUndoneItems = function () {
+            $scope.doneElements = false;
+            $scope.buildView();
         };
 
         $scope.exit = function () {
@@ -148,25 +174,24 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.lastSuccessMessage = message;
             $(".success-message").show();
         };
-        $scope.loadTimeline = function (id) {
+        $scope.loadTimeline = function (timeline) {
             $http.post(
                     '../timelinemanager/includes/load_data.php',
                     {
                         command: 'load_timeline',
-                        id: id
+                        id: timeline.metadata.id
                     }
             ).then(
                     function (rx) {
-                        $scope.timeline = rx.data.timeline;
-                        $scope.elements = rx.data.elements;
-                        for (var i = 0; i < $scope.elements.length; i++) {
+                        timeline.elements = rx.data.elements;
+                        for (var i = 0; i < timeline.elements.length; i++) {
                             var d = new Date();
-                            d.setTime($scope.elements[i].data * 1000);
-                            $scope.elements[i].data = d;
-                            $scope.elements[i].performance = [];
-                            $scope.elements[i].performed = false;
+                            d.setTime(timeline.elements[i].data * 1000);
+                            timeline.elements[i].data = d;
+                            timeline.elements[i].performance = [];
+                            timeline.elements[i].performed = false;
                         }
-                        $scope.reloadPerformances();
+                        $scope.reloadPerformances(timeline);
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data.msg);
@@ -174,6 +199,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             );
         };
         $scope.loadTimelines = function () {
+            $(".progress").show();
             $http.post(
                     '../timelinemanager/includes/load_data.php',
                     {
@@ -182,9 +208,15 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     }
             ).then(
                     function (rx) {
-                        $scope.timelines = rx.data;
+                        $scope.timelines = [];
+                        for (var i = 0; i < rx.data.length; i++) {
+                            rx.data[i].anno2 = parseInt(rx.data[i].anno) + 1;
+                            $scope.timelines.push({
+                                metadata: rx.data[i]
+                            });
+                        }
                         for (var i = 0; i < $scope.timelines.length; i++) {
-                            $scope.loadTimeline($scope.timelines(i));
+                            $scope.loadTimeline($scope.timelines[i]);
                         }
                     },
                     function (rx) {
@@ -192,43 +224,52 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     }
             );
         };
-        $scope.reloadPerformances = function () {
+        $scope.reloadPerformances = function (timeline) {
             $http.post(
                     '../timelinemanager/includes/load_data.php',
                     {
                         command: 'load_performances',
-                        classe: $scope.timeline.idclasse,
-                        anno: $scope.timeline.anno
+                        classe: timeline.metadata.idclasse,
+                        anno: timeline.metadata.anno
                     }
             ).then(
                     function (rx) {
                         var performances = rx.data;
                         for (var i = 0; i < performances.length; i++) {
-                            $scope.assignPerformance(performances[i]);
+                            $scope.assignPerformance(timeline, performances[i]);
                         }
-                        $scope.buildView();
-                        $(".progress").hide();
+                        $scope.$emit("timeline-loaded");
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data.msg);
                     }
             );
         };
-        $scope.assignPerformance = function (perf) {
-            for (var i = 0; i < $scope.elements.length; i++) {
-                if ($scope.elements[i].id === perf.id) {
+        $scope.assignPerformance = function (timeline, perf) {
+            for (var i = 0; i < timeline.elements.length; i++) {
+                if (timeline.elements[i].id === perf.id) {
                     var d = new Date();
                     d.setTime(perf.data * 1000);
-                    $scope.elements[i].performance.push({
+                    timeline.elements[i].performance.push({
                         id: perf.idmateria,
                         data: d
                     });
-                    if (perf.idmateria === $scope.timeline.idmateria) {
-                        $scope.elements[i].performed = true;
+                    if (perf.idmateria === timeline.metadata.idmateria) {
+                        timeline.elements[i].performed = true;
                     }
                 }
             }
         };
+
+        $scope.$on("timeline-loaded", function () {
+            $scope.loaded++;
+            if ($scope.loaded === $scope.timelines.length) {
+                $scope.loaded = 0;
+                $scope.buildView();
+                $(".progress").hide();
+            }
+        });
+
         $scope.buildContent = function (element) {
             var content = "";
             content += element.nome + " - ";
@@ -245,43 +286,64 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
         $scope.buildView = function () {
             var data = [];
-            for (var i = 0; i < $scope.elements.length; i++) {
-                data.push(
-                        {
-                            id: $scope.elements[i].id,
-                            content: $scope.buildContent($scope.elements[i]),
-                            start: $scope.elements[i].data,
-                            group: $scope.timeline.nomemateria
+            var groups = [];
+            for (var t = 0; t < $scope.timelines.length; t++) {
+                if (!$scope.singleMode || parseInt($scope.timelines[t].metadata.id) === timeline_id) {
+                    $scope.timelines[t].visible = true;
+                    var found = false;
+                    for (var i = 0; i < groups.length; i++) {
+                        if (groups[i].content === $scope.timelines[t].metadata.nomemateria) {
+                            found = true;
                         }
-                );
+                    }
+                    if (!found) {
+                        groups.push(
+                                {
+                                    content: $scope.timelines[t].metadata.nomemateria,
+                                    id: $scope.timelines[t].metadata.nomemateria,
+                                    value: $scope.timelines[t].metadata.nomemateria
+                                }
+                        );
+                    }
+                    for (var i = 0; i < $scope.timelines[t].elements.length; i++) {
+                        if (!$scope.doneElements || $scope.timelines[t].elements[i].performance.length > 0) {
+                            data.push(
+                                    {
+                                        // id: $scope.timelines[t].elements[i].id,
+                                        content: $scope.buildContent($scope.timelines[t].elements[i]),
+                                        start: $scope.timelines[t].elements[i].data,
+                                        group: $scope.timelines[t].metadata.nomemateria
+                                    }
+                            );
+                        }
+                    }
+                }else{
+                    $scope.timelines[t].visible = false;
+                }
             }
-            var groups = new vis.DataSet([
-                    {"content": "Fisica", "id": "Fisica", "value": 1},
-                    {"content": "Chimica", "id": "Chimica", "value": 2},
-                    {"content": "Biologia", "id": "Biologia", "value": 3}
-              ]);
             var container = document.getElementById('visualization');
+            $("#visualization").html("");
             var options = {
-            editable: false,
-            min: new Date($scope.timeline.anno, 7, 1),
-            max: new Date(parseInt($scope.timeline.anno) + 1, 6, 1),
-            zoomMin: 1000 * 60 * 60 * 24 * 12,
-            groupOrder: function (a, b) {
-                return a.value - b.value;
-            },
-            groupOrderSwap: function (a, b, groups) {
-            var v = a.value;
-            a.value = b.value;
-            b.value = v;
-            },
-            groupEditable: true
-        };
-        timeline = new vis.Timeline(container, data, options);
-        timeline.setGroups(groups);
-        timeline.on('select', function (properties) {
-            $scope.selected.current = $scope.findObjectById($scope.elements, properties.items[0]);
-            $scope.loadAttachments($scope.selected);
-        });
+                editable: false,
+                min: new Date($scope.timelines[0].metadata.anno, 7, 1),
+                max: new Date(parseInt($scope.timelines[0].metadata.anno) + 1, 6, 1),
+                zoomMin: 1000 * 60 * 60 * 24 * 12,
+                groupOrder: function (a, b) {
+                    return a.value - b.value;
+                },
+                groupOrderSwap: function (a, b, groups) {
+                    var v = a.value;
+                    a.value = b.value;
+                    b.value = v;
+                },
+                groupEditable: true
+            };
+            timeline = new vis.Timeline(container, data, options);
+            timeline.setGroups(groups);
+            timeline.on('select', function (properties) {
+                $scope.selected.current = $scope.findObjectById($scope.elements, properties.items[0]);
+                $scope.loadAttachments($scope.selected);
+            });
         };
         $scope.loadAttachments = function (table) {
 
@@ -354,7 +416,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $rootScope.$emit('load-table', {
             target: $scope.materie
         });
-        $scope.loadTimeline();
+        $scope.loadTimelines();
     }]);
 $(document).ready(function () {
     $(".success-message").click(function () {

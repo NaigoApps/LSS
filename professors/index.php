@@ -10,6 +10,7 @@ require_once '../common/auth-header.php';
         <script type="text/javascript" src="../common/scripts/jquery.js"></script>
         <script type="text/javascript" src="../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../common/scripts/angular.min.js"></script>
+        <script type="text/javascript" src="./pages/scripts/script.js"></script>
     </head>
     <body>
 
