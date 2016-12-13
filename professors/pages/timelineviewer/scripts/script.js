@@ -287,6 +287,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.buildView = function () {
             var data = [];
             var groups = [];
+            var count=1;
             for (var t = 0; t < $scope.timelines.length; t++) {
                 if (!$scope.singleMode || parseInt($scope.timelines[t].metadata.id) === timeline_id) {
                     $scope.timelines[t].visible = true;
@@ -301,9 +302,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                                 {
                                     content: $scope.timelines[t].metadata.nomemateria,
                                     id: $scope.timelines[t].metadata.nomemateria,
-                                    value: $scope.timelines[t].metadata.nomemateria
+                                    value: count       
                                 }
                         );
+                    count ++; 
                     }
                     for (var i = 0; i < $scope.timelines[t].elements.length; i++) {
                         if (!$scope.doneElements || $scope.timelines[t].elements[i].performance.length > 0) {
@@ -329,7 +331,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 max: new Date(parseInt($scope.timelines[0].metadata.anno) + 1, 6, 1),
                 zoomMin: 1000 * 60 * 60 * 24 * 12,
                 groupOrder: function (a, b) {
-                    return a.value - b.value;
+                  return a.value - b.value;
                 },
                 groupOrderSwap: function (a, b, groups) {
                     var v = a.value;
