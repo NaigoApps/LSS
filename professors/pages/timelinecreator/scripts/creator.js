@@ -141,6 +141,9 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
             ).then(
                     function (rx) {
                         $scope.timelines.content = rx.data;
+                        for(var i = 0;i < $scope.timelines.content.length;i++){
+                            $scope.timelines.content[i].anno2 = parseInt($scope.timelines.content[i].anno) + 1;
+                        }
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data);

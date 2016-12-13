@@ -106,7 +106,7 @@
                     <ul>
                         <li ng-repeat = "timeline in timelines.content">
                             <div class = "well well-sm clearfix">
-                                {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
+                                {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}/{{timeline.anno2}}
                                 <form class = "pull-right dummy-form" action = "../timelinemanager/editor2.php" method = "POST">
                                     <input type = "hidden" name = "timelineid" value = "{{timeline.id}}"/>
                                     <button type = "submit" class = "btn btn-xs btn-success tooltip-base">

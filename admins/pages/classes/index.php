@@ -8,8 +8,8 @@
         <script type="text/javascript" src="../../../common/scripts/jquery.js"></script>
         <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
-        <script src="../../../professors/pages/timelinemanager/includes/timeline/alert/dist/sweetalert.min.js"></script>
-        <link href="../../../professors/pages/timelinemanager/includes/timeline/alert/dist/sweetalert.css" rel="stylesheet" type="text/css"/>
+        <script src="../../../common/swal/sweetalert.min.js"></script>
+        <link href="../../../common/swal/sweetalert.css" rel="stylesheet" type="text/css"/>
 
         <script type="text/javascript" src="./scripts/classes-db.js"></script>
         <script type="text/javascript" src="./scripts/classes.js"></script>

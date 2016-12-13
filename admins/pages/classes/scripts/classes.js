@@ -60,7 +60,7 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
             prettyConfirm("Cancellazione", "Sicuro di voler cancellare la classe?", function () {
                 $scope.classi.current = classe;
                 $rootScope.$emit('commit-delete', {target: $scope.classi});
-            })
+            });
         };
 
         /**

@@ -27,7 +27,7 @@
             <ul>
                 <li ng-repeat="timeline in timelines.content">
                     <div class="well well-sm clearfix">
-                        {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}
+                        {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} - {{timeline.anno}}/{{timeline.anno2}}
                         <div class="pull-right">
                             <form class="dummy-form" action="viewer.php" method="POST">
                                 <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
