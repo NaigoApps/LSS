@@ -292,6 +292,9 @@ app.controller("linkController", ['$http', '$scope', '$rootScope', function ($ht
                         ).then(
                                 function (rx2) {
                                     data.target.module = rx2.data[0];
+                                    if (data.callback !== undefined) {
+                                        data.callback();
+                                    }
                                 },
                                 function (rx2) {
                                     $scope.errorMessage("Errore durante il caricamento dei collegamenti");

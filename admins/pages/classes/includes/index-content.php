@@ -33,7 +33,7 @@
                 <li class="list-group-item" ng-repeat="classe in classi.content| orderBy:['anno', 'sezione']">
                     <form class="form-inline dummy-form" ng-class="{'has-warning' : classe.modified}" >
                         <div class="form-group">
-                            <label for="{{classe.anno + classe.sezione + 'a'}}">Anno:</label>
+                            <label for="{{classe.anno + classe.sezione + 'a'}}">Classe:</label>
                             <input id="{{classe.anno + classe.sezione + 'a'}}" type="text" class="form-control" placeholder="anno" ng-keypress="classe.modified = true" ng-model="classe.anno"/>
                         </div>
                         <div class="form-group">

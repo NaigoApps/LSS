@@ -44,12 +44,16 @@ $id = $_POST['timelineid'];
                                     <li><a ng-if="!doneElements" ng-click="onDoneItems()">Argomenti svolti</a></li>
                                     <li><a ng-if="doneElements" ng-click="onUndoneItems()">Tutti gli argomenti</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="index.php">Indietro</a></li>
+                                    <li><a href="../../index.php">Indietro</a></li>
                                 </ul>
                             </li>
                             <ul class="nav navbar-nav navbar-right">
                                 <li>
-                                    <a>Visualizzazione programmazione</a>
+                                    <a>Visualizzazione programmazione {{timelines[0].metadata.anno}}/{{timelines[0].metadata.anno2}} - Classe {{timelines[0].metadata.annoclasse}}{{timelines[0].metadata.sezione}}:
+                                        <span class="small" ng-repeat="timeline in timelines| filter: {visible : true}">
+                                            <span>{{timeline.metadata.nomemateria}}</span>
+                                            <span ng-if="!$last">, </span>
+                                        </span></a>
                                 </li>
                             </ul>
                         </ul>
@@ -62,12 +66,6 @@ $id = $_POST['timelineid'];
                     <div id="bar-timeline" class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
                     </div>
                 </div>
-                <h1>A.S. {{timelines[0].metadata.anno}}/{{timelines[0].metadata.anno2}} - Classe {{timelines[0].metadata.annoclasse}}{{timelines[0].metadata.sezione}}:
-                    <span class="small" ng-repeat="timeline in timelines | filter: {visible : true}">
-                        <span>{{timeline.metadata.nomemateria}}</span>
-                        <span ng-if="!$last">, </span>
-                    </span>
-                </h1>
                 <div id="visualization" class="row top-sep clearfix"></div>
                 <div class="row top-sep well" ng-if="selected.current">
 
@@ -77,12 +75,12 @@ $id = $_POST['timelineid'];
                 </div>
                 <div class="row top-sep well" ng-if="selected.current.links && selected.current.links.length > 0">
                     <h3>Collegamenti</h3>
-                    <div ng-repeat="link in selected.current.links">
+                    <span ng-repeat="link in selected.current.links">
                         <a class="text-success" href="{{link.link}}" target="blank">
                             <span class="glyphicon glyphicon-link"></span>
                             {{link.nome}}
                         </a>
-                    </div>
+                    </span>
                 </div>
                 <!--                <div class="row top-sep well" ng-if="selected.current.docs && selected.current.docs.length > 0">
                                     <h3>Documenti</h3>

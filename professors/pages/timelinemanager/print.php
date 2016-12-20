@@ -37,7 +37,7 @@ $id = $_POST['timelineid'];
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a ng-click="print()">Stampa</a></li>
-                                        <li><a href="../timelinemanager/">Esci</a></li>
+                                        <li><a href="../../index.php">Esci</a></li>
                                     </ul>
                                 </li>
                                 <ul class="nav navbar-nav navbar-right">
@@ -58,10 +58,14 @@ $id = $_POST['timelineid'];
                             <tr><th>Modulo</th><th>Argomento</th><th>Voce</th><th>Data di svolgimento</th></tr>
                             <tr ng-repeat="element in elements track by $index" ng-if="element.data.getMonth() + 1 === month.numero">
                                 <td class="col-xs-3">
-                                    {{element.module.nome}}
+                                    <span ng-if="element.moduleVisible">
+                                        {{element.module.nome}}
+                                    </span>
                                 </td>
                                 <td class="col-xs-3">
-                                    {{element.topic.nome}}
+                                    <span ng-if="element.topicVisible">
+                                        {{element.topic.nome}}
+                                    </span>
                                 </td>
                                 <td class="col-xs-3">
                                     {{element.nome}}

@@ -1,6 +1,8 @@
 
 app.controller("timelineController", ['$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
 
+        $scope.loaded = 0;
+
         $scope.mesi = [
             {nome: 'Settembre', numero: 9},
             {nome: 'Ottobre', numero: 10},
@@ -61,7 +63,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         for (var i = 0; i < performances.length; i++) {
                             $scope.assignPerformance(performances[i]);
                         }
-                        $scope.sortTimeline();
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data.msg);
@@ -71,11 +72,42 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 
         $scope.sortTimeline = function () {
             $scope.elements.sort(function (a, b) {
-                if (a.data <= b.data) {
+                if (a.data.getTime() < b.data.getTime()) {
                     return -1;
+                }else if(a.data.getTime() === b.data.getTime() && a.module !== undefined && b.module !== undefined){
+                    if(a.module.nome < b.module.nome){
+                        return -1;
+                    }else if(a.module.nome === b.module.nome &&
+                            a.topic !== undefined && b.topic !== undefined){
+                        if(a.topic.nome <= b.topic.nome){
+                            return -1;
+                        }
+                    }
                 }
                 return 1;
             });
+        };
+
+        $scope.doUpdateView = function () {
+            $scope.sortTimeline();
+            for (var i = 0; i < $scope.elements.length; i++) {
+                if (i === 0 || $scope.elements[i].data.getMonth() !== $scope.elements[i - 1].data.getMonth() ||
+                        $scope.elements[i].module.id !== $scope.elements[i - 1].module.id) {
+                    $scope.elements[i].moduleVisible = true;
+
+                }
+                if (i === 0 || $scope.elements[i].data.getMonth() !== $scope.elements[i - 1].data.getMonth() ||
+                        $scope.elements[i].topic.id !== $scope.elements[i - 1].topic.id) {
+                    $scope.elements[i].topicVisible = true;
+                }
+            }
+        };
+
+        $scope.updateView = function () {
+            $scope.loaded++;
+            if ($scope.loaded === $scope.elements.length) {
+                $scope.doUpdateView();
+            }
         };
 
         $scope.loadTimeline = function () {
@@ -98,7 +130,8 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             $scope.elements[i].performed = false;
                             $rootScope.$emit('find-topics-by-item', {
                                 item: $scope.elements[i],
-                                target: $scope.elements[i]
+                                target: $scope.elements[i],
+                                callback: $scope.updateView
                             });
                         }
                         $scope.reloadPerformances();

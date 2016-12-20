@@ -158,8 +158,16 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return -1;
         };
-        $scope.findObjectById = function (vector, id) {
-            var index = $scope.findById(vector, id);
+        $scope.findByTimelineId = function (vector, id) {
+            for (var i = 0; i < vector.length; i++) {
+                if (vector[i].timelineId === id) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+        $scope.findObjectByTimelineId = function (vector, id) {
+            var index = $scope.findByTimelineId(vector, id);
             if (index !== -1) {
                 return vector[index];
             }
@@ -185,6 +193,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     function (rx) {
                         timeline.elements = rx.data.elements;
                         for (var i = 0; i < timeline.elements.length; i++) {
+                            timeline.elements[i].timelineId = timeline.metadata.idmateria + "-" + timeline.elements[i].id;
                             var d = new Date();
                             d.setTime(timeline.elements[i].data * 1000);
                             timeline.elements[i].data = d;
@@ -311,7 +320,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         if (!$scope.doneElements || $scope.timelines[t].elements[i].performance.length > 0) {
                             data.push(
                                     {
-                                        // id: $scope.timelines[t].elements[i].id,
+                                        id: $scope.timelines[t].elements[i].timelineId,
                                         content: $scope.buildContent($scope.timelines[t].elements[i]),
                                         start: $scope.timelines[t].elements[i].data,
                                         group: $scope.timelines[t].metadata.nomemateria
@@ -329,7 +338,9 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 editable: false,
                 min: new Date($scope.timelines[0].metadata.anno, 7, 1),
                 max: new Date(parseInt($scope.timelines[0].metadata.anno) + 1, 6, 1),
-                zoomMin: 1000 * 60 * 60 * 24 * 12,
+                zoomMin: 1000 * 60 * 60 * 24 * 7,
+                zoomMax: 1000 * 60 * 60 * 24 * 30,
+                height: "350px",
                 groupOrder: function (a, b) {
                   return a.value - b.value;
                 },
@@ -343,12 +354,17 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             timeline = new vis.Timeline(container, data, options);
             timeline.setGroups(groups);
             timeline.on('select', function (properties) {
-                $scope.selected.current = $scope.findObjectById($scope.elements, properties.items[0]);
-                $scope.loadAttachments($scope.selected);
+                var found = false;
+                for(var i = 0;i < $scope.timelines.length && !found;i++){
+                    $scope.selected.current = $scope.findObjectByTimelineId($scope.timelines[i].elements, properties.items[0]);
+                    if($scope.selected.current !== undefined){
+                        found = true;
+                        $scope.loadAttachments($scope.selected);
+                    }
+                }
             });
         };
         $scope.loadAttachments = function (table) {
-
             var data1 = {
                 item: table.current,
                 target: table.current

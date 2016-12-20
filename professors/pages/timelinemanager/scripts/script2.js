@@ -119,7 +119,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     ).then(
                             function (rx) {
                                 swal("Programmaione", "salvata correttamente", "success");
-                                window.location.replace("./index.php");
+                                window.location.replace("../../index.php");
                             },
                             function (rx) {
                                 $scope.errorMessage(rx.data.msg);
@@ -131,7 +131,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.exit = function () {
             prettyConfirm("Esci", "I dati non salvati saranno persi", function (ok) {
                 if (ok) {
-                    window.location.replace("./index.php");
+                    window.location.replace("../../index.php");
                 }
             });
         };
