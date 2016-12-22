@@ -99,7 +99,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.singleMode = true;
 
         $scope.doneElements = true;
-        
+
         $scope.loaded = 0;
         $scope.timelines = [];
 
@@ -296,7 +296,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.buildView = function () {
             var data = [];
             var groups = [];
-            var count=1;
+            var count = 1;
             for (var t = 0; t < $scope.timelines.length; t++) {
                 if (!$scope.singleMode || parseInt($scope.timelines[t].metadata.id) === timeline_id) {
                     $scope.timelines[t].visible = true;
@@ -311,10 +311,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                                 {
                                     content: $scope.timelines[t].metadata.nomemateria,
                                     id: $scope.timelines[t].metadata.nomemateria,
-                                    value: count       
+                                    value: count
                                 }
                         );
-                    count ++; 
+                        count++;
                     }
                     for (var i = 0; i < $scope.timelines[t].elements.length; i++) {
                         if (!$scope.doneElements || $scope.timelines[t].elements[i].performance.length > 0) {
@@ -328,7 +328,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             );
                         }
                     }
-                }else{
+                } else {
                     $scope.timelines[t].visible = false;
                 }
             }
@@ -340,9 +340,11 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 max: new Date(parseInt($scope.timelines[0].metadata.anno) + 1, 6, 1),
                 zoomMin: 1000 * 60 * 60 * 24 * 7,
                 zoomMax: 1000 * 60 * 60 * 24 * 30,
-                height: "350px",
+                minHeight:350,
+                maxHeight:650,
+                
                 groupOrder: function (a, b) {
-                  return a.value - b.value;
+                    return a.value - b.value;
                 },
                 groupOrderSwap: function (a, b, groups) {
                     var v = a.value;
@@ -351,13 +353,13 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 },
                 groupEditable: true
             };
-            timeline = new vis.Timeline(container, data, options);
+            timeline = new vis.Timeline(container, data, groups, options);
             timeline.setGroups(groups);
             timeline.on('select', function (properties) {
                 var found = false;
-                for(var i = 0;i < $scope.timelines.length && !found;i++){
+                for (var i = 0; i < $scope.timelines.length && !found; i++) {
                     $scope.selected.current = $scope.findObjectByTimelineId($scope.timelines[i].elements, properties.items[0]);
-                    if($scope.selected.current !== undefined){
+                    if ($scope.selected.current !== undefined) {
                         found = true;
                         $scope.loadAttachments($scope.selected);
                     }
@@ -442,5 +444,11 @@ $(document).ready(function () {
     });
     $(".error-message").click(function () {
         $(this).hide();
+    });
+    $('.vis-center>.vis-content').on('scroll', function () {
+        $('.vis-left>.vis-content').scrollTop($(this).scrollTop());
+    });
+    $('.vis-left>.vis-content').on('scroll', function () {
+        $('.vis-center>.vis-content').scrollTop($(this).scrollTop());
     });
 });
