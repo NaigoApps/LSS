@@ -342,6 +342,8 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 zoomMax: 1000 * 60 * 60 * 24 * 30,
                 minHeight: 350,
                 maxHeight: 650,
+                zoomable:false,
+                
                 groupOrder: function (a, b) {
                     return a.value - b.value;
                 },

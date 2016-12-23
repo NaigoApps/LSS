@@ -1308,7 +1308,7 @@ div.vis-color-picker input.vis-saturation-range {
 }*/
 
 .vis-center>.vis-content {
-    overflow-x: hidden;
+    overflow-x: scroll;
     overflow-y: scroll;
     height: 100%;
 }
