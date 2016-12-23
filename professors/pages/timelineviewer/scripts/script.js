@@ -340,9 +340,8 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 max: new Date(parseInt($scope.timelines[0].metadata.anno) + 1, 6, 1),
                 zoomMin: 1000 * 60 * 60 * 24 * 7,
                 zoomMax: 1000 * 60 * 60 * 24 * 30,
-                minHeight:350,
-                maxHeight:650,
-                
+                minHeight: 350,
+                maxHeight: 650,
                 groupOrder: function (a, b) {
                     return a.value - b.value;
                 },
@@ -364,6 +363,12 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         $scope.loadAttachments($scope.selected);
                     }
                 }
+            });
+            $('.vis-center>.vis-content').on('scroll', function () {
+                $('.vis-left>.vis-content').scrollTop($(this).scrollTop());
+            });
+            $('.vis-left>.vis-content').on('scroll', function () {
+                $('.vis-center>.vis-content').scrollTop($(this).scrollTop());
             });
         };
         $scope.loadAttachments = function (table) {
@@ -445,10 +450,5 @@ $(document).ready(function () {
     $(".error-message").click(function () {
         $(this).hide();
     });
-    $('.vis-center>.vis-content').on('scroll', function () {
-        $('.vis-left>.vis-content').scrollTop($(this).scrollTop());
-    });
-    $('.vis-left>.vis-content').on('scroll', function () {
-        $('.vis-center>.vis-content').scrollTop($(this).scrollTop());
-    });
+
 });
