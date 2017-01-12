@@ -25,6 +25,7 @@ function zoom(percentage) {
         start: range.start.valueOf() - interval * percentage,
         end: range.end.valueOf() + interval * percentage
     });
+
 }
 
 
@@ -342,8 +343,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 zoomMax: 1000 * 60 * 60 * 24 * 30,
                 minHeight: 350,
                 maxHeight: 650,
-                zoomable:false,
-                
                 groupOrder: function (a, b) {
                     return a.value - b.value;
                 },
@@ -428,13 +427,17 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 //        document.getElementById('zoomOut').onclick = function () {
 //            zoom(0.2);
 //        };
-//        document.getElementById('moveLeft').onclick = function () {
-//            move(0.2);
-//        };
-//        document.getElementById('moveRight').onclick = function () {
-//            move(-0.2);
-//        };
+        document.getElementById('moveLeft').onclick = function () {
 
+            move(0.6);
+
+        };
+        document.getElementById('moveRight').onclick = function () {
+            move(-0.6);
+        };
+        document.getElementById('moveTo').onclick = function () {
+            timeline.moveTo('2016-10-01');
+        };
         //alert(obj1.month + "-" + obj1.day + "-" + obj1.year);
         //alert(obj2.month + "-" + obj2.day + "-" + obj2.year);
         //timeline.setWindow(obj1.month + "-" + obj1.day + "-" + obj1.year, obj2.month + "-" + obj2.day + "-" + obj2.year);

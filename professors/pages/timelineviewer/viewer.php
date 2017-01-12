@@ -17,9 +17,11 @@ $id = $_POST['timelineid'];
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
         <script src="../../../common/scripts/links.js"></script>
         <script src="./scripts/script.js"></script>
+        <script src="scripts/script2.js"></script>
+        <link rel="stylesheet"  href="../../../common/styles/style.css"/>
 
         <script type="text/javascript">
-                    var timeline_id = <?php echo $id; ?>;</script>
+            var timeline_id = <?php echo $id; ?>;</script>
         <link href="../../../common/timeline/timeline.css" rel="stylesheet" type="text/css" />
         <link href="../../../common/styles/style.css" rel="stylesheet" type="text/css" />
     </head>
@@ -66,6 +68,11 @@ $id = $_POST['timelineid'];
                     <div id="bar-timeline" class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
                     </div>
                 </div>
+                <p>
+                    <input type="button" id="moveLeft" value="Move left"/>
+                    <input type="button" id="moveRight" value="Move right"/>
+                    <input type="button" id="moveTo" value="Vai a 2016-10-01"><br>
+                </p>
                 <div id="visualization" class="row top-sep clearfix"></div>
                 <div class="row top-sep well" ng-if="selected.current">
 
