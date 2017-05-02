@@ -25,7 +25,6 @@ function zoom(percentage) {
         start: range.start.valueOf() - interval * percentage,
         end: range.end.valueOf() + interval * percentage
     });
-
 }
 
 
@@ -104,18 +103,12 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.loaded = 0;
         $scope.timelines = [];
 
-        $scope.selected = {
-            name: "voci",
-            current: undefined
-        };
-
-        $scope.onSingleMode = function () {
-            $scope.singleMode = true;
-            $scope.buildView();
-        };
-
-        $scope.onMultiMode = function () {
-            $scope.singleMode = false;
+        $scope.onToggleTimeline = function (timeline) {
+            if (!timeline.visible) {
+                timeline.visible = true;
+            } else {
+                timeline.visible = false;
+            }
             $scope.buildView();
         };
 
@@ -299,8 +292,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             var groups = [];
             var count = 1;
             for (var t = 0; t < $scope.timelines.length; t++) {
-                if (!$scope.singleMode || parseInt($scope.timelines[t].metadata.id) === timeline_id) {
-                    $scope.timelines[t].visible = true;
+                if ($scope.timelines[t].visible) {
                     var found = false;
                     for (var i = 0; i < groups.length; i++) {
                         if (groups[i].content === $scope.timelines[t].metadata.nomemateria) {
@@ -329,8 +321,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                             );
                         }
                     }
-                } else {
-                    $scope.timelines[t].visible = false;
                 }
             }
             var container = document.getElementById('visualization');
@@ -358,10 +348,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             timeline.on('select', function (properties) {
                 var found = false;
                 for (var i = 0; i < $scope.timelines.length && !found; i++) {
-                    $scope.selected.current = $scope.findObjectByTimelineId($scope.timelines[i].elements, properties.items[0]);
-                    if ($scope.selected.current !== undefined) {
+                    $scope.voci.current = $scope.findObjectByTimelineId($scope.timelines[i].elements, properties.items[0]);
+                    if ($scope.voci.current !== undefined) {
                         found = true;
-                        $scope.loadAttachments($scope.selected);
+                        $scope.loadAttachments();
                     }
                 }
             });
@@ -372,27 +362,62 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 $('.vis-center>.vis-content').scrollTop($(this).scrollTop());
             });
         };
-        $scope.loadAttachments = function (table) {
-            var data1 = {
-                item: table.current,
-                target: table.current
-            };
-            $rootScope.$emit('find-topics-by-item', data1);
+
+        $scope.loadParentAttachments = function () {
             $http.post(
                     '../../../common/attachments-loader.php',
                     {
                         command: 'geturl',
-                        table: table.name,
-                        obj: table.current
+                        table: $scope.moduli.name,
+                        obj: $scope.voci.current.module
                     }
             ).then(
                     function (rx) {
-                        table.current.links = rx.data;
+                        $scope.moduli.current.links = rx.data;
                     },
                     function (rx) {
                         $scope.errorMessage(rx.data);
                     }
             );
+            $http.post(
+                    '../../../common/attachments-loader.php',
+                    {
+                        command: 'geturl',
+                        table: $scope.argomenti.name,
+                        obj: $scope.voci.current.topic
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.argomenti.current.links = rx.data;
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
+            $http.post(
+                    '../../../common/attachments-loader.php',
+                    {
+                        command: 'geturl',
+                        table: $scope.voci.name,
+                        obj: $scope.voci.current
+                    }
+            ).then(
+                    function (rx) {
+                        $scope.voci.current.links = rx.data;
+                    },
+                    function (rx) {
+                        $scope.errorMessage(rx.data);
+                    }
+            );
+        };
+
+        $scope.loadAttachments = function () {
+            var data1 = {
+                item: $scope.voci.current,
+                target: $scope.voci.current,
+                callback: $scope.loadParentAttachments
+            };
+            $rootScope.$emit('find-topics-by-item', data1);
 //            $http.post(
 //                    '../../../common/attachments-loader.php',
 //                    {
@@ -427,17 +452,13 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 //        document.getElementById('zoomOut').onclick = function () {
 //            zoom(0.2);
 //        };
-        document.getElementById('moveLeft').onclick = function () {
+//        document.getElementById('moveLeft').onclick = function () {
+//            move(0.2);
+//        };
+//        document.getElementById('moveRight').onclick = function () {
+//            move(-0.2);
+//        };
 
-            move(0.6);
-
-        };
-        document.getElementById('moveRight').onclick = function () {
-            move(-0.6);
-        };
-        document.getElementById('moveTo').onclick = function () {
-            timeline.moveTo('2016-10-01');
-        };
         //alert(obj1.month + "-" + obj1.day + "-" + obj1.year);
         //alert(obj2.month + "-" + obj2.day + "-" + obj2.year);
         //timeline.setWindow(obj1.month + "-" + obj1.day + "-" + obj1.year, obj2.month + "-" + obj2.day + "-" + obj2.year);

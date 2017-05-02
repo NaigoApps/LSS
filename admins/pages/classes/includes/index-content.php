@@ -29,9 +29,9 @@
     <div class="container" ng-app="lss-db" ng-controller="classesController as classCtrl">
         <h2 class="text-center">Elenco delle classi</h2>
         <div class="row">
-            <ul class="list-group top-sep col-sm-8 col-sm-offset-2">
+            <ul class="list-group top-sep">
                 <li class="list-group-item" ng-repeat="classe in classi.content| orderBy:['anno', 'sezione']">
-                    <form class="form-inline dummy-form" ng-class="{'has-warning' : classe.modified}" >
+                    <form class="form-inline dummy-form clearfix" ng-class="{'has-warning' : classe.modified}" >
                         <div class="form-group">
                             <label for="{{classe.anno + classe.sezione + 'a'}}">Classe:</label>
                             <input id="{{classe.anno + classe.sezione + 'a'}}" type="text" class="form-control" placeholder="anno" ng-keypress="classe.modified = true" ng-model="classe.anno"/>
@@ -43,17 +43,15 @@
                         <!-- Delete -->
                         <div class="btn-group pull-right">
                             <!-- Edit -->
-                            <a class="btn btn-xs btn-success tooltip-base"
+                            <a class="btn btn-xs btn-success"
                                ng-click="onEditClass(classe)">
-                                Salva
                                 <span class="glyphicon glyphicon-save"></span>
-                                <span class="tooltip">Salva</span>
+                                <span class="hidden-xs">Salva</span>
                             </a>
-                            <a class="btn btn-xs btn-danger tooltip-base"
+                            <a class="btn btn-xs btn-danger"
                                ng-click="onDeleteClass(classe)">
-                                Elimina
                                 <span class="glyphicon glyphicon-remove"></span>
-                                <span class="tooltip">Elimina</span>
+                                <span class="hidden-xs">Elimina</span>
                             </a>
                         </div>
                     </form>

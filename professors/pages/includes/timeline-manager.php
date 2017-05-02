@@ -113,7 +113,7 @@ if ($request != null && isset($request->command)) {
                     . "FROM classi, materie, timeline "
                     . "WHERE classi.id = timeline.idclasse AND materie.id = timeline.idmateria AND "
                     . "timeline.iddocente = $user_id "
-                    . "ORDER BY timeline.anno DESC";
+                    . "ORDER BY timeline.anno DESC, materie.nome ASC, classi.anno ASC, classi.sezione ASC";
             $select_result = db_select($conn, $query);
             if ($select_result->getOutcome() == QueryResult::SUCCESS) {
                 db_simple_close($conn);
@@ -133,7 +133,7 @@ if ($request != null && isset($request->command)) {
                     . "materie.id = timeline.idmateria AND "
                     . "archiviata = 0 AND "
                     . "timeline.iddocente = $user_id "
-                    . "ORDER BY timeline.anno DESC";
+                    . "ORDER BY timeline.anno DESC, materie.nome ASC, classi.anno ASC, classi.sezione ASC";
             $select_result = db_select($conn, $query);
             if ($select_result->getOutcome() == QueryResult::SUCCESS) {
                 db_simple_close($conn);
@@ -153,7 +153,7 @@ if ($request != null && isset($request->command)) {
                     . "materie.id = timeline.idmateria AND "
                     . "archiviata = 1 AND "
                     . "timeline.iddocente = $user_id "
-                    . "ORDER BY timeline.anno DESC";
+                    . "ORDER BY timeline.anno DESC, materie.nome ASC, classi.anno ASC, classi.sezione ASC";
             $select_result = db_select($conn, $query);
             if ($select_result->getOutcome() == QueryResult::SUCCESS) {
                 db_simple_close($conn);

@@ -1,6 +1,6 @@
 <?php
 define('HOST',"localhost");
-define('USER',"root");
-define('PASS',"");
-define('DB',"lss");
+define('USER',"codetests");
+define('PASS',"9cs99115");
+define('DB',"my_codetests");
 ?>

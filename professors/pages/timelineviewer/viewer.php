@@ -17,11 +17,9 @@ $id = $_POST['timelineid'];
         <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
         <script src="../../../common/scripts/links.js"></script>
         <script src="./scripts/script.js"></script>
-        <script src="scripts/script2.js"></script>
-        <link rel="stylesheet"  href="../../../common/styles/style.css"/>
 
         <script type="text/javascript">
-            var timeline_id = <?php echo $id; ?>;</script>
+                    var timeline_id = <?php echo $id; ?>;</script>
         <link href="../../../common/timeline/timeline.css" rel="stylesheet" type="text/css" />
         <link href="../../../common/styles/style.css" rel="stylesheet" type="text/css" />
     </head>
@@ -40,8 +38,10 @@ $id = $_POST['timelineid'];
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a ng-if="!singleMode" ng-click="onSingleMode()">Singola programmazione</a></li>
-                                    <li><a ng-if="singleMode" ng-click="onMultiMode()">Tutte le programmazioni</a></li>
+                                    <li ng-repeat="timeline in timelines">
+                                        <a ng-if="timeline.visible" ng-click="onToggleTimeline(timeline)">Nascondi {{timeline.metadata.nomemateria}}</a>
+                                        <a ng-if="!timeline.visible" ng-click="onToggleTimeline(timeline)">Mostra {{timeline.metadata.nomemateria}}</a>
+                                    </li>
                                     <li role="separator" class="divider"></li>
                                     <li><a ng-if="!doneElements" ng-click="onDoneItems()">Argomenti svolti</a></li>
                                     <li><a ng-if="doneElements" ng-click="onUndoneItems()">Tutti gli argomenti</a></li>
@@ -68,21 +68,28 @@ $id = $_POST['timelineid'];
                     <div id="bar-timeline" class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
                     </div>
                 </div>
-                <p>
-                    <input type="button" id="moveLeft" value="Move left"/>
-                    <input type="button" id="moveRight" value="Move right"/>
-                    <input type="button" id="moveTo" value="Vai a 2016-10-01"><br>
-                </p>
                 <div id="visualization" class="row top-sep clearfix"></div>
-                <div class="row top-sep well" ng-if="selected.current">
+                <div class="row top-sep well" ng-if="voci.current">
 
-                    <h4>{{selected.current.nome}}<small> da {{selected.current.topic.nome}} in {{selected.current.module.nome}}</small></h4>
-                    <p>{{selected.current.descrizione}}</p>
+                    <h4>{{voci.current.nome}}<small> da {{voci.current.topic.nome}} in {{voci.current.module.nome}}</small></h4>
+                    <p>{{voci.current.descrizione}}</p>
 
                 </div>
-                <div class="row top-sep well" ng-if="selected.current.links && selected.current.links.length > 0">
+                <div class="row top-sep well" ng-if="voci.current.links && voci.current.links.length > 0">
                     <h3>Collegamenti</h3>
-                    <span ng-repeat="link in selected.current.links">
+                    <span ng-repeat="link in moduli.current.links">
+                        <a class="text-success" href="{{link.link}}" target="blank">
+                            <span class="glyphicon glyphicon-link"></span>
+                            {{link.nome}}
+                        </a>
+                    </span>
+                    <span ng-repeat="link in argomenti.current.links">
+                        <a class="text-success" href="{{link.link}}" target="blank">
+                            <span class="glyphicon glyphicon-link"></span>
+                            {{link.nome}}
+                        </a>
+                    </span>
+                    <span ng-repeat="link in voci.current.links">
                         <a class="text-success" href="{{link.link}}" target="blank">
                             <span class="glyphicon glyphicon-link"></span>
                             {{link.nome}}

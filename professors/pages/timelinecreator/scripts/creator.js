@@ -21,7 +21,7 @@ app.controller("classesController", ['$http', '$scope', '$rootScope', function (
             content: []
         };
 
-        var baseYear = new Date().getFullYear();
+        var baseYear = new Date().getFullYear() - 1;
         for (var i = baseYear; i < baseYear + 10; i++) {
             $scope.anni.content.push(i);
         }

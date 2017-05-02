@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'] . '/LSS/consts.php';
+include '/membri/codetests/v4/consts.php';
 
 class QueryResult {
     

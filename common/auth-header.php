@@ -1,11 +1,11 @@
 <?php
 
-session_start();
 /*
  * Makes a page secure.
  */
-require_once $_SERVER['DOCUMENT_ROOT'] . '/LSS/common/google-api-php-client/src/Google/autoload.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/LSS/common/functions.php';
+require_once '/membri/codetests/v5/common/google-api-php-client/src/Google/autoload.php';
+session_start();
+require_once '/membri/codetests/v5/common/functions.php';
 //require_once dirname(__FILE__).'/GoogleClientApi/contrib/Google_AnalyticsService.php';
 
 $client_id = '487942486199-ur74tmud23ud4fvdr7ao871ovomhg27l.apps.googleusercontent.com';
@@ -15,10 +15,10 @@ $client_secret = 'uClSFPHN-p_WgESXnnE0ryrw';
  * Init current google client
  */
 $client = new Google_Client();
-//$client->setAccessType('online'); // default: offline
+$client->setAccessType('online'); // default: offline
 $client->setClientId($client_id);
 $client->setClientSecret($client_secret);
-$client->setRedirectUri('http://localhost/LSS/index.php');
+$client->setRedirectUri('http://codetests.altervista.org/v5/index.php');
 //$client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
 $client->setScopes('email');
 
@@ -27,10 +27,9 @@ $client->setScopes('email');
  */
 if (isset($_REQUEST['logout'])) {
     unset($_SESSION['access_token']);
+    unset($_GET['code']);
     unset($user_data);
-}
-
-if (isset($_GET['code'])) {
+}else if (isset($_GET['code'])) {
     /*
      * We've got an authorization code: user approved login
      * Now we need to exchange it for an access token
@@ -63,7 +62,6 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
     }
     $authUrl = $client->createAuthUrl();
     header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
-
 }
 
 /*
