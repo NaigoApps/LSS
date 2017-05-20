@@ -3,9 +3,12 @@
 /*
  * Makes a page secure.
  */
-require_once '/membri/codetests/v5/common/google-api-php-client/src/Google/autoload.php';
 session_start();
-require_once '/membri/codetests/v5/common/functions.php';
+
+require_once __DIR__.'/php/dao/UserDao.php';
+
+require_once __DIR__.'/php/consts.php';
+require_once __DIR__.'/google-api-php-client/src/Google/autoload.php';
 //require_once dirname(__FILE__).'/GoogleClientApi/contrib/Google_AnalyticsService.php';
 
 $client_id = '487942486199-ur74tmud23ud4fvdr7ao871ovomhg27l.apps.googleusercontent.com';
@@ -18,7 +21,7 @@ $client = new Google_Client();
 $client->setAccessType('online'); // default: offline
 $client->setClientId($client_id);
 $client->setClientSecret($client_secret);
-$client->setRedirectUri('http://codetests.altervista.org/v5/index.php');
+$client->setRedirectUri('http://localhost/LSS/index.php');
 //$client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
 $client->setScopes('email');
 
@@ -27,6 +30,7 @@ $client->setScopes('email');
  */
 if (isset($_REQUEST['logout'])) {
     unset($_SESSION['access_token']);
+    unset($_SESSION['user_data']);
     unset($_GET['code']);
     unset($user_data);
 }else if (isset($_GET['code'])) {
@@ -38,7 +42,7 @@ if (isset($_REQUEST['logout'])) {
         $client->authenticate($_GET['code']);
         $_SESSION['access_token'] = $client->getAccessToken();
     }catch(Google_IO_Exception $e){
-        print_msg("Errore di connessione: aggiorna la pagina");
+        print_msg($e->getMessage());
     }
     //$redirect = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
     //header('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
@@ -77,9 +81,9 @@ if ($client->getAccessToken()) {
         $verified_token = $client->verifyIdToken();
         $token_data = $verified_token->getAttributes();
 
-        $USER_EMAIL = $token_data['payload']['email'];
+        $user_email = $token_data['payload']['email'];
         $USER_ID = $token_data['payload']['sub'];
-        $user_data = get_user_info($USER_EMAIL);
+        $_SESSION['user_data'] = (new UserDao())->findByEmail($user_email)->uniqueContent();
     } catch (Google_Auth_Exception $e) {
         /*
          * Token not valid: login again
@@ -91,7 +95,7 @@ if ($client->getAccessToken()) {
         /*
          * Token not valid: login again
          */
-        print_msg("Errore di connessione: aggiorna la pagina");
+        print_msg($e->getMessage());
     }
 }
 

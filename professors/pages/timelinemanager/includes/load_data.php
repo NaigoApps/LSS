@@ -2,7 +2,7 @@
 
 require_once("../../../../common/auth-header.php");
 require_once("../../../../common/functions.php");
-$connection = mysqli_connect(HOST, USER, PASS, DB);
+$connection = mysqli_connect(HOST, PROFESSOR, PASS, DB);
 
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);

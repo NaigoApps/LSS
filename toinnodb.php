@@ -1,7 +1,7 @@
 <?php
 
 require_once("consts.php");
-$connection = mysqli_connect(HOST, USER, PASS, DB);
+$connection = mysqli_connect(HOST, PROFESSOR, PASS, DB);
 $sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
         WHERE TABLE_SCHEMA = 'lss' 
         AND ENGINE = 'MyISAM'";
