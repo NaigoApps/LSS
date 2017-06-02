@@ -40,9 +40,13 @@ class QueryResult {
     function getContent() {
         return $this->content;
     }
-    
+
     function uniqueContent() {
-        return $this->content[0];
+        if (count($this->content) == 1) {
+            return $this->content[0];
+        } else {
+            throw new Exception("Unique result error: size was ".count($this->content));
+        }
     }
 
 }

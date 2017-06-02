@@ -103,4 +103,8 @@ function print_msg($msg) {
     echo "<p class=\"text-success\">$msg</p>";
 }
 
+function filter($value){
+    return $value;
+}
+
 ?>

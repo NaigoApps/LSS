@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__.'/consts.php';
-require_once __DIR__.'/QueryResult.php';
+require_once __DIR__ . '/consts.php';
+require_once __DIR__ . '/QueryResult.php';
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -26,7 +26,7 @@ class TransactionManager {
         $this->mysqli = null;
     }
 
-    public function connect() {
+    private function connect() {
         $this->mysqli = new mysqli(HOST, USER, PASS, DB);
         if (!$this->mysqli->connect_errno) {
             return true;
@@ -36,9 +36,12 @@ class TransactionManager {
     }
 
     public function beginTransaction() {
-        if ($this->transaction == NONE) {
+        if ($this->transaction == TransactionManager::NONE) {
+            if ($this->mysqli == null) {
+                $this->connect();
+            }
             if ($this->mysqli->autocommit(false)) {
-                $this->transaction = OPEN;
+                $this->transaction = TransactionManager::OPEN;
                 return true;
             } else {
                 throw new Exception("Cannot begin transaction");
@@ -49,9 +52,10 @@ class TransactionManager {
     }
 
     public function commit() {
-        if ($this->transaction == OPEN) {
-            if ($this->mysqli->commit() && $this->autocommit(false)) {
-                $this->transaction = NONE;
+        if ($this->transaction == TransactionManager::OPEN) {
+            if ($this->mysqli->commit() && $this->mysqli->autocommit(true)) {
+                $this->transaction = TransactionManager::NONE;
+                $this->disconnect();
                 return true;
             } else {
                 throw new Exception("Cannot close transaction");
@@ -62,9 +66,10 @@ class TransactionManager {
     }
 
     public function rollback() {
-        if ($this->transaction == OPEN) {
+        if ($this->transaction == TransactionManager::OPEN) {
             if ($this->mysqli->rollback() && $this->autocommit(false)) {
-                $this->transaction = NONE;
+                $this->transaction = TransactionManager::NONE;
+                $this->disconnect();
                 return true;
             } else {
                 throw new Exception("Cannot close transaction");
@@ -76,11 +81,12 @@ class TransactionManager {
 
     public function disconnect() {
         $this->mysqli->close();
+        $this->mysqli = null;
     }
 
     public function find($query) {
         $alone = false;
-        if(!$this->mysqli){
+        if (!$this->mysqli) {
             $alone = true;
             $this->connect();
         }
@@ -94,7 +100,7 @@ class TransactionManager {
         } else {
             return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
         }
-        if($alone){
+        if ($alone) {
             $this->disconnect();
         }
     }
@@ -109,7 +115,16 @@ class TransactionManager {
                 return new QueryResult(QueryResult::FAILURE, $this->mysqli->error, NULL);
             }
         } else {
-            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error, NULL);
+            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
+        }
+    }
+
+    function multiInsert($query) {
+        $result = $this->mysqli->real_query($query);
+        if ($result !== false) {
+            return new QueryResult(QueryResult::SUCCESS, NULL, NULL);
+        } else {
+            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
         }
     }
 
@@ -118,7 +133,7 @@ class TransactionManager {
         if ($result !== false) {
             return new QueryResult(QueryResult::SUCCESS, NULL, NULL);
         } else {
-            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error, NULL);
+            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
         }
     }
 
@@ -127,7 +142,7 @@ class TransactionManager {
         if ($result !== false) {
             return new QueryResult(QueryResult::SUCCESS, NULL, NULL);
         } else {
-            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error, NULL);
+            return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
         }
     }
 

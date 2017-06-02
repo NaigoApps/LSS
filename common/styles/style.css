@@ -1,19 +1,9 @@
-*{
-    padding:0px;
-    margin:0px;
-    box-sizing:border-box;
+.container{
+    background-color: #EEEEEE;
 }
 
 ul{
     list-style-type:none;
-}
-
-.wrapper{
-    width:1000px;
-    min-height: 400px;
-    padding:15px;
-    margin:0px auto;
-    overflow: auto;
 }
 
 .always-bottom{
@@ -124,6 +114,18 @@ form{
 }
 .subject.gray{
     background-color: gray;
+}
+
+.status-done{
+    background-color: rgba(0,255,0,0.4);
+}
+
+.status-todo{
+    background-color: rgba(255,0,0,0.3);
+}
+
+.status-assigned{
+    background-color: rgba(255,165,0,0.3);
 }
 
 .tooltip-base{

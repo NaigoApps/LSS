@@ -7,25 +7,32 @@
  */
 
 /**
- * Description of Subject
+ * Description of Classroom
  *
  * @author root
  */
-class Subject implements JsonSerializable{
+class Element implements JsonSerializable {
+
     private $id;
+    private $parent;
     private $name;
     private $description;
-    private $color;
-    
+    private $type;
+
     function __construct() {
         $this->id = null;
+        $this->parent = null;
         $this->name = null;
         $this->description = null;
-        $this->color = null;
+        $this->type = null;
     }
-    
+
     function getId() {
         return $this->id;
+    }
+
+    function getParent() {
+        return $this->parent;
     }
 
     function getName() {
@@ -40,6 +47,10 @@ class Subject implements JsonSerializable{
         $this->id = $id;
     }
 
+    function setParent($parent) {
+        $this->parent = $parent;
+    }
+
     function setName($name) {
         $this->name = $name;
     }
@@ -48,21 +59,21 @@ class Subject implements JsonSerializable{
         $this->description = $description;
     }
 
-    function getColor() {
-        return $this->color;
+    function getType() {
+        return $this->type;
     }
 
-    function setColor($color) {
-        $this->color = $color;
+    function setType($type) {
+        $this->type = $type;
     }
 
-        
     public function jsonSerialize() {
         return [
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
-            "color" => $this->color
+            "parent" => $this->parent,
+            "type" => $this->type
         ];
     }
 

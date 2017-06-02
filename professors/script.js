@@ -1,3 +1,4 @@
+/* global angular */
 
 var app = angular.module('lss-db', []);
 
@@ -44,6 +45,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                             },
                             function (rx) {
                                 $scope.errorMessage(rx.data);
+                                $("#bar-unstored").hide();
                             }
                     );
         };
@@ -63,9 +65,12 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                             },
                             function (rx) {
                                 $scope.errorMessage(rx.data);
+                                $("#bar-stored").hide();
                             }
                     );
         };
+
+//TODO
 
         $scope.onStoreTimeline = function (timeline) {
             swal(

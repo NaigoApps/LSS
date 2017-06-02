@@ -1,13 +1,18 @@
 <?php
-require_once __DIR__.'/consts.php';
-require_once __DIR__.'/../auth-header.php';
+
+require_once __DIR__ . '/consts.php';
+require_once __DIR__ . '/../auth-header.php';
 
 function exception_handler($exception) {
-    exit_with_error("Exception: ".$exception->getMessage()." in ".$exception->getFile()." line ".$exception->getLine());
+    $traces = "";
+    foreach ($exception->getTrace() as $trace) {
+        $traces = $traces . "<p>" . $trace["file"] . $trace["line"] . $trace["function"] . "</p>";
+    }
+    exit_with_error("Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " line " . $exception->getLine() . " TRACE: " . $traces);
 }
 
 function error_handler($errno, $errstr, $errfile, $errline) {
-    exit_with_error("Error ".$errno.":".$errstr." in ".$errfile." line ".$errline);
+    exit_with_error("Error " . $errno . ":" . $errstr . " in " . $errfile . " line " . $errline);
 }
 
 function exit_with_error($msg) {

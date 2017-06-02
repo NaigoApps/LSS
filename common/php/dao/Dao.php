@@ -38,6 +38,10 @@ class Dao {
     public function insert($query){
         return $this->transactionManager->insert($query);
     }
+
+    public function multiInsert($query){
+        return $this->transactionManager->multiInsert($query);
+    }
     
     function getTransactionManager() {
         return $this->transactionManager;

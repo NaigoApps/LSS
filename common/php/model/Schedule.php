@@ -19,6 +19,7 @@ class Schedule implements JsonSerializable {
     private $year;
     private $professor;
     private $filed;
+    private $elements;
 
     function __construct() {
         $this->id = null;
@@ -27,6 +28,7 @@ class Schedule implements JsonSerializable {
         $this->year = null;
         $this->professor = null;
         $this->filed = null;
+        $this->elements = [];
     }
 
     function getId() {
@@ -77,6 +79,14 @@ class Schedule implements JsonSerializable {
         $this->filed = $filed;
     }
 
+    function getElements() {
+        return $this->elements;
+    }
+
+    function setElements($elements) {
+        $this->elements = $elements;
+    }
+
     public function jsonSerialize() {
         return [
             "id" => $this->id,
@@ -85,6 +95,7 @@ class Schedule implements JsonSerializable {
             "year" => $this->year,
             "professor" => $this->professor,
             "filed" => $this->filed,
+            "elements" => $this->elements
         ];
     }
 
