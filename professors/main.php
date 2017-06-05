@@ -90,14 +90,14 @@
                                                 <span class="glyphicon glyphicon-eye-open"></span>
                                             </button>
                                         </form>
-                                        <form class="dummy-form" action="./pages/timelinemanager/print.php" method="POST">
+                                        <form class="dummy-form" action="<?php echo WEB . "/professors/pages/scheduleprinter/print.php"; ?>" method="POST">
                                             <input type="hidden" name="timelineid" value="{{timeline.id}}"/>    
                                             <button class="btn btn-xs btn-info">
                                                 <span class="hidden-xs">Stampa</span>
                                                 <span class="glyphicon glyphicon-print"></span>
                                             </button>
                                         </form>
-                                        <form class="dummy-form" action="./pages/timelinecreator/index.php" method="POST">
+                                        <form class="dummy-form" action="<?php echo WEB . "/professors/pages/timelinecreator/main.php"; ?>" method="POST">
                                             <input type="hidden" name="timelineid" value="{{timeline.id}}"/> 
                                             <input type="hidden" name="copy" value="true"/>    
                                             <button type="submit" class="btn btn-xs btn-info">
@@ -105,11 +105,11 @@
                                                 <span class="glyphicon glyphicon-duplicate"></span>
                                             </button>
                                         </form>
-                                        <a class="btn btn-xs btn-warning" ng-click="onStoreTimeline(timeline)">
+                                        <a class="btn btn-xs btn-warning" ng-click="onStoreSchedule(timeline)">
                                             <span class="hidden-xs">Archivia</span>
                                             <span class="glyphicon glyphicon-cloud-download"></span>
                                         </a>
-                                        <a class="btn btn-xs btn-danger" ng-click="onDeleteTimeline(timeline)">
+                                        <a class="btn btn-xs btn-danger" ng-click="onDeleteSchedule(timeline)">
                                             <span class="hidden-xs">Rimuovi</span>
                                             <span class="glyphicon glyphicon-remove"></span>
                                         </a>
@@ -125,23 +125,24 @@
                     <div class="progress-bar progress-bar-success progress-bar-striped active" style="width: 100%">
                     </div>
                 </div>
-                <ul class="row" ng-hide="storedTimelines.hidden">
+                <ul class="row" ng-hide="storedSchedules.hidden">
                     <h3>Programmazioni archiviate</h3>
-                    <li class="list-group-item" ng-repeat="timeline in storedTimelines.content">
-                        {{timeline.classe}}{{timeline.sezione}} - {{timeline.materia}} {{timeline.anno}}/{{timeline.anno2}}                    <div class="pull-right">
-                            <form class="dummy-form" action="./pages/timelinecreator/index.php" method="POST">
-                                <input type="hidden" name="timelineid" value="{{timeline.id}}"/> 
+                    <li class="list-group-item" ng-repeat="schedule in storedSchedules.content">
+                        {{schedule.class.year}}{{schedule.class.section}} - {{schedule.subject.name}} {{schedule.year}}/{{schedule.year2}}                    <div class="pull-right">
+
+                            <form class="dummy-form" action="<?php echo WEB . "/professors/pages/timelinecreator/main.php"; ?>" method="POST">
+                                <input type="hidden" name="timelineid" value="{{schedule.id}}"/> 
                                 <input type="hidden" name="copy" value="true"/>    
                                 <button type="submit" class="btn btn-xs btn-info">
                                     <span class="hidden-xs">Duplica</span>
                                     <span class="glyphicon glyphicon-duplicate"></span>
                                 </button>
                             </form>
-                            <a class="btn btn-xs btn-success" ng-click="onUnStoreTimeline(timeline)">
-                                <span class="hidden-xs">Togli dall'archivio</span>
+                            <a class="btn btn-xs btn-success" ng-click="onUnstoreSchedule(schedule)">
+                                <span class="hidden-xs">Recupera</span>
                                 <span class="glyphicon glyphicon-cloud-upload"></span>
                             </a>
-                            <a class="btn btn-xs btn-danger" ng-click="onDeleteTimeline(timeline)">
+                            <a class="btn btn-xs btn-danger" ng-click="onDeleteSchedule(schedule)">
                                 <span class="hidden-xs">Rimuovi</span>
                                 <span class="glyphicon glyphicon-remove"></span>
                             </a>

@@ -15,6 +15,21 @@ require_once __DIR__ . '/../model/Schedule.php';
  */
 class ScheduleDao extends Dao {
 
+    public function insertSchedule($data) {
+        $query = $this->buildSchedulesInsert($data);
+        return $this->insert($query);
+    }
+
+    public function deleteSchedule($id) {
+        $query = "DELETE FROM timeline WHERE id = $id";
+        return $this->delete($query);
+    }
+
+    public function updateSchedule($schedule) {
+        $query = "UPDATE timeline SET archiviata = " . $schedule->getFiled() . " WHERE id = " . $schedule->getId();
+        return $this->update($query);
+    }
+
     public function findById($id, $lazy = false) {
         return $this->findSchedules(["id" => $id], $lazy);
     }
@@ -64,6 +79,12 @@ class ScheduleDao extends Dao {
         $builder->order("t.anno DESC");
         //    $query = $query . "ORDER BY timeline.anno DESC, materie.nome ASC, classi.anno ASC, classi.sezione ASC";
         return $builder->getQuery();
+    }
+
+    private function buildSchedulesInsert($data) {
+        $query = "INSERT INTO timeline(idmateria, idclasse, anno, iddocente, archiviata) VALUES ";
+        $query = $query . "(" . $data['subject'] . "," . $data['class'] . "," . $data['year'] . "," . $_SESSION['user_data']->getId() . ",false)";
+        return $query;
     }
 
 }

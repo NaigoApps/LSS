@@ -122,12 +122,28 @@ class ScheduleElementDao extends Dao {
         return $this->delete($delete_query);
     }
 
-    public function insertElements($elements) {
+    public function insertRawElements($elements) {
         $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, status) VALUES ";
         $at_least_one = false;
         $inserts = [];
         foreach ($elements as $element) {
             $inserts[] = "($element->schedule, " . $element->element->id . ", FROM_UNIXTIME('" . strtotime($element->date) . "'), '" . $element->status . "')";
+            $at_least_one = true;
+        }
+        if ($at_least_one) {
+            $update_query = $update_query . join(",", $inserts);
+            return $this->multiInsert($update_query);
+        }else{
+            return new QueryResult(QueryResult::SUCCESS, null, null);
+        }
+    }
+
+    public function insertElements($elements) {
+        $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, status) VALUES ";
+        $at_least_one = false;
+        $inserts = [];
+        foreach ($elements as $element) {
+            $inserts[] = "(".$element->getSchedule().", " . $element->getElement()->getId() . ", FROM_UNIXTIME('" . $element->getDate() . "'), '" . $element->getStatus() . "')";
             $at_least_one = true;
         }
         if ($at_least_one) {

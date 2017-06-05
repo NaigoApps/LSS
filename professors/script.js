@@ -10,7 +10,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             content: []
         };
 
-        $scope.storedTimelines = {
+        $scope.storedSchedules = {
             content: [],
             hidden: true
         };
@@ -24,17 +24,17 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             $scope.currentTimeline = timeline;
         };
 
-        $scope.reloadTimelines = function () {
-            $scope.loadUnstoredTimelines();
-            if (!$scope.storedTimelines.hidden) {
-                $scope.loadStoredTimelines();
+        $scope.reloadSchedules = function () {
+            $scope.loadUnstoredSchedules();
+            if (!$scope.storedSchedules.hidden) {
+                $scope.loadStoredSchedules();
             }
         };
 
-        $scope.loadUnstoredTimelines = function () {
+        $scope.loadUnstoredSchedules = function () {
             $("#bar-unstored").show();
 
-            $http.post('./ajax/load-unstored-schedules.php')
+            $http.post('../common/php/ajax/load-unstored-schedules.php')
                     .then(
                             function (rx) {
                                 $scope.timelines.content = rx.data;
@@ -44,35 +44,33 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                                 $("#bar-unstored").hide();
                             },
                             function (rx) {
-                                $scope.errorMessage(rx.data);
+                                swal(rx.data);
                                 $("#bar-unstored").hide();
                             }
                     );
         };
 
-        $scope.loadStoredTimelines = function () {
+        $scope.loadStoredSchedules = function () {
             $("#bar-stored").show();
-            $http.post('../common/php/ajax-load-schedules.php')
+            $http.post('../common/php/ajax/load-stored-schedules.php')
                     .then(
                             function (rx) {
-                                $scope.storedTimelines.content = rx.data;
-                                for (var i = 0; i < $scope.storedTimelines.content.length; i++) {
-                                    $scope.storedTimelines.content[i].year2 = parseInt($scope.storedTimelines.content[i].year) + 1;
+                                $scope.storedSchedules.content = rx.data;
+                                for (var i = 0; i < $scope.storedSchedules.content.length; i++) {
+                                    $scope.storedSchedules.content[i].year2 = parseInt($scope.storedSchedules.content[i].year) + 1;
                                 }
-                                $scope.storedTimelines.hidden = false;
+                                $scope.storedSchedules.hidden = false;
                                 $("#btn-stored").text("Nascondi archiviate");
                                 $("#bar-stored").hide();
                             },
                             function (rx) {
-                                $scope.errorMessage(rx.data);
+                                swal(rx.data);
                                 $("#bar-stored").hide();
                             }
                     );
         };
 
-//TODO
-
-        $scope.onStoreTimeline = function (timeline) {
+        $scope.onStoreSchedule = function (timeline) {
             swal(
                     {
                         title: "Archiviazione programmazione",
@@ -83,70 +81,60 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                         cancelButtonText: "No"
                     },
                     function () {
-                        $http.post(
-                                './common/php/ajax-store-schedule.php',
-                                {
-                                    id: timeline.id,
-                                    archived: true
-                                }
-                        ).then(
-                                function (rx) {
-                                    swal("Programmazione", "archiviata correttamente", "success");
-                                    $scope.reloadTimelines();
-                                },
-                                function (rx) {
-                                    $scope.errorMessage(rx.data);
-                                }
-                        );
+                        $http.post('./ajax/store-schedule.php', {id: timeline.id})
+                                .then(
+                                        function (rx) {
+                                            swal("Programmazione", "archiviata correttamente", "success");
+                                            $scope.reloadSchedules();
+                                        },
+                                        function (rx) {
+                                            swal(rx.data);
+                                        }
+                                );
                     }
             );
 
         };
 
-        $scope.onUnStoreTimeline = function (timeline) {
+        $scope.onUnstoreSchedule = function (timeline) {
             swal(
                     {
                         title: "Archiviazione programmazione",
                         text: "Recuperare la programmazione dall'archivio?",
-                        showCancelButton: true,
+                        type: "warning", showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
                         confirmButtonText: "Sì",
                         cancelButtonText: "No"
                     },
                     function () {
-                        $http.post(
-                                './pages/includes/timeline-manager.php',
-                                {
-                                    command: 'unstore_timeline',
-                                    timeline: timeline.id
-                                }
-                        ).then(
-                                function (rx) {
-                                    swal("Programmazione", "recuperata correttamente", "success");
-                                    $scope.reloadTimelines();
-                                },
-                                function (rx) {
-                                    $scope.errorMessage(rx.data);
-                                }
-                        );
+                        $http.post('./ajax/unstore-schedule.php', {id: timeline.id})
+                                .then(
+                                        function (rx) {
+                                            swal("Programmazione", "recuperata correttamente", "success");
+                                            $scope.reloadSchedules();
+                                        },
+                                        function (rx) {
+                                            swal(rx.data);
+                                        }
+                                );
                     }
             );
 
         };
 
         $scope.onShowStored = function () {
-            if ($scope.storedTimelines.hidden) {
-                $scope.loadStoredTimelines();
+            if ($scope.storedSchedules.hidden) {
+                $scope.loadStoredSchedules();
             } else {
-                $scope.storedTimelines.hidden = true;
-                $scope.storedTimelines.content = [];
+                $scope.storedSchedules.hidden = true;
+                $scope.storedSchedules.content = [];
                 $("#btn-stored").text("Mostra archiviate");
             }
         };
 
 
 
-        $scope.onDeleteTimeline = function (timeline) {
+        $scope.onDeleteSchedule = function (schedule) {
             swal(
                     {
                         title: "Cancellazione programmazione",
@@ -157,42 +145,21 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                         cancelButtonText: "No"
                     },
                     function () {
-                        $http.post(
-                                './pages/includes/timeline-manager.php',
-                                {
-                                    command: 'delete_timeline',
-                                    timeline: timeline.id
-                                }
-                        ).then(
-                                function (rx) {
-                                    swal("Programmazione", "eliminata correttamente", "success");
-                                    $scope.reloadTimelines();
-                                },
-                                function (rx) {
-                                    $scope.errorMessage(rx.data);
-                                }
-                        );
+                        $http.post('./ajax/delete-schedule.php', {id: schedule.id})
+                                .then(
+                                        function (rx) {
+                                            swal("Programmazione", "eliminata correttamente", "success");
+                                            $scope.reloadSchedules();
+                                        },
+                                        function (rx) {
+                                            swal(rx.data);
+                                        }
+                                );
                     }
             );
 
         };
 
-        $scope.errorMessage = function (message) {
-            swal("Errore", message, "error");
-        };
-        $scope.successMessage = function (message) {
-            swal("Successo", message, "success");
-        };
-
-        $scope.reloadTimelines();
+        $scope.reloadSchedules();
 
     }]);
-
-$(document).ready(function () {
-    $(".success-message").click(function () {
-        $(this).hide();
-    });
-    $(".error-message").click(function () {
-        $(this).hide();
-    });
-});

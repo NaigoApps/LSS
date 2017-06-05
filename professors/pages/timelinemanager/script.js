@@ -28,7 +28,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
          * nome, descrizione, data, performance
          */
 
-
         $scope.subjects = {
             content: []
         };
@@ -62,7 +61,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             selected: undefined,
             searchString: ""
         };
-        $scope.elements = [];
+
         $scope.schedule = {
             content: []
         };
@@ -267,7 +266,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             return newElement;
         };
         $scope.reloadElementStatus = function (element) {
-            $http.post('../../ajax/load-status.php', {element: element.element.id, schedule: schedule_id})
+            $http.post('../../../common/php/ajax/load-status.php', {element: element.element.id, schedule: schedule_id})
                     .then(
                             function (rx) {
                                 element.fullStatus = rx.data;
@@ -305,7 +304,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
         };
         $scope.loadModules = function () {
-            $http.post('../../ajax/load-elements.php', {type: "module"})
+            $http.post('../../../common/php/ajax/load-elements.php', {type: "module"})
                     .then(
                             function (rx) {
                                 $scope.replaceContent($scope.modules, rx.data);
@@ -316,7 +315,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     );
         };
         $scope.loadTopics = function (module) {
-            $http.post('../../ajax/load-elements.php', {parent: module.id})
+            $http.post('../../../common/php/ajax/load-elements.php', {parent: module.id})
                     .then(
                             function (rx) {
                                 $scope.replaceContent($scope.topics, rx.data);
@@ -327,7 +326,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     );
         };
         $scope.loadItems = function (topic) {
-            $http.post('../../ajax/load-elements.php', {parent: topic.id})
+            $http.post('../../../common/php/ajax/load-elements.php', {parent: topic.id})
                     .then(
                             function (rx) {
                                 $scope.replaceContent($scope.items, rx.data);
@@ -394,7 +393,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.schedule.elements = $scope.mergeSort($scope.schedule.elements);
         };
         $scope.loadSchedule = function () {
-            $http.post('../../ajax/load-schedule.php', {id: schedule_id})
+            $http.post('../../../common/php/ajax/load-schedule.php', {id: schedule_id})
                     .then(
                             function (rx) {
                                 $scope.schedule = rx.data;

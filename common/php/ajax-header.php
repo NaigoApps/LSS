@@ -27,6 +27,10 @@ function exit_with_data($data) {
     die($json_response);
 }
 
+function isAuthorized($schedule) {
+    return $schedule->getProfessor()->getId() == $_SESSION['user_data']->getId();
+}
+
 set_error_handler('error_handler');
 set_exception_handler('exception_handler');
 

@@ -67,7 +67,7 @@ class TransactionManager {
 
     public function rollback() {
         if ($this->transaction == TransactionManager::OPEN) {
-            if ($this->mysqli->rollback() && $this->autocommit(false)) {
+            if ($this->mysqli->rollback() && $this->mysqli->autocommit(false)) {
                 $this->transaction = TransactionManager::NONE;
                 $this->disconnect();
                 return true;
@@ -106,16 +106,24 @@ class TransactionManager {
     }
 
     function insert($query) {
+        $alone = false;
+        if (!$this->mysqli) {
+            $alone = true;
+            $this->connect();
+        }
         $result = $this->mysqli->real_query($query);
         if ($result !== false) {
             $id = $this->mysqli->insert_id;
             if ($id !== 0) {
-                return new QueryResult(QueryResult::SUCCESS, NULL, $id);
+                return new QueryResult(QueryResult::SUCCESS, NULL, [$id]);
             } else {
                 return new QueryResult(QueryResult::FAILURE, $this->mysqli->error, NULL);
             }
         } else {
             return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
+        }
+        if ($alone) {
+            $this->disconnect();
         }
     }
 

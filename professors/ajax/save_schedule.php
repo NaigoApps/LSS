@@ -13,7 +13,7 @@ if ($tm->beginTransaction()) {
     $sed = new ScheduleElementDao($tm);
     $res = $sed->deleteBySchedule($schedule->id);
     if ($res->wasSuccessful()) {
-        $res = $sed->insertElements($schedule->elements);
+        $res = $sed->insertRawElements($schedule->elements);
         if ($res->wasSuccessful()) {
             if ($tm->commit()) {
                 exit_with_data("OK");

@@ -27,7 +27,7 @@ class ClassDao extends Dao {
         return $select_result;
     }
 
-    public function findAll() {
+    public function findClasses() {
         $builder = new QueryBuilder();
         $builder->select("*")->from("classi c");
         $select_result = $this->find($builder->getQuery());
