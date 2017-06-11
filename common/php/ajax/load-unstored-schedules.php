@@ -1,8 +1,8 @@
 <?php
 
 
-require_once __DIR__.'/../../common/php/ajax-header.php';
-require_once __DIR__.'/../../common/php/dao/ScheduleDao.php';
+require_once __DIR__ . '/../ajax-header.php';
+require_once __DIR__.'/../dao/ScheduleDao.php';
 
 $dao = new ScheduleDao();
 $result = $dao->findSchedules(["user" => $_SESSION['user_data']->getId(), "filed" => "false"], true);

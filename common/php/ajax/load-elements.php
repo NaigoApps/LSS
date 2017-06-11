@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../common/php/ajax-header.php';
-require_once __DIR__ . '/../../common/php/dao/ElementDao.php';
+require_once __DIR__ . '/../ajax-header.php';
+require_once __DIR__ . '/../dao/ElementDao.php';
 
 $type = null;
 $parent = null;

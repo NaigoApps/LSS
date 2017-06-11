@@ -137,20 +137,36 @@ class TransactionManager {
     }
 
     function update($query) {
+        $alone = false;
+        if (!$this->mysqli) {
+            $alone = true;
+            $this->connect();
+        }
         $result = $this->mysqli->real_query($query);
         if ($result !== false) {
             return new QueryResult(QueryResult::SUCCESS, NULL, NULL);
         } else {
             return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
         }
+        if ($alone) {
+            $this->disconnect();
+        }
     }
 
     function delete($query) {
+        $alone = false;
+        if (!$this->mysqli) {
+            $alone = true;
+            $this->connect();
+        }
         $result = $this->mysqli->real_query($query);
         if ($result !== false) {
             return new QueryResult(QueryResult::SUCCESS, NULL, NULL);
         } else {
             return new QueryResult(QueryResult::FAILURE, $this->mysqli->error . " Your query was: " . $query, NULL);
+        }
+        if ($alone) {
+            $this->disconnect();
         }
     }
 

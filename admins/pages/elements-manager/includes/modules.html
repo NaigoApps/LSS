@@ -1,0 +1,100 @@
+<div class="col-sm-4">
+
+    <h2>Moduli</h2>
+    <input type="text" class="form-control" placeholder="ricerca"
+           ng-model="modules.searchString"
+           ng-keyup="onSearchModule()"/>
+    <ul class="list-group top-sep">
+        <div class="row" ng-repeat="module in modules.content">
+            <!-- Module -->
+            <li id="mod{{module.id}}" class="list-group-item module-name col-sm-12"
+                ng-class="{'current': module === modules.selected}"
+                data-toggle="tooltip"
+                title="{{module.description}}"
+                ng-click="onSelectModule(module)">
+                {{module.name}}
+                <!-- Functions -->
+                <div class="right btn-group" role="group" aria-label="...">
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentModule(module)"
+                       data-target="#editModule">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a class="btn btn-xs btn-default"
+                       data-toggle="modal"
+                       ng-hide="linkMode"
+                       ng-click="onCurrentModule(module)"
+                       data-target="#deleteModule">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </div>
+                <div class="well">
+                    
+                </div>
+            </li>
+        </div>
+    </ul>
+
+    <!-- Add -->
+    <div class="row top-sep">
+        <button
+            class="btn btn-default col-sm-2 col-sm-offset-5"
+            data-toggle="modal"
+            ng-click="onAddModule()"
+            data-target="#addElement">
+            <span
+                class="glyphicon glyphicon-plus">
+            </span>
+        </button>
+    </div>
+
+    <!-- Add Modal -->
+    <div id="addElement" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">{{modalData.modalTitle}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="elementAddForm" novalidate>
+                        <input type="text" maxlength="50" class="title form-control" placeholder="nome" ng-model="modalData.name" autofocus required/>
+                        <textarea maxlength="500" rows="5" cols="50" class="description form-control" placeholder="descrizione" ng-model="modalData.description"></textarea>
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-5"
+                                ng-click="onConfirmAddElement()"
+                                ng-disabled='elementAddForm.$invalid'
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editElement" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">{{modalData.title}} {{modalData.name}}</h3>
+                </div>
+                <div class="modal-body">
+                    <form name="elementEditForm" novalidate>
+                        <input type="text" maxlength="50" class="title form-control" placeholder="nome" ng-model="modalData.name" autofocus required/>
+                        <textarea maxlength="500" rows="5" cols="50" class="description form-control" placeholder="descrizione" ng-model="modalData.description"></textarea>
+
+                        <button type="submit" class="btn btn-success col-sm-2 col-sm-offset-5"
+                                ng-click="onConfirmEditElement()"
+                                ng-disabled='elementEditForm.$invalid'
+                                data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>			
+</div>

@@ -1,8 +1,8 @@
 <?php
 
 
-require_once __DIR__.'/../../common/php/ajax-header.php';
-require_once __DIR__.'/../../common/php/dao/ScheduleDao.php';
+require_once __DIR__ . '/../ajax-header.php';
+require_once __DIR__.'/../dao/ScheduleDao.php';
 
 $id = null;
 if (isset($request->id)) {

@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../model/Element.php';
 
 require_once __DIR__ . '/../QueryBuilder.php';
+require_once __DIR__ . '/../InsertBuilder.php';
 require_once __DIR__ . '/Dao.php';
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -16,6 +17,56 @@ require_once __DIR__ . '/Dao.php';
  * @author root
  */
 class ElementDao extends Dao {
+
+    function fromRequest($request) {
+        $element = new Element();
+        if (isset($request->id)) {
+            $element->setId($request->id);
+        }
+        if (isset($request->name)) {
+            $element->setName($request->name);
+        }
+        if (isset($request->description)) {
+            $element->setDescription($request->description);
+        }
+        if (isset($request->parent)) {
+            $element->setParent($this->findById($request->parent->id)->uniqueContent());
+        }
+        if (isset($request->type)) {
+            $element->setType($request->type);
+        }
+        return $element;
+    }
+
+    public function updateElement($data) {
+        $query = "UPDATE element SET"
+                . " nome = '" . $data->getName() . "',"
+                . " descrizione = '" . $data->getDescription() . "',"
+                . " parent = " . (($data->getParent() != null) ? $data->getParent()->getId() : "NULL")
+                . " WHERE id = " . $data->getId();
+        return $this->update($query);
+    }
+
+    public function insertElement($data) {
+        $builder = new InsertBuilder();
+        $builder->insert("element")
+                ->attrs("nome", "descrizione", "parent", "tipo");
+        $builder->startValues();
+        $builder->value($data["name"], true)
+                ->value($data["description"], true);
+        if (isset($data["parent"])) {
+            $builder->value($data["parent"]);
+        } else {
+            $builder->value("NULL");
+        }
+        $builder->value($data["type"], true);
+        $builder->endValues();
+        return $this->insert($builder->getQuery());
+    }
+
+    public function deleteElement($id) {
+        return $this->delete("DELETE FROM element WHERE id = $id");
+    }
 
     public function findById($id) {
         return $this->findElements(["id" => $id]);

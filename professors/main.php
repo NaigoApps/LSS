@@ -52,7 +52,7 @@
                     if ($_SESSION['user_data']->isAdmin()) {
                         ?>
 
-                        <a class="col-sm-3 btn btn-sm btn-default" href="../admins/index.php">
+                        <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/admins/main.php"; ?>">
                             <strong class="text-warning">
                                 <span class="glyphicon glyphicon-console" aria-hidden="true"></span>
                                 Sezione amministratore

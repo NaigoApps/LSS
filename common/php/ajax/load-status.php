@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../common/php/ajax-header.php';
-require_once __DIR__ . '/../../common/php/dao/ScheduleElementDao.php';
+require_once __DIR__ . '/../ajax-header.php';
+require_once __DIR__ . '/../dao/ScheduleElementDao.php';
 
 $element = null;
 $schedule = null;

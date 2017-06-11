@@ -337,7 +337,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     );
         };
         $scope.loadSubjects = function () {
-            $http.post('../../ajax/load-subjects.php')
+            $http.post('../../../common/php/ajax/load-subjects.php')
                     .then(
                             function (rx) {
                                 $scope.replaceContent($scope.subjects, rx.data);
