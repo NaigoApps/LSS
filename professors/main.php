@@ -32,6 +32,12 @@
                             Nuova programmazione
                         </strong>
                     </a>
+                    <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/professors/pages/materialmanager/materialmanager.php"; ?>">
+                        <strong class="text-info">
+                            <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                            Gestione del materiale
+                        </strong>
+                    </a>
                     <!--
                             <a class="col-sm-3 btn btn-sm btn-default" href="./pages/timelinemanager/index.php">
                                 <strong class="text-info">
