@@ -3,26 +3,32 @@
 require_once __DIR__ . '/../../common/php/ajax-header.php';
 
 require_once __DIR__ . '/../../common/php/TransactionManager.php';
+require_once __DIR__ . '/../../common/php/dao/FileDao.php';
+require_once __DIR__ . '/../../common/php/model/File.php';
 
 $ok = true;
 $message = "";
 if (isset($_FILES['document'])) {
+    if($_FILES['document']['size'] > 5*1024*1024){
+        exit_with_error("Dimensione eccessiva");
+    }
     $tm = new TransactionManager();
-    $dao = new MaterialDao($tm);
+    $dao = new FileDao($tm);
     if ($tm->beginTransaction()) {
-        if (uploadFile() && createMaterial($dao)) {
-            if ($dao->commit()) {
+        if (uploadFile() && createFile($dao)) {
+            if ($tm->commit()) {
                 exit_with_data("File caricato correttamente");
             } else {
-                $dao->rollback();
-                exit_with_error("Impossibile caricare il file");
+                deleteFile();
+                $tm->rollback();
+                exit_with_error("Impossibile completare la transazione");
             }
         } else {
-            $dao->rollback();
+            $tm->rollback();
             exit_with_error("Impossibile caricare il file");
         }
     } else {
-        exit_with_error("Impossibile caricare il file");
+        exit_with_error("Impossibile iniziare la transazione");
     }
 } else {
     exit_with_error("File non trovato");
@@ -30,7 +36,8 @@ if (isset($_FILES['document'])) {
 
 function uploadFile() {
     $sourcePath = $_FILES['document']['tmp_name'];
-    $targetPath = ROOT . "/files/";
+    $targetPath = FILES_DIR . "/";
+    $ok = true;
     if (!is_dir($targetPath)) {
         $ok = mkdir($targetPath, 0777, true);
     }
@@ -44,8 +51,21 @@ function uploadFile() {
     } else {
         return false;
     }
+    return $ok;
 }
 
-function createMaterial($dao){
-    $dao->insertMaterial();
+function deleteFile() {
+    $targetPath = ROOT . "/files/" . ($_SESSION['user_data']->getEmail()) . "/";
+    $targetPath = $targetPath . $_FILES['document']['name'];
+    if (is_file($targetPath)) {
+        unlink($targetPath);    // Moving Uploaded file*/
+    }
+}
+
+function createFile($dao) {
+    $userDao = new UserDao();
+    $file = new File();
+    $file->setUploader($userDao->findById($_SESSION['user_data']->getId())->uniqueContent());
+    $file->setName($_FILES['document']['name']);
+    return $dao->insertFile($file)->wasSuccessful();
 }

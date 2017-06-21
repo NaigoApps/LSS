@@ -7,24 +7,24 @@ $id = $_POST['timelineid'];
     <head>
         <title>Visualizzazione</title>
 
-        <script src="../../../common/scripts/jquery.js"></script>
-        <script src="../../../common/swal/sweetalert.min.js"></script>
-        <link href="../../../common/swal/sweetalert.css" rel="stylesheet" type="text/css"/>
-        <script src="../../../common/timeline/timeline2.js"></script>
-        <link rel="stylesheet" href="../../../common/styles/bootstrap.min.css">
-        <link rel="stylesheet" href="../../../common/styles/style.css">
-        <script type="text/javascript" src="../../../common/scripts/bootstrap.min.js"></script>
-        <script type="text/javascript" src="../../../common/scripts/angular.min.js"></script>
-        <script src="../../../common/scripts/links.js"></script>
-        <script src="./scripts/script.js"></script>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href=<?php echo WEB . "/common/styles/bootstrap.min.css"; ?>>
+        <link rel="stylesheet" href=<?php echo WEB . "/common/styles/style.css"; ?>>
+        <link rel="stylesheet" href=<?php echo WEB . "/common/swal/sweetalert.css"; ?>>
+        <script type="text/javascript" src=<?php echo WEB . "/common/swal/sweetalert.min.js"; ?>></script>
+        <script type="text/javascript" src=<?php echo WEB . "/common/scripts/jquery.js"; ?>></script>
+        <script type="text/javascript" src=<?php echo WEB . "/common/scripts/bootstrap.min.js"; ?>></script>
+        <script type="text/javascript" src=<?php echo WEB . "/common/scripts/angular.min.js"; ?>></script>
 
         <script type="text/javascript">
-                    var timeline_id = <?php echo $id; ?>;</script>
-        <link href="../../../common/timeline/timeline.css" rel="stylesheet" type="text/css" />
-        <link href="../../../common/styles/style.css" rel="stylesheet" type="text/css" />
+            var timeline_id = <?php echo $id; ?>;
+        </script>
+        <script src="viewer.js"></script>
+
+        <link href='<?php echo WEB . "/common/timeline/timeline.css"; ?>' rel="stylesheet" type="text/css" />
+        <script src='<?php echo WEB . "/common/timeline/timeline.js"; ?>' type="text/javascript" ></script>
     </head>
-    <body ng-app="lss-db" ng-controller="linkController as linkCtrl">
-        <div ng-app="lss-db" ng-controller="timelineController as tCtrl">
+    <body ng-app="lss-db" ng-controller="timelineController as tCtrl">
             <nav class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
@@ -32,15 +32,14 @@ $id = $_POST['timelineid'];
                             <span class="glyphicon glyphicon-list"></span>
                         </a>
                     </div>
-
-                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div class="collapse navbar-collapse">
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li ng-repeat="timeline in timelines">
-                                        <a ng-if="timeline.visible" ng-click="onToggleTimeline(timeline)">Nascondi {{timeline.metadata.nomemateria}}</a>
-                                        <a ng-if="!timeline.visible" ng-click="onToggleTimeline(timeline)">Mostra {{timeline.metadata.nomemateria}}</a>
+                                    <li ng-repeat="schedule in schedules">
+                                        <a ng-if="schedule.visible" ng-click="onToggleSchedule(schedule)">Nascondi {{schedule.metadata.nomemateria}}</a>
+                                        <a ng-if="!schedule.visible" ng-click="onToggleSchedule(schedule)">Mostra {{schedule.metadata.nomemateria}}</a>
                                     </li>
                                     <li role="separator" class="divider"></li>
                                     <li><a ng-if="!doneElements" ng-click="onDoneItems()">Argomenti svolti</a></li>
@@ -49,17 +48,17 @@ $id = $_POST['timelineid'];
                                     <li><a href="../../index.php">Indietro</a></li>
                                 </ul>
                             </li>
-                            <ul class="nav navbar-nav navbar-right">
-                                <li>
-                                    <a>Visualizzazione programmazione {{timelines[0].metadata.anno}}/{{timelines[0].metadata.anno2}} - Classe {{timelines[0].metadata.annoclasse}}{{timelines[0].metadata.sezione}}:
-                                        <span class="small" ng-repeat="timeline in timelines| filter: {visible : true}">
-                                            <span>{{timeline.metadata.nomemateria}}</span>
-                                            <span ng-if="!$last">, </span>
-                                        </span></a>
-                                </li>
-                            </ul>
+                            <li>
+                                <a>Visualizzazione programmazione {{schedules[0].metadata.anno}}/{{schedules[0].metadata.anno2}} - Classe {{schedules[0].metadata.annoclasse}}{{schedules[0].metadata.sezione}}:
+                                    <span class="small" ng-repeat="schedule in schedules| filter: {visible : true}">
+                                        <span>{{schedule.metadata.nomemateria}}</span>
+                                        <span ng-if="!$last">, </span>
+                                    </span></a>
+                            </li>
                         </ul>
+                        <?php require_once __DIR__ . '/../../../common/authentication-bar.php'; ?>
                     </div><!-- /.navbar-collapse -->
+
                 </div><!-- /.container-fluid -->
             </nav>
 
@@ -130,24 +129,22 @@ $id = $_POST['timelineid'];
                                         </button>
                                     </div>
                                 </div>-->
-
-                <div class="row error message always-bottom">
-                    <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Errore:</span>
-                        {{lastErrorMessage}}
-                    </div>
-                </div>
-                <div class="row success message always-bottom">
-                    <div class="alert alert-success success-message col-sm-12" role="alert" hidden>
-                        <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Successo:</span>
-                        {{lastSuccessMessage}}
-                    </div>
+                iv class="row error message always-bottom">
+                <div class="alert alert-danger error-message col-sm-12" role="alert" hidden>
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Errore:</span>
+                    {{lastErrorMessage}}
                 </div>
             </div>
-        </div>
+            <div class="row success message always-bottom">
+                <div class="alert alert-success success-message col-sm-12" role="alert" hidden>
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Successo:</span>
+                    {{lastSuccessMessage}}
+                </div>
+            </div>
+    </div>
 
 
-    </body>
+</body>
 </html>

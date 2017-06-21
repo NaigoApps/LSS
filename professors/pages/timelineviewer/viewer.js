@@ -48,47 +48,35 @@ function prettyPrompt(title, text, inputValue, callback) {
     }, callback);
 }
 
+/* global angular */
 
-
-
+var app = angular.module('lss-db', []);
 app.controller("timelineController", ['$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
 
-        $scope.argomenti = {
+        $scope.modules = {
             content: [],
-            name: 'argomenti',
             selected: undefined,
-            current: {},
-            newURL:
-                    {
-                        nome: "",
-                        link: ""
-                    },
             searchString: ""
         };
-        $scope.voci = {
+        $scope.topics = {
             content: [],
-            name: 'voci',
             selected: undefined,
-            current: {},
-            newURL:
-                    {
-                        nome: "",
-                        link: ""
-                    },
             searchString: ""
         };
-        $scope.moduli = {
+        $scope.items = {
             content: [],
-            name: 'moduli',
             selected: undefined,
-            current: {},
-            newURL:
-                    {
-                        nome: "",
-                        link: ""
-                    },
             searchString: ""
         };
+
+        $scope.materials = {
+            content: []
+        };
+
+        $scope.files = {
+            content: []
+        };
+
         $scope.materie = {
             content: [],
             colors: ["orange", "cyan", "red", "green", "black"],
@@ -101,13 +89,21 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.doneElements = true;
 
         $scope.loaded = 0;
-        $scope.timelines = [];
 
-        $scope.onToggleTimeline = function (timeline) {
-            if (!timeline.visible) {
-                timeline.visible = true;
+        $scope.schedules = {
+            content: []
+        };
+
+        $scope.subjects = {
+            content: [],
+            selected: undefined
+        };
+
+        $scope.onToggleSchedule = function (schedule) {
+            if (!schedule.visible) {
+                schedule.visible = true;
             } else {
-                timeline.visible = false;
+                schedule.visible = false;
             }
             $scope.buildView();
         };
@@ -123,7 +119,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
 
         $scope.exit = function () {
-            window.location.replace("./index.php");
+            window.location.replace("../../main.php");
         };
         $scope.initElement = function (id, name, date) {
             var element = {
@@ -168,20 +164,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             return undefined;
         };
 
-        $scope.errorMessage = function (message) {
-            $scope.lastErrorMessage = message;
-            $(".error-message").show();
-        };
-        $scope.successMessage = function (message) {
-            $scope.lastSuccessMessage = message;
-            $(".success-message").show();
-        };
-        $scope.loadTimeline = function (timeline) {
-            $http.post(
-                    '../timelinemanager/includes/load_data.php',
+        $scope.loadTimeline = function (schedule) {
+            $http.post('../../../common/php/ajax/load-schedule.php',
                     {
-                        command: 'load_timeline',
-                        id: timeline.metadata.id
+                        id: schedule.id
                     }
             ).then(
                     function (rx) {
@@ -197,14 +183,13 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                         $scope.reloadPerformances(timeline);
                     },
                     function (rx) {
-                        $scope.errorMessage(rx.data.msg);
+                        swal(rx.data);
                     }
             );
         };
-        $scope.loadTimelines = function () {
+        $scope.loadSchedules = function () {
             $(".progress").show();
-            $http.post(
-                    '../timelinemanager/includes/load_data.php',
+            $http.post('../../../common/php/ajax/load-schedule.php',
                     {
                         command: 'load_timeline_sameclass',
                         id: timeline_id

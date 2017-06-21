@@ -20,7 +20,7 @@ class Material implements JsonSerializable {
     private $private;
     private $approved;
     private $url;
-    private $fileName;
+    private $file;
 
     function __construct() {
         $this->id = null;
@@ -31,15 +31,24 @@ class Material implements JsonSerializable {
         $this->approved = null;
 
         $this->url = null;
-        $this->fileName = null;
+        $this->file = null;
+    }
+    
+    function getPrivate() {
+        return $this->private;
     }
 
-    function getFileName() {
-        return $this->fileName;
+    function getApproved() {
+        return $this->approved;
     }
 
-    function setFileName($fileName) {
-        $this->fileName = $fileName;
+    
+    function getFile() {
+        return $this->file;
+    }
+
+    function setFile($file) {
+        $this->file = $file;
     }
 
     function getId() {
@@ -99,7 +108,7 @@ class Material implements JsonSerializable {
             "private" => $this->private,
             "approved" => $this->approved,
             "url" => $this->url,
-            "fileName" => $this->fileName
+            "file" => $this->file
         ];
     }
 

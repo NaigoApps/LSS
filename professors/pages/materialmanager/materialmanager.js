@@ -43,9 +43,11 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             content: []
         };
 
+        $scope.files = {
+            content: []
+        };
+
         $scope.newMaterial = {};
-
-
 
         $scope.addMode = false;
 
@@ -61,55 +63,123 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             $scope.newMaterial = {
                 name: undefined,
                 url: undefined,
-                file: undefined,
-                private: false,
-                internal: false
+                file: false,
+                private: false
             };
+            if ($scope.items.selected !== undefined) {
+                $scope.newMaterial.element = $scope.items.selected;
+            } else if ($scope.topics.selected !== undefined) {
+                $scope.newMaterial.element = $scope.topics.selected;
+            } else if ($scope.modules.selected !== undefined) {
+                $scope.newMaterial.element = $scope.modules.selected;
+            }
 
             $scope.addMode = true;
         };
 
-        $scope.onConfirmNewMaterial = function () {
+        $scope.onUploadFile = function () {
             $scope.uploadFile();
         };
 
-        $scope.onDiscardNewMaterial = function () {
+        $scope.materialPost = function (material) {
+            var forPost = {};
+            forPost.name = (material.name !== undefined) ? material.name : undefined;
+            forPost.url = (material.url !== undefined) ? material.url : undefined;
+            forPost.file = (material.file !== undefined) ? material.file.id : undefined;
+            forPost.private = (material.private !== undefined) ? material.private : undefined;
+            forPost.element = (material.element !== undefined) ? material.element.id : undefined;
+            return forPost;
+        }
+
+        $scope.onConfirmNewMaterial = function () {
+            $http.post('../../ajax/create-material.php', {material: $scope.materialPost($scope.newMaterial)})
+                    .then(
+                            function (rx) {
+                                $scope.loadMaterial($scope.newMaterial.element.id);
+                                $scope.addMode = false;
+                                $scope.newMaterial = {};
+                                swal("Creazione avvenuta con successo");
+                            },
+                            function (rx) {
+                                swal(rx.data);
+                            }
+                    );
+        };
+
+        $scope.resetNewMaterial = function () {
             $scope.addMode = false;
             $scope.newMaterial = {};
         };
 
-        /**
-         * 
-         * @param {object} module Selected module
-         * @returns {undefined}
-         */
+        $scope.onDiscardNewMaterial = function () {
+            $scope.resetNewMaterial();
+        };
+
         $scope.onSelectModule = function (module) {
             $scope.modules.selected = module;
             $scope.topics.selected = undefined;
             $scope.loadTopics(module);
             $scope.items.content.splice(0, $scope.items.content.length);
             $scope.loadMaterial($scope.modules.selected.id);
+            $scope.resetNewMaterial();
         };
-        /**
-         * 
-         * @param {object} topic Selected topic
-         * @returns {undefined}
-         */
+
         $scope.onSelectTopic = function (topic) {
             $scope.topics.selected = topic;
             $scope.items.selected = undefined;
             $scope.loadItems(topic);
             $scope.loadMaterial($scope.topics.selected.id);
+            $scope.resetNewMaterial();
         };
-        /**
-         * 
-         * @param {object} item Selected item
-         * @returns {undefined}
-         */
+
         $scope.onSelectItem = function (item) {
             $scope.items.selected = item;
             $scope.loadMaterial($scope.items.selected.id);
+            $scope.resetNewMaterial();
         };
+
+        $scope.onSelectFile = function (file) {
+            $scope.newMaterial.file = file;
+        };
+
+        $scope.onDeleteFile = function (file) {
+            prettyConfirm("Cancellazione file", "Eliminare " + file.name + "?", function (ok) {
+                if (ok) {
+                    $http.post('../../ajax/delete-file.php', {file: file})
+                            .then(
+                                    function (rx) {
+                                        $scope.loadFiles();
+                                        if ($scope.newMaterial.file === file) {
+                                            $scope.newMaterial.file = undefined;
+                                        }
+                                        swal("Cancellazione avvenuta con successo");
+                                    },
+                                    function (rx) {
+                                        swal(rx.data);
+                                    }
+                            );
+                }
+            });
+        };
+
+        $scope.onDeleteMaterial = function (material) {
+            prettyConfirm("Cancellazione materiale", "Eliminare " + material.name + "?", function (ok) {
+                if (ok) {
+                    $http.post('../../ajax/delete-material.php', {material: material})
+                            .then(
+                                    function (rx) {
+                                        $scope.loadRightMaterial();
+                                        swal("Cancellazione avvenuta con successo");
+                                    },
+                                    function (rx) {
+                                        swal(rx.data);
+                                    }
+                            );
+                }
+            });
+        };
+
+
         /**
          * Searches a matching module
          * @returns {undefined}
@@ -161,6 +231,17 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                 array.content.push(data[i]);
             }
         };
+        $scope.loadFiles = function () {
+            $http.post('../../../common/php/ajax/load-files.php')
+                    .then(
+                            function (rx) {
+                                $scope.replaceContent($scope.files, rx.data);
+                            },
+                            function (rx) {
+                                swal(rx.data);
+                            }
+                    );
+        };
         $scope.loadModules = function () {
             $http.post('../../../common/php/ajax/load-elements.php', {type: "module"})
                     .then(
@@ -194,57 +275,97 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                             }
                     );
         };
-        $scope.loadMaterial = function (element) {
-            var id = (element !== undefined) ? element.id : undefined;
+
+        $scope.getRightElement = function () {
+            var element = undefined;
+            if ($scope.items.selected !== undefined) {
+                element = $scope.items.selected;
+            } else if ($scope.topics.selected !== undefined) {
+                element = $scope.topics.selected;
+            } else if ($scope.modules.selected !== undefined) {
+                element = $scope.modules.selected;
+            }
+            return element;
+        };
+
+        $scope.loadRightMaterial = function () {
+            var e = $scope.getRightElement();
+            if (e !== undefined) {
+                $scope.loadMaterial(e.id);
+            }else{
+                $scope.loadMaterial(undefined);
+            }
+        };
+
+        $scope.loadMaterial = function (id) {
+            $("#material-load-progress-container").show();
+            $("#material-load-progress").width("100%");
             $http.post('../../../common/php/ajax/load-materials.php', {element: id})
                     .then(
                             function (rx) {
                                 $scope.replaceContent($scope.materials, rx.data);
+                                $scope.materials.content.forEach(function (element) {
+                                    if (element.file) {
+                                        element.file.url = "http://localhost/LSS/materials/" + element.file.name;
+                                    }
+                                });
+                                $("#material-load-progress-container").hide();
                             },
                             function (rx) {
+                                $("#material-load-progress-container").hide();
                                 swal(rx.data);
                             }
                     );
         };
         $scope.uploadFile = function () {
             var formData = new FormData();
-            formData.append('document', $('#file-loader')[0].files[0]); 
-            $.ajax({
-                url: '../../ajax/file-upload.php',
-                type: 'POST',
-                xhr: function () {
-                    var myXhr = $.ajaxSettings.xhr();
-                    if (myXhr.upload) {
-                        myXhr.upload.addEventListener('progress',
-                                function (e) {
-                                    console.log(e.loaded);
-                                    if (e.lengthComputable) {
-                                        $('#file-upload-progress').attr(
-                                                {
-                                                    'aria-valuenow': e.loaded,
-                                                    'aria-valuemax': e.total
-                                                }
-                                        );
-                                        $('#file-upload-progress').width(e.loaded * 100 / e.total + '%');
+            if ($('#file-loader')[0].files[0].size <= 5 * 1024 * 1024) {
+                formData.append('document', $('#file-loader')[0].files[0]);
+                $('#file-upload-progress-container').show();
+                $('#file-upload-progress').width('100%');
+                $.ajax({
+                    url: '../../ajax/file-upload.php',
+                    type: 'POST',
+                    xhr: function () {
+                        var myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) {
+                            myXhr.upload.addEventListener('progress',
+                                    function (e) {
+                                        console.log(e.loaded);
+                                        if (e.lengthComputable) {
+                                            $('#file-upload-progress').attr(
+                                                    {
+                                                        'aria-valuenow': e.loaded,
+                                                        'aria-valuemax': e.total
+                                                    }
+                                            );
+                                            $('#file-upload-progress').width(e.loaded * 100 / e.total + '%');
+                                        }
                                     }
-                                }
-                        , false);
-                    }
-                    return myXhr;
-                },
-                success: function (rx, status) {
-                    swal(rx);
-                },
-                error: function (rx, status) {
-                    swal(rx.responseText);
-                },
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false
-            });
+                            , false);
+                        }
+                        return myXhr;
+                    },
+                    success: function (rx, status) {
+                        $scope.loadFiles();
+                        $('#file-upload-progress-container').hide();
+                        swal(rx);
+                    },
+                    error: function (rx, status) {
+                        $('#file-upload-progress-container').hide();
+                        swal(rx.responseText);
+                    },
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            } else {
+                swal("Dimensione eccessiva");
+            }
         };
 //MAIN
         $scope.loadModules();
+        $scope.loadFiles();
         $scope.loadMaterial(undefined);
     }]);

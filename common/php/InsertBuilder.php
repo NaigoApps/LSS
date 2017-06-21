@@ -43,10 +43,16 @@ class InsertBuilder {
     }
 
     function value($val, $str = false) {
-        if ($str) {
-            $this->newValues[] = "'" . $val . "'";
+        if ($val !== null) {
+            if (is_bool($val)) {
+                $this->newValues[] = ($val) ? "true" : "false";
+            }else if ($str) {
+                $this->newValues[] = "'" . $val . "'";
+            } else {
+                $this->newValues[] = $val;
+            }
         } else {
-            $this->newValues[] = $val;
+            $this->newValues[] = "NULL";
         }
         return $this;
     }

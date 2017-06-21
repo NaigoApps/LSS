@@ -3,6 +3,8 @@
 require_once __DIR__ . '/Dao.php';
 require_once __DIR__ . '/UserDao.php';
 require_once __DIR__ . '/ElementDao.php';
+require_once __DIR__ . '/FileDao.php';
+require_once __DIR__ . '/../model/Material.php';
 
 /**
  * Description of MaterialDao
@@ -11,9 +13,37 @@ require_once __DIR__ . '/ElementDao.php';
  */
 class MaterialDao extends Dao {
 
-    public function insertMaterial($data) {
-        $query = $this->buildMaterialInsert($data);
-        return $this->insert($query);
+    function fromRequest($request) {
+        $element = new Material();
+        foreach ($request->material as $property => $value) {
+            $element->{"set" . ucfirst($property)}($value);
+        }
+        if ($element->getElement() != null) {
+            $dao = new ElementDao();
+            $element->setElement($dao->findById($element->getElement())->uniqueContent());
+        }
+        if ($element->getFile() != null) {
+            $dao = new FileDao();
+            $element->setFile($dao->findById($element->getFile())->uniqueContent());
+        }
+        $element->setUploader($_SESSION['user_data']);
+        return $element;
+    }
+
+    public function insertMaterial($material) {
+        $builder = new InsertBuilder();
+        $builder->insert("material")
+                ->attrs("url", "uploader", "file", "name", "element", "private", "approved");
+        $builder->startValues();
+        $builder->value(($material->getUrl() != null) ? $material->getUrl() : null, true)
+                ->value($material->getUploader()->getId())
+                ->value(($material->getFile() != null) ? $material->getFile()->getId() : null)
+                ->value($material->getName(), true)
+                ->value($material->getElement()->getId())
+                ->value(($material->getPrivate() != null) ? $material->getPrivate() : false)
+                ->value(($material->getApproved() != null) ? $material->getApproved() : false);
+        $builder->endValues();
+        return $this->insert($builder->getQuery());
     }
 
     public function deleteMaterial($id) {
@@ -35,6 +65,7 @@ class MaterialDao extends Dao {
     public function findMaterials($filters) {
         $userDao = new UserDao($this->getTransactionManager());
         $elementsDao = new ElementDao($this->getTransactionManager());
+        $filesDao = new FileDao($this->getTransactionManager());
         $query = $this->buildMaterialsQuery($filters);
         $select_result = $this->find($query);
         if ($select_result->wasSuccessful()) {
@@ -45,9 +76,11 @@ class MaterialDao extends Dao {
                 $material->setName($material_info['name']);
                 $material->setElement($elementsDao->findById($material_info['element'])->uniqueContent());
                 $material->setUrl($material_info['url']);
-                $material->setFileName($material_info['file_name']);
-                $material->setPrivate($material_info['private']);
-                $material->setApproved($material_info['approved']);
+                if ($material_info['file'] != null) {
+                    $material->setFile($filesDao->findById($material_info['file'])->uniqueContent());
+                }
+                $material->setPrivate(($material_info['private']) ? true : false);
+                $material->setApproved(($material_info['approved']) ? true : false);
                 $material->setUploader($userDao->findById($material_info['uploader'])->uniqueContent());
                 $materials[] = $material;
             }
@@ -74,12 +107,6 @@ class MaterialDao extends Dao {
         }
         $builder->order("m.name DESC");
         return $builder->getQuery();
-    }
-
-    private function buildMaterialInsert($data) {
-        $query = "INSERT INTO material(name, element, url, fileName, private, approved, uploader) VALUES ";
-        $query = $query . "('" . $data['name'] . "'," . $data['element'] . ",'" . $data['url'] . ",'" . $data['fileName'] . "'," . $data['private'] . "'," . $data['approved'] . "," . $_SESSION['user_data']->getId() . ")";
-        return $query;
     }
 
 }
