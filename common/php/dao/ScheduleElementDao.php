@@ -20,7 +20,7 @@ require_once __DIR__ . '/../model/ScheduleElement.php';
 class ScheduleElementDao extends Dao {
 
     public function findBySchedule($schedule) {
-        return $this->findElements(["schedule" => $schedule]);
+        return $this->findElements(["schedule" => $schedule], $schedule);
     }
 
     public function findRelated($element_id, $schedule_id) {
@@ -29,18 +29,10 @@ class ScheduleElementDao extends Dao {
     }
 
     public function findElements($filter = [], $related_to = null) {
-        if ($related_to != null) {
-            $query = $this->buildRelatedElementsQuery($filter, $related_to);
-        } else {
-            $query = $this->buildElementsQuery($filter);
-        }
+        $query = $this->buildElementsQuery($filter);
         $select_result = $this->find($query);
         if ($select_result->wasSuccessful()) {
-            if ($related_to != null) {
-                return new QueryResult(QueryResult::SUCCESS, "", $this->toElements($select_result, $related_to));
-            } else {
-                return new QueryResult(QueryResult::SUCCESS, "", $this->toElements($select_result));
-            }
+            return new QueryResult(QueryResult::SUCCESS, "", $this->toElements($select_result, $related_to));
         }
         return $select_result;
     }
@@ -96,26 +88,26 @@ class ScheduleElementDao extends Dao {
         return $builder->getQuery();
     }
 
-    private function buildRelatedElementsQuery($filters, $schedule) {
-        $builder = new QueryBuilder();
-        $builder->select("te.id, te.idelemento, UNIX_TIMESTAMP(te.data) as data, te.idtimeline, te.status")->from("timeline_element te, timeline ti");
-        $builder->where("te.idtimeline = ti.id")
-                ->where("ti.anno = " . $schedule->getYear())
-                ->where("ti.idclasse = " . $schedule->getClass()->getId());
-        if (isset($filters['id'])) {
-            $builder->where("te.id = " . $filters['id']);
-        }
-        if (isset($filters['element'])) {
-            $builder->where("te.idelemento = " . $filters['element']);
-        }
-        if (isset($filters['status'])) {
-            $builder->where("te.status = " . $filters['status']);
-        }
-        if (isset($filters['schedule'])) {
-            $builder->where("te.idtimeline = " . $filters['schedule']);
-        }
-        return $builder->getQuery();
-    }
+//    private function buildRelatedElementsQuery($filters, $schedule) {
+//        $builder = new QueryBuilder();
+//        $builder->select("te.id, te.idelemento, UNIX_TIMESTAMP(te.data) as data, te.idtimeline, te.status")->from("timeline_element te, timeline ti");
+//        $builder->where("te.idtimeline = ti.id")
+//                ->where("ti.anno = " . $schedule->getYear())
+//                ->where("ti.idclasse = " . $schedule->getClass()->getId());
+//        if (isset($filters['id'])) {
+//            $builder->where("te.id = " . $filters['id']);
+//        }
+//        if (isset($filters['element'])) {
+//            $builder->where("te.idelemento = " . $filters['element']);
+//        }
+//        if (isset($filters['status'])) {
+//            $builder->where("te.status = " . $filters['status']);
+//        }
+//        if (isset($filters['schedule'])) {
+//            $builder->where("te.idtimeline = " . $filters['schedule']);
+//        }
+//        return $builder->getQuery();
+//    }
 
     public function deleteBySchedule($schedule) {
         $delete_query = "DELETE FROM timeline_element WHERE idtimeline=$schedule";
@@ -133,7 +125,7 @@ class ScheduleElementDao extends Dao {
         if ($at_least_one) {
             $update_query = $update_query . join(",", $inserts);
             return $this->multiInsert($update_query);
-        }else{
+        } else {
             return new QueryResult(QueryResult::SUCCESS, null, null);
         }
     }
@@ -143,13 +135,13 @@ class ScheduleElementDao extends Dao {
         $at_least_one = false;
         $inserts = [];
         foreach ($elements as $element) {
-            $inserts[] = "(".$element->getSchedule().", " . $element->getElement()->getId() . ", FROM_UNIXTIME('" . $element->getDate() . "'), '" . $element->getStatus() . "')";
+            $inserts[] = "(" . $element->getSchedule() . ", " . $element->getElement()->getId() . ", FROM_UNIXTIME('" . $element->getDate() . "'), '" . $element->getStatus() . "')";
             $at_least_one = true;
         }
         if ($at_least_one) {
             $update_query = $update_query . join(",", $inserts);
             return $this->multiInsert($update_query);
-        }else{
+        } else {
             return new QueryResult(QueryResult::SUCCESS, null, null);
         }
     }

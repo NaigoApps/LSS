@@ -34,28 +34,52 @@ class ScheduleDao extends Dao {
         return $this->findSchedules(["id" => $id], $lazy);
     }
 
-    public function findSchedules($filters, $lazy = false) {
+    public function findRelatedSchedules($id) {
+        $query = "SELECT ti.* "
+                . "FROM timeline ti "
+                . "WHERE "
+                . "ti.idclasse in (SELECT t2.idclasse from timeline t2 WHERE t2.id=$id) AND "
+                . "ti.anno in (SELECT t2.anno from timeline t2 WHERE t2.id=$id)";
+        $select_result = $this->find($query);
+        if ($select_result->wasSuccessful()) {
+            $schedules = array();
+            foreach ($select_result->getContent() as $schedule_info) {
+                $schedule = $this->fromResultSet($schedule_info, false);
+                $schedules[] = $schedule;
+            }
+            return new QueryResult(QueryResult::SUCCESS, "", $schedules);
+        }
+
+        return $select_result;
+    }
+
+    private function fromResultSet($schedule_info, $lazy) {
         $subjectDao = new SubjectDao($this->getTransactionManager());
         $classDao = new ClassDao($this->getTransactionManager());
         $userDao = new UserDao($this->getTransactionManager());
         $elementsDao = new ScheduleElementDao($this->getTransactionManager());
+        $schedule = new Schedule();
+        $schedule->setId($schedule_info['id']);
+        $schedule->setFiled($schedule_info['archiviata']);
+        $schedule->setYear($schedule_info['anno']);
+        $schedule->setSubject($subjectDao->findById($schedule_info['idmateria'])->uniqueContent());
+        $schedule->setClass($classDao->findById($schedule_info['idclasse'])->uniqueContent());
+        $schedule->setProfessor($userDao->findById($schedule_info['iddocente'])->uniqueContent());
+        if ($lazy) {
+            $schedule->setElements([]);
+        } else {
+            $schedule->setElements($elementsDao->findBySchedule($schedule_info['id'])->getContent());
+        }
+        return $schedule;
+    }
+
+    public function findSchedules($filters, $lazy = false) {
         $query = $this->buildSchedulesQuery($filters);
         $select_result = $this->find($query);
         if ($select_result->wasSuccessful()) {
             $schedules = array();
             foreach ($select_result->getContent() as $schedule_info) {
-                $schedule = new Schedule();
-                $schedule->setId($schedule_info['id']);
-                $schedule->setFiled($schedule_info['archiviata']);
-                $schedule->setYear($schedule_info['anno']);
-                $schedule->setSubject($subjectDao->findById($schedule_info['idmateria'])->uniqueContent());
-                $schedule->setClass($classDao->findById($schedule_info['idclasse'])->uniqueContent());
-                $schedule->setProfessor($userDao->findById($schedule_info['iddocente'])->uniqueContent());
-                if ($lazy) {
-                    $schedule->setElements([]);
-                } else {
-                    $schedule->setElements($elementsDao->findBySchedule($schedule_info['id'])->getContent());
-                }
+                $schedule = $this->fromResultSet($schedule_info, $lazy);
                 $schedules[] = $schedule;
             }
             return new QueryResult(QueryResult::SUCCESS, "", $schedules);

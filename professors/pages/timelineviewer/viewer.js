@@ -77,26 +77,22 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             content: []
         };
 
-        $scope.materie = {
-            content: [],
-            colors: ["orange", "cyan", "red", "green", "black"],
-            name: "materie",
-            selected: undefined
+        $scope.subjects = {
+            content: []
         };
 
         $scope.singleMode = true;
 
         $scope.doneElements = true;
+        $scope.todoElements = true;
+        $scope.assignedElements = true;
 
         $scope.loaded = 0;
 
+        $scope.timeline = undefined;
+
         $scope.schedules = {
             content: []
-        };
-
-        $scope.subjects = {
-            content: [],
-            selected: undefined
         };
 
         $scope.onToggleSchedule = function (schedule) {
@@ -108,38 +104,40 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.buildView();
         };
 
-        $scope.onDoneItems = function () {
+        $scope.onShowDone = function () {
             $scope.doneElements = true;
             $scope.buildView();
         };
 
-        $scope.onUndoneItems = function () {
+        $scope.onHideDone = function () {
             $scope.doneElements = false;
+            $scope.buildView();
+        };
+
+        $scope.onShowAssigned = function () {
+            $scope.assignedElements = true;
+            $scope.buildView();
+        };
+
+        $scope.onHideAssigned = function () {
+            $scope.assignedElements = false;
+            $scope.buildView();
+        };
+
+        $scope.onShowTodo = function () {
+            $scope.todoElements = true;
+            $scope.buildView();
+        };
+
+        $scope.onHideTodo = function () {
+            $scope.todoElements = false;
             $scope.buildView();
         };
 
         $scope.exit = function () {
             window.location.replace("../../main.php");
         };
-        $scope.initElement = function (id, name, date) {
-            var element = {
-                id: id,
-                content: name,
-                date: date,
-                start: new Date(date.year, date.month - 1, date.day),
-                performed: false,
-                performance: []
-            };
-            for (var j = 0; j < $scope.materie.length; j++) {
-                element.performance.push(
-                        {
-                            done: false,
-                            on: undefined
-                        }
-                );
-            }
-            return element;
-        };
+
         $scope.findById = function (vector, id) {
             for (var i = 0; i < vector.length; i++) {
                 if (vector[i].id === id) {
@@ -148,172 +146,145 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             }
             return -1;
         };
-        $scope.findByTimelineId = function (vector, id) {
-            for (var i = 0; i < vector.length; i++) {
-                if (vector[i].timelineId === id) {
-                    return i;
-                }
-            }
-            return -1;
-        };
-        $scope.findObjectByTimelineId = function (vector, id) {
-            var index = $scope.findByTimelineId(vector, id);
+        $scope.findObjectById = function (vector, id) {
+            var index = $scope.findById(vector, id);
             if (index !== -1) {
                 return vector[index];
             }
             return undefined;
         };
 
-        $scope.loadTimeline = function (schedule) {
-            $http.post('../../../common/php/ajax/load-schedule.php',
+        $scope.loadSubjects = function () {
+            $http.post('../../../common/php/ajax/load-subjects.php')
+                    .then(
+                            function (rx) {
+                                $scope.subjects.content = rx.data;
+                                $scope.buildView();
+                            },
+                            function (rx) {
+                                swal(rx.data);
+                            }
+                    );
+        };
+
+        $scope.loadSchedules = function () {
+            $(".progress").show();
+            $http.post('../../../common/php/ajax/load-related-schedules.php',
                     {
-                        id: schedule.id
+                        id: timeline_id
                     }
             ).then(
                     function (rx) {
-                        timeline.elements = rx.data.elements;
-                        for (var i = 0; i < timeline.elements.length; i++) {
-                            timeline.elements[i].timelineId = timeline.metadata.idmateria + "-" + timeline.elements[i].id;
-                            var d = new Date();
-                            d.setTime(timeline.elements[i].data * 1000);
-                            timeline.elements[i].data = d;
-                            timeline.elements[i].performance = [];
-                            timeline.elements[i].performed = false;
-                        }
-                        $scope.reloadPerformances(timeline);
+                        $scope.schedules.content = rx.data;
+                        $scope.schedules.content.forEach(function (schedule) {
+                            if (parseInt(schedule.id) === timeline_id) {
+                                schedule.visible = true;
+                            }
+                            schedule.year2 = parseInt(schedule.year) + 1;
+                            schedule.elements.forEach(function (element) {
+                                var d = new Date();
+                                d.setTime(element.date * 1000);
+                                element.date = d;
+                            });
+                        });
+                        $scope.loadSubjects();
+                        $(".progress").hide();
                     },
                     function (rx) {
                         swal(rx.data);
                     }
             );
         };
-        $scope.loadSchedules = function () {
-            $(".progress").show();
-            $http.post('../../../common/php/ajax/load-schedule.php',
-                    {
-                        command: 'load_timeline_sameclass',
-                        id: timeline_id
-                    }
-            ).then(
-                    function (rx) {
-                        $scope.timelines = [];
-                        for (var i = 0; i < rx.data.length; i++) {
-                            rx.data[i].anno2 = parseInt(rx.data[i].anno) + 1;
-                            $scope.timelines.push({
-                                metadata: rx.data[i]
-                            });
-                        }
-                        for (var i = 0; i < $scope.timelines.length; i++) {
-                            $scope.loadTimeline($scope.timelines[i]);
-                        }
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data.msg);
-                    }
-            );
-        };
-        $scope.reloadPerformances = function (timeline) {
-            $http.post(
-                    '../timelinemanager/includes/load_data.php',
-                    {
-                        command: 'load_performances',
-                        classe: timeline.metadata.idclasse,
-                        anno: timeline.metadata.anno
-                    }
-            ).then(
-                    function (rx) {
-                        var performances = rx.data;
-                        for (var i = 0; i < performances.length; i++) {
-                            $scope.assignPerformance(timeline, performances[i]);
-                        }
-                        $scope.$emit("timeline-loaded");
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data.msg);
-                    }
-            );
-        };
-        $scope.assignPerformance = function (timeline, perf) {
-            for (var i = 0; i < timeline.elements.length; i++) {
-                if (timeline.elements[i].id === perf.id) {
-                    var d = new Date();
-                    d.setTime(perf.data * 1000);
-                    timeline.elements[i].performance.push({
-                        id: perf.idmateria,
-                        data: d
-                    });
-                    if (perf.idmateria === timeline.metadata.idmateria) {
-                        timeline.elements[i].performed = true;
-                    }
+
+        $scope.subjectStatus = function (element, subject) {
+            for (var i = 0; i < element.fullStatus.length; i++) {
+                if (element.fullStatus[i].subject === subject.id) {
+                    return element.fullStatus[i].status;
                 }
             }
+            return undefined;
         };
-
-        $scope.$on("timeline-loaded", function () {
-            $scope.loaded++;
-            if ($scope.loaded === $scope.timelines.length) {
-                $scope.loaded = 0;
-                $scope.buildView();
-                $(".progress").hide();
+        $scope.subjectDate = function (element, subject) {
+            for (var i = 0; i < element.fullStatus.length; i++) {
+                if (element.fullStatus[i].subject === subject.id) {
+                    return element.fullStatus[i].date;
+                }
             }
-        });
+            return -1;
+        };
 
         $scope.buildContent = function (element) {
             var content = "";
-            content += element.nome + " - ";
-            for (var i = 0; i < $scope.materie.content.length; i++) {
-                var materia = $scope.materie.content[i];
-                if ($scope.findById(element.performance, materia.id) !== -1) {
-                    content += '<span><div class="subject tooltip-base" style="background-color : ' + $scope.materie.colors[i] + ';">';
-                    content += '<span class="tooltip">' + materia.nome + ' : ' + $scope.simpleDateFormat($scope.findObjectById(element.performance, materia.id).data) + '</span>';
+            content += element.element.name + " - ";
+            $scope.subjects.content.forEach(function (subject) {
+                if ($scope.subjectStatus(element, subject) === "todo") {
+                    content += '<span><div class="subject tooltip-base" style="background-color : gray;">';
+                    content += '<span class="tooltip">' + subject.name + ', previsto : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
+                    content += '</div>';
+                    content += '</span>';
+                } else if ($scope.subjectStatus(element, subject) === "assigned") {
+                    content += '<span><div class="subject tooltip-base" style="background-color : lightGray;">';
+                    content += '<span class="tooltip">' + subject.name + ', assegnato : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
+                    content += '</div>';
+                    content += '</span>';
+                } else if ($scope.subjectStatus(element, subject) === "done") {
+                    content += '<span><div class="subject tooltip-base" style="background-color :   #' + subject.color + ';">';
+                    content += '<span class="tooltip">' + subject.name + ', svolto : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
+                    content += '</div>';
+                    content += '</span>';
+                } else {
+                    content += '<span><div class="subject tooltip-base" style="background-color : black;">';
+                    content += '<span class="tooltip">' + subject.name + ', non previsto</span>';
                     content += '</div>';
                     content += '</span>';
                 }
-            }
+            });
             return content;
         };
         $scope.buildView = function () {
             var data = [];
             var groups = [];
             var count = 1;
-            for (var t = 0; t < $scope.timelines.length; t++) {
-                if ($scope.timelines[t].visible) {
+            $scope.schedules.content.forEach(function (schedule) {
+                if (schedule.visible) {
                     var found = false;
                     for (var i = 0; i < groups.length; i++) {
-                        if (groups[i].content === $scope.timelines[t].metadata.nomemateria) {
+                        if (groups[i].content === schedule.subject.name) {
                             found = true;
                         }
                     }
                     if (!found) {
                         groups.push(
                                 {
-                                    content: $scope.timelines[t].metadata.nomemateria,
-                                    id: $scope.timelines[t].metadata.nomemateria,
+                                    content: schedule.subject.name,
+                                    id: schedule.subject.name,
                                     value: count
                                 }
                         );
                         count++;
                     }
-                    for (var i = 0; i < $scope.timelines[t].elements.length; i++) {
-                        if (!$scope.doneElements || $scope.timelines[t].elements[i].performance.length > 0) {
+                    schedule.elements.forEach(function (element) {
+                        if ($scope.doneElements && element.status === "done" ||
+                                $scope.assignedElements && element.status === "assigned" ||
+                                $scope.todoElements && element.status === "todo") {
                             data.push(
                                     {
-                                        id: $scope.timelines[t].elements[i].timelineId,
-                                        content: $scope.buildContent($scope.timelines[t].elements[i]),
-                                        start: $scope.timelines[t].elements[i].data,
-                                        group: $scope.timelines[t].metadata.nomemateria
+                                        id: element.id,
+                                        content: $scope.buildContent(element),
+                                        start: element.date,
+                                        group: schedule.subject.name
                                     }
                             );
                         }
-                    }
+                    });
                 }
-            }
+            });
             var container = document.getElementById('visualization');
             $("#visualization").html("");
             var options = {
                 editable: false,
-                min: new Date($scope.timelines[0].metadata.anno, 7, 1),
-                max: new Date(parseInt($scope.timelines[0].metadata.anno) + 1, 6, 1),
+                min: new Date($scope.schedules.content[0].year, 7, 1),
+                max: new Date(parseInt($scope.schedules.content[0].year) + 1, 6, 1),
                 zoomMin: 1000 * 60 * 60 * 24 * 7,
                 zoomMax: 1000 * 60 * 60 * 24 * 30,
                 minHeight: 350,
@@ -328,16 +299,17 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 },
                 groupEditable: true
             };
-            timeline = new vis.Timeline(container, data, groups, options);
-            timeline.setGroups(groups);
-            timeline.on('select', function (properties) {
-                var found = false;
-                for (var i = 0; i < $scope.timelines.length && !found; i++) {
-                    $scope.voci.current = $scope.findObjectByTimelineId($scope.timelines[i].elements, properties.items[0]);
-                    if ($scope.voci.current !== undefined) {
-                        found = true;
-                        $scope.loadAttachments();
+            $scope.timeline = new vis.Timeline(container, data, groups, options);
+            $scope.timeline.setGroups(groups);
+            $scope.timeline.on('select', function (properties) {
+                $scope.schedules.content.forEach(function (schedule) {
+                    var element = $scope.findObjectById(schedule.elements, properties.items[0]);
+                    if (element !== undefined) {
+                        $scope.currentElement = element.element;
                     }
+                });
+                if ($scope.currentElement !== undefined) {
+                    $scope.updateCurrentElement();
                 }
             });
             $('.vis-center>.vis-content').on('scroll', function () {
@@ -348,87 +320,40 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             });
         };
 
-        $scope.loadParentAttachments = function () {
-            $http.post(
-                    '../../../common/attachments-loader.php',
-                    {
-                        command: 'geturl',
-                        table: $scope.moduli.name,
-                        obj: $scope.voci.current.module
-                    }
-            ).then(
-                    function (rx) {
-                        $scope.moduli.current.links = rx.data;
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data);
-                    }
-            );
-            $http.post(
-                    '../../../common/attachments-loader.php',
-                    {
-                        command: 'geturl',
-                        table: $scope.argomenti.name,
-                        obj: $scope.voci.current.topic
-                    }
-            ).then(
-                    function (rx) {
-                        $scope.argomenti.current.links = rx.data;
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data);
-                    }
-            );
-            $http.post(
-                    '../../../common/attachments-loader.php',
-                    {
-                        command: 'geturl',
-                        table: $scope.voci.name,
-                        obj: $scope.voci.current
-                    }
-            ).then(
-                    function (rx) {
-                        $scope.voci.current.links = rx.data;
-                    },
-                    function (rx) {
-                        $scope.errorMessage(rx.data);
-                    }
-            );
+        $scope.updateCurrentElement = function () {
+            $http.post('../../../common/php/ajax/load-all-materials.php', {element: $scope.currentElement.id})
+                    .then(
+                            function (rx) {
+                                $scope.materials.content = rx.data;
+                                $scope.materials.content.forEach(function (element) {
+                                    if (element.file) {
+                                        element.file.url = "http://localhost/LSS/materials/" + element.file.name;
+                                    }
+                                });
+                            },
+                            function (rx) {
+                                swal(rx.data);
+                            }
+                    );
         };
 
-        $scope.loadAttachments = function () {
-            var data1 = {
-                item: $scope.voci.current,
-                target: $scope.voci.current,
-                callback: $scope.loadParentAttachments
-            };
-            $rootScope.$emit('find-topics-by-item', data1);
-//            $http.post(
-//                    '../../../common/attachments-loader.php',
-//                    {
-//                        command: 'getdocs',
-//                        table: table.name,
-//                        obj: table.current
-//                    }
-//            ).then(
-//                    function (rx) {
-//                        table.current.docs = rx.data;
-//                    },
-//                    function (rx) {
-//                        $scope.errorMessage(rx.data);
-//                    }
-//            );
-        };
-        $scope.errorMessage = function (message) {
-            $scope.lastErrorMessage = message;
-            $(".error-message").show();
-        };
-        $scope.successMessage = function (message) {
-            $scope.lastSuccessMessage = message;
-            $(".success-message").show();
-        };
         $scope.simpleDateFormat = function (date) {
+            date = new Date(parseInt(date) * 1000);
             return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+        };
+
+        $scope.replaceCurrentElement = function (element) {
+            $scope.currentElement = element;
+            $http.post('../../../common/php/ajax/load-children-elements.php', {parent: $scope.currentElement.id})
+                    .then(
+                            function (rx) {
+                                $scope.currentElement.children = rx.data;
+                            },
+                            function (rx) {
+                                swal(rx.data);
+                            }
+                    );
+            $scope.updateCurrentElement();
         };
 // attach events to the navigation buttons
 //        document.getElementById('zoomIn').onclick = function () {
@@ -449,17 +374,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         //timeline.setWindow(obj1.month + "-" + obj1.day + "-" + obj1.year, obj2.month + "-" + obj2.day + "-" + obj2.year);
 
         //MAIN
-        $rootScope.$emit('load-table', {
-            target: $scope.materie
-        });
-        $scope.loadTimelines();
-    }]);
-$(document).ready(function () {
-    $(".success-message").click(function () {
-        $(this).hide();
-    });
-    $(".error-message").click(function () {
-        $(this).hide();
-    });
 
-});
+        $scope.loadSchedules();
+    }]);

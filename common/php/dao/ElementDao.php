@@ -72,6 +72,10 @@ class ElementDao extends Dao {
         return $this->findElements(["id" => $id]);
     }
 
+    public function findByParent($id) {
+        return $this->findElements(["parent" => $id]);
+    }
+
     public function findElements($filters) {
         $query = $this->buildElementQuery($filters);
         $select_result = $this->find($query);

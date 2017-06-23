@@ -73,7 +73,7 @@ class Element implements JsonSerializable {
             "name" => $this->name,
             "description" => $this->description,
             "parent" => $this->parent,
-            "type" => $this->type
+            "type" => $this->type,
         ];
     }
 
