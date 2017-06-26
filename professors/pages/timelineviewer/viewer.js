@@ -232,12 +232,13 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     content += '<span class="tooltip">' + subject.name + ', svolto : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
                     content += '</div>';
                     content += '</span>';
-                } else {
-                    content += '<span><div class="subject tooltip-base" style="background-color : black;">';
-                    content += '<span class="tooltip">' + subject.name + ', non previsto</span>';
-                    content += '</div>';
-                    content += '</span>';
                 }
+//                } else {
+//                    content += '<span><div class="subject tooltip-base" style="background-color : black;">';
+//                    content += '<span class="tooltip">' + subject.name + ', non previsto</span>';
+//                    content += '</div>';
+//                    content += '</span>';
+//                }
             });
             return content;
         };

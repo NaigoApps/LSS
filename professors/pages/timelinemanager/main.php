@@ -158,15 +158,18 @@ $id = filter($_POST['timelineid']);
                                     <div class="picker-container" id="picker{{i}}"></div>
                                     <button class="btn btn-danger btn-md tooltip-base" ng-click="setTodo(element, i)"
                                             ng-disabled="element.status === 'todo'">
-                                        Annulla svolgimento
+                                        <span ng-if="element.status !== 'todo'">Annulla svolgimento</span>
+                                        <span ng-if="element.status === 'todo'">Non svolto</span>
                                     </button>
                                     <button class="btn btn-warning btn-md tooltip-base" ng-click="setAssigned(element, i)"
                                             ng-disabled="element.status === 'assigned'">
-                                        Assegna
+                                        <span ng-if="element.status !== 'assigned'">Assegna</span>
+                                        <span ng-if="element.status === 'assigned'">Assegnato</span>
                                     </button>
                                     <button class="btn btn-success btn-md tooltip-base" ng-click="setDone(element, i)"
                                             ng-disabled="element.status === 'done'">
-                                        Svolgi
+                                        <span ng-if="element.status !== 'done'">Svolgi</span>
+                                        <span ng-if="element.status === 'done'">Svolto</span>
                                     </button>
                                 </div>
 

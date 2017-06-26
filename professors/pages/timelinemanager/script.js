@@ -213,6 +213,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             element.status = "assigned";
         };
         $scope.setDone = function (element, index) {
+            element.date = new Date();
             element.status = "done";
         };
         $scope.onAddToTimeline = function () {
