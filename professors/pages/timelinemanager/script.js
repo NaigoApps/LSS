@@ -42,7 +42,9 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 {name: 'Marzo', number: 3},
                 {name: 'Aprile', number: 4},
                 {name: 'Maggio', number: 5},
-                {name: 'Giugno', number: 6}
+                {name: 'Giugno', number: 6},
+                {name: 'Luglio', number: 7},
+                {name: 'Agosto', number: 8}
             ],
             selected: undefined
         };

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../TransactionManager.php';
+require_once __DIR__ . '/../TransactionManager.php';
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,9 +15,9 @@ require_once __DIR__.'/../TransactionManager.php';
 class Dao {
 
     private $transactionManager;
-    
+
     public function __construct($tm = null) {
-        if($tm == null){
+        if ($tm == null) {
             $tm = new TransactionManager();
         }
         $this->transactionManager = $tm;
@@ -27,25 +27,34 @@ class Dao {
         return $this->transactionManager->find($query);
     }
 
-    public function delete($query){
+    public function delete($query) {
         return $this->transactionManager->delete($query);
     }
 
-    public function update($query){
+    public function update($query) {
         return $this->transactionManager->update($query);
     }
 
-    public function insert($query){
+    public function insert($query) {
         return $this->transactionManager->insert($query);
     }
 
-    public function multiInsert($query){
+    public function multiInsert($query) {
         return $this->transactionManager->multiInsert($query);
     }
-    
+
     function getTransactionManager() {
         return $this->transactionManager;
     }
 
+    static function checkNull($value, $string = false) {
+        if ($value == NULL) {
+            return "NULL";
+        } else if ($string) {
+            return "'" . $value . "'";
+        } else {
+            return $value;
+        }
+    }
 
 }

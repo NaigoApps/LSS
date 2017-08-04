@@ -6,6 +6,7 @@
 session_start();
 
 require_once __DIR__.'/php/dao/UserDao.php';
+require_once __DIR__.'/php/model/User.php';
 
 require_once __DIR__.'/php/consts.php';
 require_once __DIR__.'/google-api-php-client/src/Google/autoload.php';
@@ -83,7 +84,15 @@ if ($client->getAccessToken()) {
 
         $user_email = $token_data['payload']['email'];
         $USER_ID = $token_data['payload']['sub'];
-        $_SESSION['user_data'] = (new UserDao())->findByEmail($user_email)->uniqueContent();
+        $db_users = (new UserDao())->findByEmail($user_email)->getContent();
+        if(count($db_users) == 1){
+            $_SESSION['user_data'] = $db_users[0];
+        }else{
+            $new_user = new User();
+            $new_user->setType(User::UNREGISTERED);
+            $new_user->setEmail($user_email);
+            $_SESSION['user_data'] = $new_user;
+        }
     } catch (Google_Auth_Exception $e) {
         /*
          * Token not valid: login again

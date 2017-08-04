@@ -34,24 +34,16 @@
                     </a>
                     <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/professors/pages/materialmanager/materialmanager.php"; ?>">
                         <strong class="text-info">
-                            <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
                             Gestione del materiale
                         </strong>
                     </a>
-                    <!--
-                            <a class="col-sm-3 btn btn-sm btn-default" href="./pages/timelinemanager/index.php">
-                                <strong class="text-info">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                    Gestisci programmazioni
-                                </strong>
-                            </a>
-                    
-                            <a class="col-sm-3 btn btn-sm btn-default" href="./pages/timelineviewer/index.php">
-                                <strong class="text-info">
-                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-                                    Visualizza programmazioni
-                                </strong>
-                            </a>-->
+                    <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/professors/pages/linksmanager/linksmanager.php"; ?>">
+                        <strong class="text-info">
+                            <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                            Gestione dei collegamenti
+                        </strong>
+                    </a>
 
 
                     <?php

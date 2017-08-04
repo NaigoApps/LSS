@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../QueryBuilder.php';
+require_once __DIR__ . '/../InsertBuilder.php';
 require_once __DIR__ . '/Dao.php';
 require_once __DIR__ . '/../model/Classroom.php';
 
@@ -16,6 +17,46 @@ require_once __DIR__ . '/../model/Classroom.php';
  * @author root
  */
 class ClassDao extends Dao {
+
+    public function insertClass($data) {
+        $query = $this->buildClassInsert($data);
+        return $this->insert($query);
+    }
+    
+    public function updateClass($data) {
+        $query = $this->buildClassUpdate($data);
+        return $this->update($query);
+    }
+    
+    private function buildClassInsert($data){
+        $builder = new InsertBuilder();
+        return $builder
+                ->insert("classi")
+                    ->attrs("sezione", "anno")
+                ->startValues()
+                    ->value($data['section'], true)
+                    ->value($data['year'])
+                ->endValues()
+                ->getQuery();
+    }
+    
+    private function buildClassUpdate($data) {
+        $builder = new UpdateBuilder();
+        $builder->update("classi");
+        if (isset($data['year'])) {
+            $builder->set("anno", $data['year']);
+        }
+        if (isset($data['section'])) {
+            $builder->set("sezione", $data['section'], true);
+        }
+        $builder->where("id = " . $data['id']);
+        return $builder->getQuery();
+    }
+
+    public function removeClass($id) {
+        $query = "DELETE FROM classi WHERE id = " . $id;
+        return parent::delete($query);
+    }
 
     public function findById($id) {
         $builder = new QueryBuilder();

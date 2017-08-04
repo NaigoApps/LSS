@@ -51,7 +51,7 @@
             ?>
 
             <div class="row top-sep">
-                <a class="col-sm-2 col-sm-offset-5 btn btn-md btn-default" href="../professors/main.php">
+                <a class="col-sm-2 col-sm-offset-5 btn btn-md btn-default" href="../professors/index.php">
                     <h1 class="text-info">
                         <span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span>
                     </h1>

@@ -22,14 +22,45 @@ class User implements JsonSerializable{
     private $id;
     private $email;
     private $type;
+    private $classroom;
+    private $name;
+    private $surname;
    
     
     function __construct() {
         $this->id = null;
         $this->email = null;
+        $this->classroom = null;
+        $this->name = null;
+        $this->surname = null;
         $this->type = self::UNKNOWN;
     }
+    
+    function getClassroom() {
+        return $this->classroom;
+    }
 
+    function getName() {
+        return $this->name;
+    }
+
+    function getSurname() {
+        return $this->surname;
+    }
+
+    function setClassroom($classroom) {
+        $this->classroom = $classroom;
+    }
+
+    function setName($name) {
+        $this->name = $name;
+    }
+
+    function setSurname($surname) {
+        $this->surname = $surname;
+    }
+
+    
     function getId() {
         return $this->id;
     }
@@ -79,7 +110,10 @@ class User implements JsonSerializable{
         return [
             "id" => $this->id,
             "email" => $this->email,
-            "type" => $this->type
+            "type" => $this->type,
+            "classroom" => $this->classroom,
+            "name" => $this->name,
+            "surname" => $this->surname
         ];
     }
 

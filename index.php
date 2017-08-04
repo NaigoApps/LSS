@@ -10,12 +10,10 @@ if (isset($_SESSION['user_data'])) {
     } elseif ($_SESSION['user_data']->isStudent()) {
         header('Location: ' . WEB . '/students/main.php');
     } elseif ($_SESSION['user_data']->isUnknown()) {
-        header('Location: ' . WEB . '/unknown/main.php');
+        header('Location: ' . WEB . '/waiting/main.php');
     } elseif ($_SESSION['user_data']->isUnregistered()) {
         header('Location: ' . WEB . '/register/main.php');
-    } else {
-        // ???                
-        header('Location: ' . __DIR__ . '/register/main.php');
+    } else {          
+        header('Location: ' . WEB . '/register/main.php');
     }
 }
-?>

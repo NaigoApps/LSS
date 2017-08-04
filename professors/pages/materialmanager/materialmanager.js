@@ -52,7 +52,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.addMode = false;
 
         $scope.exit = function () {
-            prettyConfirm("Esci", "I dati non salvati saranno persi", function (ok) {
+            prettyConfirm("Esci", "Torna al menu principale", function (ok) {
                 if (ok) {
                     window.location.replace("../../main.php");
                 }

@@ -12,16 +12,21 @@ if (isset($request->file)) {
     $tm = new TransactionManager();
     $dao = new FileDao($tm);
     if ($tm->beginTransaction()) {
-        if (deleteDatabaseFile($dao, $request->file) && deleteFilesystemFile($request->file)) {
-            if ($tm->commit()) {
-                exit_with_data("File eliminato correttamente");
-            } else {
+        if (deleteDatabaseFile($dao, $request->file)){
+            if(deleteFilesystemFile($request->file)) {
+                if ($tm->commit()) {
+                    exit_with_data("File eliminato correttamente");
+                } else {
+                    $tm->rollback();
+                    exit_with_error("Impossibile completare la transazione");
+                }
+            }else{
                 $tm->rollback();
-                exit_with_error("Impossibile completare la transazione");
+                exit_with_error("Impossibile eliminare il file");
             }
         } else {
             $tm->rollback();
-            exit_with_error("Impossibile eliminare il file");
+            exit_with_error("Impossibile eliminare il file dal database");
         }
     } else {
         exit_with_error("Impossibile iniziare la transazione");

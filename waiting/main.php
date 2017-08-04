@@ -24,9 +24,11 @@
         </nav>
         <div class="container">
             <div class="row">
-                <div class="jumbotron text-center"><h1>Registrazione</h1></div>
+                <div class="jumbotron text-center"><h1>Registrazione completa</h1></div>
                 <div class="col-sm-6 col-sm-offset-3" ng-app="lss-db" ng-controller="newUserController as userCtrl">
 
+                    <h3>Puoi ancora modificare i tuoi dati</h3>
+                    
                     <form class="dummy-form row">
                         <div class="form-group">
                             <label>Nome:</label>
@@ -50,9 +52,9 @@
                                 </ul>
                             </div>
                         </ul>
-                        <a class="btn btn-sm btn-success bot-sep" href="#" ng-click="requestUser()">
+                        <a class="btn btn-sm btn-success bot-sep" href="#" ng-click="updateUser()">
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                            Richiedi un account
+                            Aggiorna i dati
                         </a>
                     </form>
 

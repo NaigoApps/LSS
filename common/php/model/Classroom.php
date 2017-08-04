@@ -47,6 +47,10 @@ class Classroom implements JsonSerializable{
         $this->year = $year;
     }
 
+    function display(){
+        return $this->year . " " . $this->section;
+    }
+    
     public function jsonSerialize() {
         return [
             "id" => $this->id,
