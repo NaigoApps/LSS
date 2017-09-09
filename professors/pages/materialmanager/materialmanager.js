@@ -52,11 +52,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.addMode = false;
 
         $scope.exit = function () {
-            prettyConfirm("Esci", "Torna al menu principale", function (ok) {
-                if (ok) {
-                    window.location.replace("../../main.php");
-                }
-            });
+            window.location.replace("../../main.php");
         };
 
         $scope.onAddMaterial = function () {
