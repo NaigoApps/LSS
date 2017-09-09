@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../model/File.php';
 require_once __DIR__ . '/Dao.php';
 require_once __DIR__ . '/UserDao.php';
+require_once __DIR__ . '/ElementDao.php';
 require_once __DIR__ . '/../InsertBuilder.php';
 require_once __DIR__ . '/../QueryBuilder.php';
 
@@ -20,7 +21,11 @@ class FileDao extends Dao {
         }
         if ($element->getUploader() != null) {
             $dao = new UserDao();
-            $element->setUploader($dao->findById($element->getUploader()->getId())->uniqueContent());
+            $element->setUploader($dao->findById($element->getUploader())->uniqueContent());
+        }
+        if ($element->getElement() != null) {
+            $dao = new ElementDao();
+            $element->setElement($dao->findById($element->getElement())->uniqueContent());
         }
         return $element;
     }
@@ -28,9 +33,10 @@ class FileDao extends Dao {
     public function insertFile($file) {
         $builder = new InsertBuilder();
         $builder->insert("file")
-                ->attrs("uploader", "name");
+                ->attrs("uploader", "element", "name");
         $builder->startValues();
         $builder->value($file->getUploader()->getId())
+                ->value(($file->getElement()) ? $file->getElement()->getId() : NULL)
                 ->value($file->getName(), true);
         $builder->endValues();
         return $this->insert($builder->getQuery());
@@ -51,6 +57,7 @@ class FileDao extends Dao {
 
     public function findFiles($filters) {
         $userDao = new UserDao($this->getTransactionManager());
+        $elementDao = new ElementDao($this->getTransactionManager());
         $query = $this->buildFilesQuery($filters);
         $select_result = $this->find($query);
         if ($select_result->wasSuccessful()) {
@@ -60,6 +67,7 @@ class FileDao extends Dao {
                 $file->setId($file_info['id']);
                 $file->setName($file_info['name']);
                 $file->setUploader($userDao->findById($file_info['uploader'])->uniqueContent());
+                $file->setElement($elementDao->findById($file_info['element'])->uniqueContent());
                 $files[] = $file;
             }
             return new QueryResult(QueryResult::SUCCESS, "", $files);
@@ -80,4 +88,5 @@ class FileDao extends Dao {
         $builder->order("f.name");
         return $builder->getQuery();
     }
+
 }

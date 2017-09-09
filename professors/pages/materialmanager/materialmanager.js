@@ -74,7 +74,8 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         };
 
         $scope.onUploadFile = function () {
-            $scope.uploadFile();
+            var element = $scope.getRightElement();
+            $scope.uploadFile(element);
         };
 
         $scope.materialPost = function (material) {
@@ -313,9 +314,10 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                             }
                     );
         };
-        $scope.uploadFile = function () {
+        $scope.uploadFile = function (element) {
             var formData = new FormData();
             if ($('#file-loader')[0].files[0].size <= 5 * 1024 * 1024) {
+                formData.append('element', element.id);
                 formData.append('document', $('#file-loader')[0].files[0]);
                 $('#file-upload-progress-container').show();
                 $('#file-upload-progress').width('100%');

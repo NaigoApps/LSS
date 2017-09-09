@@ -15,11 +15,13 @@ class File implements JsonSerializable {
 
     private $id;
     private $name;
+    private $element;
     private $uploader;
 
     function __construct() {
         $this->id = null;
         $this->name = null;
+        $this->element = null;
         $this->uploader = null;
     }
 
@@ -29,6 +31,10 @@ class File implements JsonSerializable {
 
     function getName() {
         return $this->name;
+    }
+    
+    function getElement(){
+        return $this->element;
     }
 
     function getUploader() {
@@ -42,6 +48,10 @@ class File implements JsonSerializable {
     function setName($name) {
         $this->name = $name;
     }
+    
+    function setElement($element){
+        $this->element = $element;
+    }
 
     function setUploader($uploader) {
         $this->uploader = $uploader;
@@ -51,6 +61,7 @@ class File implements JsonSerializable {
         return [
             "id" => $this->id,
             "name" => $this->name,
+            "element" => $this->element,
             "uploader" => $this->uploader,
         ];
     }

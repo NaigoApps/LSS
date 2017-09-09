@@ -124,8 +124,9 @@ require_once '../../../common/auth-header.php';
                         <div class="form-group" ng-if="newMaterial.internal">
                             <h4 class="text-center">Files:</h4>
                             <div class="list-group">
-                                <div ng-class="{'active' : file.id == newMaterial.file.id}"
+                                <div ng-class="{'active' : file.id === newMaterial.file.id}"
                                      class="list-group-item clearfix"
+                                     ng-if="file.element.id === getRightElement().id"
                                      ng-repeat="file in files.content"
                                      ng-click="onSelectFile(file)">
                                     {{file.name}}

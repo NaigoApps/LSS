@@ -4,18 +4,22 @@ require_once __DIR__ . '/../../common/php/ajax-header.php';
 
 require_once __DIR__ . '/../../common/php/TransactionManager.php';
 require_once __DIR__ . '/../../common/php/dao/FileDao.php';
+require_once __DIR__ . '/../../common/php/dao/ElementDao.php';
 require_once __DIR__ . '/../../common/php/model/File.php';
 
 $ok = true;
 $message = "";
+
+$element = $_POST['element'];
+
 if (isset($_FILES['document'])) {
-    if($_FILES['document']['size'] > 5*1024*1024){
+    if ($_FILES['document']['size'] > 5 * 1024 * 1024) {
         exit_with_error("Dimensione eccessiva");
     }
     $tm = new TransactionManager();
     $dao = new FileDao($tm);
     if ($tm->beginTransaction()) {
-        if (uploadFile() && createFile($dao)) {
+        if (uploadFile() && createFile($dao, $element)) {
             if ($tm->commit()) {
                 exit_with_data("File caricato correttamente");
             } else {
@@ -62,9 +66,11 @@ function deleteFile() {
     }
 }
 
-function createFile($dao) {
+function createFile($dao, $element) {
     $userDao = new UserDao();
+    $elementDao = new ElementDao();
     $file = new File();
+    $file->setElement(($element) ? $elementDao->findById($element)->uniqueContent() : null);
     $file->setUploader($userDao->findById($_SESSION['user_data']->getId())->uniqueContent());
     $file->setName($_FILES['document']['name']);
     return $dao->insertFile($file)->wasSuccessful();
