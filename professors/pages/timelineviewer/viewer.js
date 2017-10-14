@@ -80,6 +80,8 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         $scope.subjects = {
             content: []
         };
+        
+        $scope.links = [];
 
         $scope.singleMode = true;
 
@@ -213,17 +215,39 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             return -1;
         };
 
+        $scope.unsaturate = function (color) {
+            var r = parseInt(color.substr(0, 2), 16);
+            var g = parseInt(color.substr(2, 2), 16);
+            var b = parseInt(color.substr(4, 2), 16);
+
+            const k = 0.6;
+            const l = 0.3 * r + 0.6 * g + 0.1 * b;
+
+            r = Math.floor(r + k * (l - r));
+            g = Math.floor(g + k * (l - g));
+            b = Math.floor(b + k * (l - b));
+
+            r = r.toString(16);
+            g = g.toString(16);
+            b = b.toString(16);
+
+            r = (r.length === 1) ? "0" + r : r;
+            g = (g.length === 1) ? "0" + g : g;
+            b = (b.length === 1) ? "0" + b : b;
+            return r + g + b;
+        };
+
         $scope.buildContent = function (element) {
             var content = "";
             content += element.element.name + " - ";
             $scope.subjects.content.forEach(function (subject) {
                 if ($scope.subjectStatus(element, subject) === "todo") {
-                    content += '<span><div class="subject tooltip-base" style="background-color : gray;">';
+                    content += '<span><div class="subject tooltip-base" style="background-color : #' + $scope.unsaturate(subject.color) + ';">';
                     content += '<span class="tooltip">' + subject.name + ', previsto : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
                     content += '</div>';
                     content += '</span>';
                 } else if ($scope.subjectStatus(element, subject) === "assigned") {
-                    content += '<span><div class="subject tooltip-base" style="background-color : lightGray;">';
+                    content += '<span><div class="subject blink tooltip-base" style="background-color : #' + subject.color + ';">';
                     content += '<span class="tooltip">' + subject.name + ', assegnato : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
                     content += '</div>';
                     content += '</span>';
@@ -285,9 +309,9 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             var options = {
                 editable: false,
                 min: new Date($scope.schedules.content[0].year, 7, 1),
-                max: new Date(parseInt($scope.schedules.content[0].year) + 1, 6, 1),
+                max: new Date(parseInt($scope.schedules.content[0].year) + 1, 8, 1),
                 zoomMin: 1000 * 60 * 60 * 24 * 7,
-                zoomMax: 1000 * 60 * 60 * 24 * 30,
+                zoomMax: 1000 * 60 * 60 * 24 * 30 * 12,
                 minHeight: 350,
                 maxHeight: 650,
                 groupOrder: function (a, b) {
@@ -376,5 +400,29 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 
         //MAIN
 
+        $scope.loadLinks = function () {
+            $http.post('../../../common/php/ajax/load-links.php').then(
+                    function (rx) {
+                        $scope.links = rx.data;
+                    },
+                    function (rx) {
+                        swal(rx.data);
+                    }
+            );
+        };
+        
+        $scope.elementLinks = function(element){
+            var links = [];
+            $scope.links.forEach(function(link){
+                if(element.id === link.element1.id){
+                    links.push(link.element2);
+                }else if(element.id === link.element2.id){
+                    links.push(link.element1);
+                }
+            });
+            return links;
+        };
+
         $scope.loadSchedules();
+        $scope.loadLinks();
     }]);

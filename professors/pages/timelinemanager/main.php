@@ -141,7 +141,7 @@ $id = filter($_POST['timelineid']);
                         <ul class="list-group">
                             <li class="list-group-item clearfix status-{{element.status}}" ng-repeat="(i,element) in schedule.elements" 
                                 ng-if="element.date.getMonth() + 1 === month.number">
-                                {{element.element.name}}
+                                {{element.element.parent.parent.name + " - "+ element.element.parent.name + " - " + element.element.name}}
                                 <div class="btn-group pull-right">
                                     <button class="btn btn-danger btn-md tooltip-base pull-right" ng-click="onRemoveFromTimeline(element, i)">
                                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>

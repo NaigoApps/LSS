@@ -56,9 +56,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         };
         $scope.currentLink = undefined;
 
-        $scope.links = {
-
-        };
+        $scope.links = [];
 
         $scope.exit = function () {
             prettyConfirm("Esci", "Torna al menu principale", function (ok) {
@@ -82,11 +80,11 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                         .then(
                                 function (rx) {
                                     var addedLink = rx.data;
-                                    $scope.links[addedLink] = {
-                                        id : addedLink,
-                                        element1 : e1,
+                                    $scope.links.push({
+                                        id: addedLink,
+                                        element1: e1,
                                         element2: e2
-                                    };
+                                    });
                                     $scope.updateCurrentLink();
                                     swal("Creazione avvenuta con successo");
                                 },
@@ -103,7 +101,13 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
             $http.post('../../ajax/delete-link.php', {id: $scope.currentLink.id})
                     .then(
                             function (rx) {
-                                delete $scope.links[$scope.currentLink.id];
+                                var done = false;
+                                for (var i = 0; i < $scope.links.length && !done; i++) {
+                                    if($scope.links[i].id === $scope.currentLink.id){
+                                        $scope.links.splice(i, 1);
+                                        done = true;
+                                    }
+                                }
                                 $scope.currentLink = undefined;
                                 swal("Eliminazione avvenuta con successo");
                             },
@@ -162,8 +166,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.findLinkByElements = function (e1, e2) {
             var result = undefined;
             if (e1 !== undefined && e2 !== undefined) {
-                Object.keys($scope.links).forEach(function (key) {
-                    var link = $scope.links[key];
+                $scope.links.forEach(function(link, index){
                     if (link.element1.id === e1.id && link.element2.id === e2.id) {
                         result = link;
                     }

@@ -103,18 +103,29 @@ require_once '../../../common/auth-header.php';
                         </div>
                     </div>
                     <!--Add link-->
-                    <button class="btn btn-lg btn-success col-sm-2 col-sm-offset-1"
-                            ng-if="currentLink === undefined"
-                            ng-click="onLinkElements()">
-                        Aggiungi
-                    </button>
-                    <button class="btn btn-lg btn-warning col-sm-2 col-sm-offset-1"
-                            ng-if="currentLink !== undefined"
-                            ng-click="onUnlinkElements()">
-                        Rimuovi
-                    </button>
+                    <div class="col-sm-4 text-center">
+                        <div class="row">
+                            <button class="btn btn-lg btn-success"
+                                    ng-if="currentLink === undefined"
+                                    ng-click="onLinkElements()">
+                                Aggiungi
+                            </button>
+                            <button class="btn btn-lg btn-warning"
+                                    ng-if="currentLink !== undefined"
+                                    ng-click="onUnlinkElements()">
+                                Rimuovi
+                            </button>
+                        </div>
+                        <h4 class="row">Collegamenti di {{firstSelected().name}}</h4>
+                        <div class="well well-sm row" ng-repeat="link in links" ng-if="link.element1.id === firstSelected().id">
+                            {{link.element2.name}}
+                        </div>
+                        <div class="well well-sm row" ng-repeat="link in links" ng-if="link.element2.id === firstSelected().id">
+                            {{link.element1.name}}
+                        </div>
+                    </div>
                     <!--Second element-->
-                    <div class="col-sm-4 col-sm-offset-1">
+                    <div class="col-sm-4">
                         <div class="row">
                             <div class="col-sm-12 bg-info">
                                 <h4 class="text-center">Moduli:</h4>

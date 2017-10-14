@@ -106,6 +106,14 @@ $id = $_POST['timelineid'];
                                     </a>
                                 </span>
                             </div>
+                            <div class="row top-sep">
+                                <h4 ng-if="elementLinks(currentElement).length > 0">{{currentElement.name}} è collegato a:</h4>
+                                <span class="well well-sm" ng-repeat="link in elementLinks(currentElement)">
+                                    <a ng-click="replaceCurrentElement(link)">
+                                        {{link.name}}
+                                    </a>
+                                </span>
+                            </div>
                     </div>
                 </div>
             </div>
