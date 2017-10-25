@@ -143,7 +143,7 @@ form{
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 1;
+    z-index: 9999;
     bottom: 125%;
     left: 50%;
     margin-left: -60px;
@@ -195,4 +195,40 @@ form{
     animation-name: blink;
     animation-duration: 1s;
     animation-iteration-count: infinite;
+}
+
+.label-group{
+    
+}
+
+.label-group-item{
+    padding: 6px 12px;
+}
+
+.label-group>.label-group-item:first-child{
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.label-group>.label-group-item:last-child{
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.module-name{
+    color: #fff;
+    background-color: #AD2A1A;
+    border: 1px solid #9A2617;
+}
+
+.topic-name{
+    color: #fff;
+    background-color: #DA621E;
+    border: 1px solid #C2571A;
+}
+
+.item-name{
+    color: #fff;
+    background-color: #D3B53D;
+    border: 1px solid #BCA136;
 }

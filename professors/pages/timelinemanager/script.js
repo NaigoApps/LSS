@@ -213,6 +213,11 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
         $scope.setAssigned = function (element, index) {
             element.status = "assigned";
+            prettyPrompt("Messaggio per gli studenti", "", element.message, function (message) {
+                if (message) {
+                    element.message = message;
+                }
+            });
         };
         $scope.setDone = function (element, index) {
             element.date = new Date();

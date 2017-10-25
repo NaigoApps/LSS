@@ -46,6 +46,7 @@ class ScheduleElementDao extends Dao {
             $result->setElement($elementsDao->findById($element['idelemento'])->uniqueContent());
             $result->setSchedule($element['idtimeline']);
             $result->setDate($element['data']);
+            $result->setMessage($element['message']);
             $result->setStatus($element['status']);
             if ($schedule != null) {
                 $result->setFullStatus($this->computeFullStatus($element['idelemento'], $schedule));
@@ -72,7 +73,7 @@ class ScheduleElementDao extends Dao {
 
     private function buildElementsQuery($filters) {
         $builder = new QueryBuilder();
-        $builder->select("id, idelemento, UNIX_TIMESTAMP(data) as data, idtimeline, status")->from("timeline_element te");
+        $builder->select("id, idelemento, UNIX_TIMESTAMP(data) as data, message, idtimeline, status")->from("timeline_element te");
         if (isset($filters['id'])) {
             $builder->where("te.id = " . $filters['id']);
         }
@@ -115,11 +116,11 @@ class ScheduleElementDao extends Dao {
     }
 
     public function insertRawElements($elements) {
-        $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, status) VALUES ";
+        $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, message, status) VALUES ";
         $at_least_one = false;
         $inserts = [];
         foreach ($elements as $element) {
-            $inserts[] = "($element->schedule, " . $element->element->id . ", FROM_UNIXTIME('" . strtotime($element->date) . "'), '" . $element->status . "')";
+            $inserts[] = "($element->schedule, " . $element->element->id . ", FROM_UNIXTIME('" . strtotime($element->date) . "'),'" . $element->message . "', '" . $element->status . "')";
             $at_least_one = true;
         }
         if ($at_least_one) {
@@ -131,11 +132,11 @@ class ScheduleElementDao extends Dao {
     }
 
     public function insertElements($elements) {
-        $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, status) VALUES ";
+        $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, message, status) VALUES ";
         $at_least_one = false;
         $inserts = [];
         foreach ($elements as $element) {
-            $inserts[] = "(" . $element->getSchedule() . ", " . $element->getElement()->getId() . ", FROM_UNIXTIME('" . $element->getDate() . "'), '" . $element->getStatus() . "')";
+            $inserts[] = "(" . $element->getSchedule() . ", " . $element->getElement()->getId() . ", FROM_UNIXTIME('" . $element->getDate() . "'), '" . $element->getMessage() . "', '" . $element->getStatus() . "')";
             $at_least_one = true;
         }
         if ($at_least_one) {

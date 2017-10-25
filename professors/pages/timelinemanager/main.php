@@ -4,8 +4,7 @@ require_once '../../../common/auth-header.php';
 $id = filter($_POST['timelineid']);
 ?>
 <script type="text/javascript">
-    var schedule_id = <?php echo $id ?>;
-</script>
+    var schedule_id = <?php echo $id ?>;</script>
 
 <!DOCTYPE HTML>
 <html>
@@ -139,46 +138,59 @@ $id = filter($_POST['timelineid']);
                             <h3 class="panel-heading">{{month.name}} <small>non svolti</small></h3>
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item clearfix status-{{element.status}}" ng-repeat="(i,element) in schedule.elements" 
+                            <li class="list-group-item status-{{element.status}}" ng-repeat="(i, element) in schedule.elements" 
                                 ng-if="element.date.getMonth() + 1 === month.number">
-                                {{element.element.parent.parent.name + " - "+ element.element.parent.name + " - " + element.element.name}}
-                                <div class="btn-group pull-right">
-                                    <button class="btn btn-danger btn-md tooltip-base pull-right" ng-click="onRemoveFromTimeline(element, i)">
-                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                        Elimina
-                                    </button>
-                                </div>
-                                <div class="btn-group pull-right">
-
-                                    <button class="btn btn-info btn-md tooltip-base" ng-click="onSetDate(i)">
-                                        <span class="tooltip" ng-if="!element.settingDate">Imposta data</span>
-                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                        {{element.date| date:'dd/MM/yyyy'}}
-                                    </button>
-                                    <div class="picker-container" id="picker{{i}}"></div>
-                                    <button class="btn btn-danger btn-md tooltip-base" ng-click="setTodo(element, i)"
-                                            ng-disabled="element.status === 'todo'">
-                                        <span ng-if="element.status !== 'todo'">Annulla svolgimento</span>
-                                        <span ng-if="element.status === 'todo'">Non svolto</span>
-                                    </button>
-                                    <button class="btn btn-warning btn-md tooltip-base" ng-click="setAssigned(element, i)"
-                                            ng-disabled="element.status === 'assigned'">
-                                        <span ng-if="element.status !== 'assigned'">Assegna</span>
-                                        <span ng-if="element.status === 'assigned'">Assegnato</span>
-                                    </button>
-                                    <button class="btn btn-success btn-md tooltip-base" ng-click="setDone(element, i)"
-                                            ng-disabled="element.status === 'done'">
-                                        <span ng-if="element.status !== 'done'">Svolgi</span>
-                                        <span ng-if="element.status === 'done'">Svolto</span>
-                                    </button>
-                                </div>
-
-                                <div class="subjects pull-right">
-                                    <span ng-repeat="subject in subjects.content">
-                                        <div class="subject tooltip-base" ng-style="{'background-color':subject.color}" ng-if="subjectStatus(element, subject) !== 'todo'">
-                                            <span class="tooltip">{{subject.name}} : {{subjectDate(element, subject) | date:'dd/MM/yyyy'}}</span>
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="label-group">
+                                        <div class="label-group-item col-sm-1 module-name">
+                                            {{element.element.parent.parent.name}}
                                         </div>
-                                    </span>
+                                        <div class="label-group-item col-sm-2 topic-name">
+                                            {{element.element.parent.name}}
+                                        </div>
+                                        <div class="label-group-item col-sm-2 item-name">
+                                            {{element.element.name}}
+                                        </div>
+                                            </div>
+                                        <div class="col-sm-7">
+                                            <div class="pull-right">
+                                                <div class="subjects">
+                                                    <span ng-repeat="subject in subjects.content">
+                                                        <div class="subject tooltip-base" ng-style="{'background-color':subject.color}" ng-if="subjectStatus(element, subject) !== 'todo'">
+                                                            <span class="tooltip">{{subject.name}} : {{subjectDate(element, subject) | date:'dd/MM/yyyy'}}</span>
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-info btn-md tooltip-base" ng-click="onSetDate(i)">
+                                                        <span class="tooltip" ng-if="!element.settingDate">Imposta data</span>
+                                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                                        {{element.date| date:'dd/MM/yyyy'}}
+                                                    </button>
+                                                    <div class="picker-container" id="picker{{i}}"></div>
+                                                    <button class="btn btn-danger btn-md tooltip-base" ng-click="setTodo(element, i)"
+                                                            ng-disabled="element.status === 'todo'">
+                                                        <span ng-if="element.status !== 'todo'">Annulla svolgimento</span>
+                                                        <span ng-if="element.status === 'todo'">Non svolto</span>
+                                                    </button>
+                                                    <button class="btn btn-warning btn-md tooltip-base" ng-click="setAssigned(element, i)"
+                                                            ng-disabled="element.status === 'assigned'">
+                                                        <span ng-if="element.status !== 'assigned'">Assegna</span>
+                                                        <span ng-if="element.status === 'assigned'">Assegnato</span>
+                                                    </button>
+                                                    <button class="btn btn-success btn-md tooltip-base" ng-click="setDone(element, i)"
+                                                            ng-disabled="element.status === 'done'">
+                                                        <span ng-if="element.status !== 'done'">Svolgi</span>
+                                                        <span ng-if="element.status === 'done'">Svolto</span>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-md tooltip-base" ng-click="onRemoveFromTimeline(element, i)">
+                                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
                         </ul>

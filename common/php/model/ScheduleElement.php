@@ -18,12 +18,14 @@ class ScheduleElement implements JsonSerializable {
     private $status;
     private $fullStatus;
     private $date;
+    private $message;
     private $element;
 
     function __construct() {
         $this->id = null;
         $this->schedule = null;
         $this->status = null;
+        $this->message = null;
         $this->fullStatus = [];
         $this->date = null;
         $this->element = null;
@@ -34,6 +36,10 @@ class ScheduleElement implements JsonSerializable {
 
     function getSchedule() {
         return $this->schedule;
+    }
+
+    function getMessage() {
+        return $this->message;
     }
 
     function getStatus() {
@@ -72,6 +78,10 @@ class ScheduleElement implements JsonSerializable {
         $this->date = $date;
     }
 
+    function setMessage($message) {
+        $this->message = $message;
+    }
+
     function setElement($element) {
         $this->element = $element;
     }
@@ -82,6 +92,7 @@ class ScheduleElement implements JsonSerializable {
             "element" => $this->element,
             "schedule" => $this->schedule,
             "status" => $this->status,
+            "message" => $this->message,
             "fullStatus" => $this->fullStatus,
             "date" => $this->date
         ];

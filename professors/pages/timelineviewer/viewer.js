@@ -242,18 +242,21 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             content += element.element.name + " - ";
             $scope.subjects.content.forEach(function (subject) {
                 if ($scope.subjectStatus(element, subject) === "todo") {
-                    content += '<span><div class="subject tooltip-base" style="background-color : #' + $scope.unsaturate(subject.color) + ';">';
+                    content += '<span><div class="subject tooltip-base" style="background-color : #FFFFFF;">';
                     content += '<span class="tooltip">' + subject.name + ', previsto : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
+                    content += subject.name.substr(0,1);
                     content += '</div>';
                     content += '</span>';
                 } else if ($scope.subjectStatus(element, subject) === "assigned") {
                     content += '<span><div class="subject blink tooltip-base" style="background-color : #' + subject.color + ';">';
                     content += '<span class="tooltip">' + subject.name + ', assegnato : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
+                    content += subject.name.substr(0,1);
                     content += '</div>';
                     content += '</span>';
                 } else if ($scope.subjectStatus(element, subject) === "done") {
                     content += '<span><div class="subject tooltip-base" style="background-color :   #' + subject.color + ';">';
                     content += '<span class="tooltip">' + subject.name + ', svolto : ' + $scope.simpleDateFormat($scope.subjectDate(element, subject)) + '</span>';
+                    content += subject.name.substr(0,1);
                     content += '</div>';
                     content += '</span>';
                 }

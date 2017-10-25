@@ -126,6 +126,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.onSelectModule1 = function (module) {
             $scope.modules1.selected = module;
             $scope.topics1.selected = undefined;
+            $scope.items1.selected = undefined;
             $scope.loadTopics1(module);
             $scope.items1.content.splice(0, $scope.items1.content.length);
             $scope.updateCurrentLink();
@@ -146,6 +147,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         $scope.onSelectModule2 = function (module) {
             $scope.modules2.selected = module;
             $scope.topics2.selected = undefined;
+            $scope.items2.selected = undefined;
             $scope.loadTopics2(module);
             $scope.items2.content.splice(0, $scope.items2.content.length);
             $scope.updateCurrentLink();
