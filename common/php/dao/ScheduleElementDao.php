@@ -18,7 +18,7 @@ require_once __DIR__ . '/../model/ScheduleElement.php';
  * @author root
  */
 class ScheduleElementDao extends Dao {
-
+    
     public function findBySchedule($schedule) {
         return $this->findElements(["schedule" => $schedule], $schedule);
     }
@@ -116,19 +116,23 @@ class ScheduleElementDao extends Dao {
     }
 
     public function insertRawElements($elements) {
-        $update_query = "INSERT INTO timeline_element(idtimeline, idelemento, data, message, status) VALUES ";
-        $at_least_one = false;
-        $inserts = [];
-        foreach ($elements as $element) {
-            $inserts[] = "($element->schedule, " . $element->element->id . ", FROM_UNIXTIME('" . strtotime($element->date) . "'),'" . $element->message . "', '" . $element->status . "')";
-            $at_least_one = true;
+        $builder = new InsertBuilder();
+        $builder->insert("timeline_element")
+                ->attrs("idtimeline", "idelemento", "data", "message", "status");
+        foreach ($elements as $element){
+            $builder->startValues();
+            $builder->value($element->schedule)
+                    ->value($element->element->id)
+                    ->value("FROM_UNIXTIME('" . strtotime($element->date) . "')");
+            if (isset($element->message)) {
+                $builder->value($element->message, true);
+            } else {
+                $builder->value("NULL");
+            }
+            $builder->value($element->status, true);
+            $builder->endValues();
         }
-        if ($at_least_one) {
-            $update_query = $update_query . join(",", $inserts);
-            return $this->multiInsert($update_query);
-        } else {
-            return new QueryResult(QueryResult::SUCCESS, null, null);
-        }
+        return $this->insert($builder->getQuery());
     }
 
     public function insertElements($elements) {
