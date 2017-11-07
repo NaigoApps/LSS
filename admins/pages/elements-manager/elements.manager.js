@@ -74,7 +74,7 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
         };
 
         $scope.exit = function () {
-            prettyConfirm("Esci", "I dati non salvati saranno persi", function (ok) {
+            prettyConfirm("Esci", "Tornare al menu principale?", function (ok) {
                 if (ok) {
                     window.location.replace("../../main.php");
                 }
@@ -279,6 +279,8 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
                                         $scope.loadTopics($scope.modules.selected, $scope.topics);
                                     } else if (element.type === "item") {
                                         $scope.loadItems($scope.topics.selected);
+                                    }else{
+                                        $scope.loadModules();
                                     }
                                     swal({
                                         title: "Elemento",

@@ -1,5 +1,17 @@
 /* global angular */
 
+
+function prettyConfirm(title, text, callback) {
+    swal({
+        title: title,
+        text: text,
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55"
+    }, callback);
+}
+
+
 var app = angular.module('lss-db', []);
 
 app.controller("userController", ['$http', '$scope', function ($http, $scope) {
@@ -17,6 +29,14 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
 
         $scope.visibleUsers = {
             content: []
+        };
+
+        $scope.exit = function () {
+            prettyConfirm("Esci", "Tornare al menu principale?", function (ok) {
+                if (ok) {
+                    window.location.replace("../../main.php");
+                }
+            });
         };
 
         $scope.removeUser = function (user) {

@@ -14,7 +14,7 @@
         <script type="text/javascript" src=<?php echo WEB . "/common/scripts/angular.min.js"; ?>></script>
         <script type="text/javascript" src="elements.manager.js"></script>
     </head>
-    <body>
+    <body ng-app="lss-db" ng-controller="dbController as dbCtrl">
 
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
@@ -40,7 +40,7 @@
                 </div>
             </div>
         </nav>
-        <div class="container under-nav" ng-app="lss-db" ng-controller="dbController as dbCtrl">
+        <div class="container under-nav">
             <div class="row">
                 <div class="col-sm-4">
 
@@ -83,7 +83,7 @@
 
                         <div class="row" ng-repeat="module in modules.content">
                             <!-- Module -->
-                            <li id="mod{{module.id}}" class="list-group-item module-name col-sm-12" ng-if="!module.editMode"
+                            <li id="mod{{module.id}}" class="list-group-item col-sm-12" ng-if="!module.editMode"
                                 ng-class="{'current': module === modules.selected}"
                                 ng-click="onSelectModule(module)">
                                 {{module.name}}
@@ -99,7 +99,7 @@
                                 </div>
                             </li>
 
-                            <li class="list-group-item module-name col-sm-12" ng-if="module.editMode">
+                            <li class="list-group-item col-sm-12" ng-if="module.editMode">
 
                                 <form>
                                     <div class="form-group">
