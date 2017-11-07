@@ -67,7 +67,9 @@ class FileDao extends Dao {
                 $file->setId($file_info['id']);
                 $file->setName($file_info['name']);
                 $file->setUploader($userDao->findById($file_info['uploader'])->uniqueContent());
-                $file->setElement($elementDao->findById($file_info['element'])->uniqueContent());
+                if($file_info['element'] != null){
+                    $file->setElement($elementDao->findById($file_info['element'])->uniqueContent());
+                }
                 $files[] = $file;
             }
             return new QueryResult(QueryResult::SUCCESS, "", $files);
