@@ -410,6 +410,11 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                                     var d = new Date();
                                     d.setTime(element.date * 1000);
                                     element.date = d;
+                                    element.fullStatus.forEach(function(fs){
+                                        var d = new Date();
+                                        d.setTime(fs.date * 1000);
+                                        fs.date = d;
+                                    });
                                 });
                                 $scope.sortSchedule();
                             },
