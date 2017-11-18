@@ -98,6 +98,8 @@ class MaterialDao extends Dao {
         }
         if (isset($filters['element'])) {
             $builder->where("m.element = " . $filters['element']);
+        }else{
+            $builder->where("m.element is NULL");
         }
         if (isset($filters['private'])) {
             $builder->where("m.private = " . $filters['private']);
