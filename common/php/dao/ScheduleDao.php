@@ -34,6 +34,24 @@ class ScheduleDao extends Dao {
         return $this->findSchedules(["id" => $id], $lazy);
     }
 
+    public function findByStudent($id) {
+        $query = "SELECT ti.* "
+                . "FROM timeline ti "
+                . "WHERE "
+                . "ti.idclasse = (SELECT u.classroom from utenti u WHERE u.id=$id)";
+        $select_result = $this->find($query);
+        if ($select_result->wasSuccessful()) {
+            $schedules = array();
+            foreach ($select_result->getContent() as $schedule_info) {
+                $schedule = $this->fromResultSet($schedule_info, false);
+                $schedules[] = $schedule;
+            }
+            return new QueryResult(QueryResult::SUCCESS, "", $schedules);
+        }
+
+        return $select_result;
+    }
+
     public function findRelatedSchedules($id) {
         $query = "SELECT ti.* "
                 . "FROM timeline ti "

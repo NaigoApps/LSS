@@ -136,10 +136,6 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             $scope.buildView();
         };
 
-        $scope.exit = function () {
-            window.location.replace("../../main.php");
-        };
-
         $scope.findById = function (vector, id) {
             for (var i = 0; i < vector.length; i++) {
                 if (vector[i].id === id) {
@@ -157,7 +153,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
 
         $scope.loadSubjects = function () {
-            $http.post('../../../common/php/ajax/load-subjects.php')
+            $http.post('../common/php/ajax/load-subjects.php')
                     .then(
                             function (rx) {
                                 $scope.subjects.content = rx.data;
@@ -171,17 +167,15 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 
         $scope.loadSchedules = function () {
             $(".progress").show();
-            $http.post('../../../common/php/ajax/load-related-schedules.php',
+            $http.post('../common/php/ajax/load-student-schedules.php',
                     {
-                        id: timeline_id
+                        id: student_id
                     }
             ).then(
                     function (rx) {
                         $scope.schedules.content = rx.data;
                         $scope.schedules.content.forEach(function (schedule) {
-                            if (parseInt(schedule.id) === timeline_id) {
-                                schedule.visible = true;
-                            }
+                            schedule.visible = true;
                             schedule.year2 = parseInt(schedule.year) + 1;
                             schedule.elements.forEach(function (element) {
                                 var d = new Date();
@@ -349,7 +343,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
 
         $scope.updateCurrentElement = function () {
-            $http.post('../../../common/php/ajax/load-all-materials.php', {element: $scope.currentElement.id})
+            $http.post('../common/php/ajax/load-all-materials.php', {element: $scope.currentElement.id})
                     .then(
                             function (rx) {
                                 $scope.materials.content = rx.data;
@@ -372,7 +366,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
 
         $scope.replaceCurrentElement = function (element) {
             $scope.currentElement = element;
-            $http.post('../../../common/php/ajax/load-children-elements.php', {parent: $scope.currentElement.id})
+            $http.post('../common/php/ajax/load-children-elements.php', {parent: $scope.currentElement.id})
                     .then(
                             function (rx) {
                                 $scope.currentElement.children = rx.data;
@@ -383,28 +377,10 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                     );
             $scope.updateCurrentElement();
         };
-// attach events to the navigation buttons
-//        document.getElementById('zoomIn').onclick = function () {
-//            zoom(-0.2);
-//        };
-//        document.getElementById('zoomOut').onclick = function () {
-//            zoom(0.2);
-//        };
-//        document.getElementById('moveLeft').onclick = function () {
-//            move(0.2);
-//        };
-//        document.getElementById('moveRight').onclick = function () {
-//            move(-0.2);
-//        };
 
-        //alert(obj1.month + "-" + obj1.day + "-" + obj1.year);
-        //alert(obj2.month + "-" + obj2.day + "-" + obj2.year);
-        //timeline.setWindow(obj1.month + "-" + obj1.day + "-" + obj1.year, obj2.month + "-" + obj2.day + "-" + obj2.year);
-
-        //MAIN
 
         $scope.loadLinks = function () {
-            $http.post('../../../common/php/ajax/load-links.php').then(
+            $http.post('../common/php/ajax/load-links.php').then(
                     function (rx) {
                         $scope.links = rx.data;
                     },
@@ -426,6 +402,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
             return links;
         };
 
+        //MAIN
         $scope.loadSchedules();
         $scope.loadLinks();
     }]);

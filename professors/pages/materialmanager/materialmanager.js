@@ -303,7 +303,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
                                 $scope.replaceContent($scope.materials, rx.data);
                                 $scope.materials.content.forEach(function (element) {
                                     if (element.file) {
-                                        element.file.url = "http://localhost/LSS/materials/" + element.file.name;
+                                        element.file.url = window.location.protocol + "//" + window.location.hostname + "/materials/" + element.file.name;
                                     }
                                 });
                                 $("#material-load-progress-container").hide();
