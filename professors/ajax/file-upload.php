@@ -13,7 +13,7 @@ $message = "";
 $element = $_POST['element'];
 
 if (isset($_FILES['document'])) {
-    if ($_FILES['document']['size'] > 5 * 1024 * 1024) {
+    if ($_FILES['document']['size'] > 30 * 1024 * 1024) {
         exit_with_error("Dimensione eccessiva");
     }
     $tm = new TransactionManager();

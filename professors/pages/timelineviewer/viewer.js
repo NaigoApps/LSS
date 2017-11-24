@@ -349,7 +349,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
 
         $scope.updateCurrentElement = function () {
-            $http.post('../../../common/php/ajax/load-all-materials.php', {element: $scope.currentElement.id})
+            $http.post('../../../common/php/ajax/load-related-materials.php', {element: $scope.currentElement.id})
                     .then(
                             function (rx) {
                                 $scope.materials.content = rx.data;

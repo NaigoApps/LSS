@@ -22,44 +22,46 @@
 
             </div><!-- /.container-fluid -->
         </nav>
-        <div class="container">
-            <div class="jumbotron text-center"><h1>Home</h1></div>
-            <div class="well">
-                <div class="row">
-                    <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/professors/pages/timelinecreator/main.php"; ?>">
-                        <strong class="text-info">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                            Nuova programmazione
-                        </strong>
-                    </a>
-                    <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/professors/pages/materialmanager/materialmanager.php"; ?>">
-                        <strong class="text-info">
-                            <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-                            Gestione del materiale
-                        </strong>
-                    </a>
-                    <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/professors/pages/linksmanager/linksmanager.php"; ?>">
-                        <strong class="text-info">
-                            <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-                            Gestione dei collegamenti
-                        </strong>
-                    </a>
-
-
-                    <?php
-                    if ($_SESSION['user_data']->isAdmin()) {
-                        ?>
-
-                        <a class="col-sm-3 btn btn-sm btn-default" href="<?php echo WEB . "/admins/main.php"; ?>">
-                            <strong class="text-warning">
-                                <span class="glyphicon glyphicon-console" aria-hidden="true"></span>
-                                Sezione amministratore
+        <div class="container under-nav">
+            <h1 class="text-center">Home</h1>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="btn-group">
+                        <a class="btn btn-default" href="<?php echo WEB . "/professors/pages/timelinecreator/main.php"; ?>">
+                            <strong class="text-info">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                Nuova programmazione
+                            </strong>
+                        </a>
+                        <a class="btn btn-default" href="<?php echo WEB . "/professors/pages/materialmanager/materialmanager.php"; ?>">
+                            <strong class="text-info">
+                                <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                                Gestione del materiale
+                            </strong>
+                        </a>
+                        <a class="btn btn-default" href="<?php echo WEB . "/professors/pages/linksmanager/linksmanager.php"; ?>">
+                            <strong class="text-info">
+                                <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                                Gestione dei collegamenti
                             </strong>
                         </a>
                         <?php
-                    }
-                    ?>
+                        if ($_SESSION['user_data']->isAdmin()) {
+                            ?>
+
+                            <a class="btn btn-default" href="<?php echo WEB . "/admins/main.php"; ?>">
+                                <strong class="text-warning">
+                                    <span class="glyphicon glyphicon-console" aria-hidden="true"></span>
+                                    Sezione amministratore
+                                </strong>
+                            </a>
+                            <?php
+                        }
+                        ?>
+                    </div>
                 </div>
+
+
             </div>
 
             <div ng-app="lss-db" ng-controller="timelineController as timCtrl" class="top-sep">

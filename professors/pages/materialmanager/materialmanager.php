@@ -99,95 +99,125 @@ require_once '../../../common/auth-header.php';
 
                 <div class="row top-sep" ng-if="!addMode">
                     <button class="btn btn-lg btn-default add-item col-sm-2 col-sm-offset-5"
-                            ng-disabled="modules.selected == undefined && topics.selected == undefined && items.selected == undefined"
+                            ng-disabled="modules.selected === undefined && topics.selected === undefined && items.selected === undefined"
                             ng-click="onAddMaterial()">
                         Aggiungi
                     </button>
                 </div>
 
                 <div class="row top-sep" ng-if="addMode">
-                    <form class="col-sm-8 col-sm-offset-2">
-                        <h3>Nuovo materiale per {{newMaterial.element.name}}</h3>
-                        <div class="form-group">
-                            <label>Nome visualizzato:</label>
-                            <input class="form-control" type="text" placeholder="Nome" ng-model="newMaterial.name">
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="newMaterial.internal">Collega file
-                            </label>
-                        </div>
-                        <div class="form-group" ng-if="!newMaterial.internal">
-                            <label>Link:</label>
-                            <input class="form-control" type="text" placeholder="Nome" ng-model="newMaterial.url">
-                        </div>
-                        <div class="form-group" ng-if="newMaterial.internal">
-                            <h4 class="text-center">Files:</h4>
-                            <div class="list-group">
-                                <div ng-class="{'active' : file.id === newMaterial.file.id}"
-                                     class="list-group-item clearfix"
-                                     ng-if="file.element.id === getRightElement().id"
-                                     ng-repeat="file in files.content"
-                                     ng-click="onSelectFile(file)">
-                                    {{file.name}}
-                                    <button class="btn btn-xs btn-danger pull-right"
-                                            ng-click="onDeleteFile(file)">
-                                        <span class="glyphicon glyphicon-trash"></span>
+                    <div class="col-sm-6">
+                        <form class="form-horizontal">
+                            <h3 class="text-center">Nuovo materiale per {{newMaterial.element.name}}</h3>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Nome visualizzato:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" placeholder="Nome" ng-model="newMaterial.name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Link:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" placeholder="Link" 
+                                           ng-disabled="newMaterial.internal"
+                                           ng-model="newMaterial.url">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-8">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="newMaterial.internal"> Collega file
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-8">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="newMaterial.private"> Privato
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" role="group">
+                                <div class="col-sm-12 text-center">
+                                    <div class="btn-group">
+                                        <a class="btn btn-success" 
+                                           ng-disabled="newMaterial.internal && !newMaterial.file"
+                                           ng-click="newMaterial.internal && !newMaterial.file || onConfirmNewMaterial()">
+                                            <span class="glyphicon glyphicon-ok"></span>
+                                        </a>
+                                        <a class="btn btn-warning" ng-click="onDiscardNewMaterial()">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form" ng-if="newMaterial.internal">
+                            <h3 class="text-center">Files disponibili per {{newMaterial.element.name}}</h3>
+                            <div class="form-group">
+                                <label>Files:</label>
+                                <div class="list-group">
+                                    <div ng-class="{'active' : file.id === newMaterial.file.id}"
+                                         class="list-group-item clearfix"
+                                         ng-if="file.element.id === getRightElement().id"
+                                         ng-repeat="file in files.content"
+                                         ng-click="onSelectFile(file)">
+                                        {{file.name}}
+                                        <button class="btn btn-xs btn-danger pull-right"
+                                                ng-click="onDeleteFile(file)">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Carica nuovo file:</label>
+                                <input name="document" id="file-loader" type="file" class="form-control">
+                                <div class="text-center">
+                                    <button class="btn btn-lg btn-default" ng-click="onUploadFile()">
+                                        <span class="glyphicon glyphicon-upload"></span>
                                     </button>
                                 </div>
-                            </div>
-                            <label>Carica:</label>
-                            <input name="document" id="file-loader" type="file" class="form-control">
-                            <div class="text-center">
-                                <button class="btn btn-lg btn-default" ng-click="onUploadFile()">
-                                    <span class="glyphicon glyphicon-upload"></span>
-                                </button>
-                            </div>
-                            <div id="file-upload-progress-container" class="progress" hidden>
-                                <div id="file-upload-progress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div id="file-upload-progress-container" class="progress" hidden>
+                                    <div id="file-upload-progress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="newMaterial.private">Privato
-                            </label>
-                        </div>
-
-                        <div class="pull-right btn-group" role="group">
-                            <a class="btn btn-xs btn-success" ng-click="onConfirmNewMaterial()">
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </a>
-                            <a class="btn btn-xs btn-warning" ng-click="onDiscardNewMaterial()">
-                                <span class="glyphicon glyphicon-remove"></span>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-                <div class="row">
-                    <h3 class="text-center">{{getRightElement().name}}</h3>
-
-                    <div class="col-sm-10 col-sm-offset-1 panel panel-default">
-
-                        <div id="material-load-progress-container" class="progress" hidden>
-                            <div id="material-load-progress" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                            </div>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item clearfix" ng-repeat="(i,material) in materials.content">
-                                <a ng-if="material.url" target="_blank" href="{{material.url}}">{{material.name}}</a>
-                                <a ng-if="!material.url" target="_blank" href="{{material.file.url}}">{{material.name}}</a>
-                                <span ng-if="material.private">(Privato)</span>
-                                <div class="btn-group pull-right">
-                                    <button class="btn btn-danger btn-md tooltip-base pull-right" ng-click="onDeleteMaterial(material)">
-                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                    </button>
-                                </div>
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <h3 class="text-center">{{getRightElement().name}}</h3>
+
+                <div class="col-sm-10 col-sm-offset-1 panel panel-default">
+
+                    <div id="material-load-progress-container" class="progress" hidden>
+                        <div id="material-load-progress" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item clearfix" ng-repeat="(i,material) in materials.content">
+                            <a ng-if="material.url" target="_blank" href="{{material.url}}">{{material.name}}</a>
+                            <a ng-if="!material.url" target="_blank" href="{{material.file.url}}">{{material.name}}</a>
+                            <span ng-if="material.private">(Privato)</span>
+                            <div class="btn-group pull-right">
+                                <button class="btn btn-danger btn-md tooltip-base pull-right" ng-click="onDeleteMaterial(material)">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </body>
+    </div>
+</body>
 </html>

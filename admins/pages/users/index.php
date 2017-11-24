@@ -32,11 +32,20 @@ require_once '../../../common/auth-header.php';
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a ng-click="exit()">Torna al menu</a></li>
+                                    <li><a ng-if="!areProfessorsVisible" ng-click="showProfessors(true)">Visualizza docenti</a></li>
+                                    <li><a ng-if="areProfessorsVisible" ng-click="showProfessors(false)">Nascondi docenti</a></li>
+                                    <li><a ng-if="!areAdminsVisible" ng-click="showAdmins(true)">Visualizza amministratori</a></li>
+                                    <li><a ng-if="areAdminsVisible" ng-click="showAdmins(false)">Nascondi amministratori</a></li>
+                                    <li><a ng-if="!areStudentsVisible" ng-click="showStudents(true)">Visualizza studenti</a></li>
+                                    <li><a ng-if="areStudentsVisible" ng-click="showStudents(false)">Nascondi studenti</a></li>
+                                    <li><a ng-if="!areUnassignedVisible" ng-click="showUnassigned(true)">Visualizza non assegnati</a></li>
+                                    <li><a ng-if="areUnassignedVisible" ng-click="showUnassigned(false)">Nascondi non assegnati</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a ng-click="exit()">Indietro</a></li>
                                 </ul>
                             </li>
                             <li>
-                                <a>Gestione degli utenti</a>
+                                <a>Gestione degli utenti ({{shownUsers()}})</a>
                             </li>
                         </ul>
                         <?php require_once __DIR__ . '/../../../common/authentication-bar.php'; ?>
@@ -52,6 +61,7 @@ require_once '../../../common/auth-header.php';
                             <th class="text-center">Nome</th>
                             <th class="text-center">Cognome</th>
                             <th class="text-center">e-mail</th>
+                            <th class="text-center">Classe</th>
                             <th class="text-center">Admin</th>
                             <th class="text-center">Docente</th>
                             <th class="text-center">Studente</th>
@@ -61,6 +71,7 @@ require_once '../../../common/auth-header.php';
                             <td>{{user.name}}</td>
                             <td>{{user.surname}}</td>
                             <td>{{user.email}}</td>
+                            <td>{{user.classroom.year + user.classroom.section}}</td>
 
                             <td>
                                 <a class="col-sm-3 btn btn-xs btn-default" ng-if="!isStudent(user)" ng-click="toggleAdmin(user)">

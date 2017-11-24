@@ -30,6 +30,11 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
         $scope.visibleUsers = {
             content: []
         };
+        
+        $scope.areAdminsVisible = false;
+        $scope.areProfessorsVisible = false;
+        $scope.areStudentsVisible = false;
+        $scope.areUnassignedVisible = true;
 
         $scope.exit = function () {
             prettyConfirm("Esci", "Tornare al menu principale?", function (ok) {
@@ -53,8 +58,34 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
         $scope.updateView = function () {
             $scope.visibleUsers.content = [];
             for (var i = 0; i < $scope.users.content.length; i++) {
-                $scope.visibleUsers.content.push($scope.users.content[i]);
+                var user = $scope.users.content[i];
+                if($scope.areAdminsVisible && $scope.isAdmin(user) ||
+                        $scope.areProfessorsVisible && $scope.isProfessor(user) ||
+                        $scope.areStudentsVisible && $scope.isStudent(user) ||
+                        $scope.areUnassignedVisible && $scope.isUnassigned(user)){
+                    $scope.visibleUsers.content.push(user);
+                }
             }
+        };
+        
+        $scope.showAdmins = function(val){
+            $scope.areAdminsVisible = val;
+            $scope.updateView();
+        };
+        
+        $scope.showProfessors = function(val){
+            $scope.areProfessorsVisible = val;
+            $scope.updateView();
+        };
+        
+        $scope.showStudents = function(val){
+            $scope.areStudentsVisible = val;
+            $scope.updateView();
+        };
+        
+        $scope.showUnassigned = function(val){
+            $scope.areUnassignedVisible = val;
+            $scope.updateView();
         };
 
         $scope.isAdmin = function (user) {
@@ -68,6 +99,29 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
         $scope.isProfessor = function (user) {
             return (parseInt(user.type) & 1) !== 0;
         };
+
+        $scope.isUnassigned = function (user) {
+            return !($scope.isAdmin(user) || 
+                    $scope.isProfessor(user) || 
+                    $scope.isStudent(user));
+        };
+        
+        $scope.shownUsers = function (){
+            var strings = [];
+            if($scope.areAdminsVisible){
+                strings.push("Amministratori");
+            }
+            if($scope.areProfessorsVisible){
+                strings.push("Docenti");
+            }
+            if($scope.areStudentsVisible){
+                strings.push("Studenti");
+            }
+            if($scope.areUnassignedVisible){
+                strings.push("Non assegnati");
+            }
+            return strings.join(", ");
+        }
 
         $scope.toggleProfessor = function (usr) {
             var grant, revoke;

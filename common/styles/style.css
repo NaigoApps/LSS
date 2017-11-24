@@ -1,5 +1,5 @@
 .container{
-    background-color: #EEEEEE;
+    /*background-color: #EEEEEE;*/
 }
 
 ul{
@@ -52,10 +52,6 @@ input.ng-valid, textarea.ng-valid{
 
 .full{
     width:100%;
-}
-
-form{
-    overflow:auto;
 }
 
 .left{
