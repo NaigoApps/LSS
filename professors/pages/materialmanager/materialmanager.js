@@ -316,7 +316,7 @@ app.controller("timelineController", ['$http', '$scope', function ($http, $scope
         };
         $scope.uploadFile = function (element) {
             var formData = new FormData();
-            if ($('#file-loader')[0].files[0].size <= 5 * 1024 * 1024) {
+            if ($('#file-loader')[0].files[0].size <= 30 * 1024 * 1024) {
                 formData.append('element', element.id);
                 formData.append('document', $('#file-loader')[0].files[0]);
                 $('#file-upload-progress-container').show();
