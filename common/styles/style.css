@@ -6,6 +6,10 @@ ul{
     list-style-type:none;
 }
 
+ul.decorated{
+    list-style-type: square;
+}
+
 .always-bottom{
     position: absolute;
     bottom: 0px;
