@@ -23,6 +23,9 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
         $scope.professorsChecked = true;
         $scope.othersChecked = true;
 
+        $scope.classrooms = [];
+        $scope.shownClassroom = undefined;
+
         $scope.users = {
             content: []
         };
@@ -42,6 +45,11 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
                     window.location.replace("../../main.php");
                 }
             });
+        };
+        
+        $scope.filterClassroom = function(classroom){
+            $scope.shownClassroom = classroom;
+            $scope.updateView();
         };
 
         $scope.removeUser = function (user) {
@@ -63,7 +71,9 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
                         $scope.areProfessorsVisible && $scope.isProfessor(user) ||
                         $scope.areStudentsVisible && $scope.isStudent(user) ||
                         $scope.areUnassignedVisible && $scope.isUnassigned(user)){
-                    $scope.visibleUsers.content.push(user);
+                    if(!$scope.shownClassroom || $scope.shownClassroom.id === user.classroom.id){
+                        $scope.visibleUsers.content.push(user);
+                    }
                 }
             }
         };
@@ -215,7 +225,18 @@ app.controller("userController", ['$http', '$scope', function ($http, $scope) {
                     }
             );
         };
-
+        
+        $scope.loadClassrooms = function () {
+            $http.post('../../../common/php/ajax/load-classes.php').then(
+                    function (rx) {
+                        $scope.classrooms = rx.data;
+                    },
+                    function (rx) {
+                        swal("Errore", rx.data);
+                    }
+            );
+        };
 
         $scope.loadUsers();
+        $scope.loadClassrooms();
     }]);

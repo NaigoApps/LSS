@@ -44,6 +44,13 @@ require_once '../../../common/auth-header.php';
                                     <li><a ng-click="exit()">Indietro</a></li>
                                 </ul>
                             </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Classi<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a ng-click="filterClassroom()">Tutte</a></li>
+                                    <li><a ng-repeat="classroom in classrooms" ng-click="filterClassroom(classroom)">{{classroom.year + " " + classroom.section}}</a></li>
+                                </ul>
+                            </li>
                             <li>
                                 <a>Gestione degli utenti ({{shownUsers()}})</a>
                             </li>
