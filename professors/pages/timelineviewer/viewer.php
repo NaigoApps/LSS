@@ -80,7 +80,7 @@ $id = $_POST['timelineid'];
             <div class="row" ng-if="currentElement !== undefined">
                 <div class="col-sm-12">
                     <div class="row top-sep well">
-                        <h2 class="text-center">{{currentElement.name}}</h4>
+                        <h2 class="text-center">{{currentElement.name}} <small>{{currentTimelineElement ? "(" + currentTimelineElement.message + ")" : ""}}</small></h4>
                             <p>{{currentElement.description}}</p>
                             <h3>Materiale</h3>
                             <div class="well well-sm" ng-repeat="material in materials.content">

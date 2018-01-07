@@ -333,6 +333,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
                 $scope.schedules.content.forEach(function (schedule) {
                     var element = $scope.findObjectById(schedule.elements, properties.items[0]);
                     if (element !== undefined) {
+                        $scope.currentTimelineElement = element;
                         $scope.currentElement = element.element;
                     }
                 });
@@ -371,6 +372,7 @@ app.controller("timelineController", ['$http', '$scope', '$rootScope', function 
         };
 
         $scope.replaceCurrentElement = function (element) {
+            $scope.currentTimelineElement = undefined;
             $scope.currentElement = element;
             $http.post('../../../common/php/ajax/load-children-elements.php', {parent: $scope.currentElement.id})
                     .then(
