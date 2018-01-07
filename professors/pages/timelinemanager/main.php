@@ -163,6 +163,9 @@ $id = filter($_POST['timelineid']);
                                                     </span>
                                                 </div>
                                                 <div class="btn-group">
+                                                    <button class="btn btn-info btn-md tooltip-base" ng-click="setMessage(element, i)">
+                                                        <span class="glyphicon glyphicon-send"></span>
+                                                    </button>
                                                     <button class="btn btn-info btn-md tooltip-base" ng-click="onSetDate(i)">
                                                         <span class="tooltip" ng-if="!element.settingDate">Imposta data</span>
                                                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
