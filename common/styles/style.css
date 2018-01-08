@@ -86,11 +86,6 @@ input.ng-valid, textarea.ng-valid{
     bottom: 0px;
 }
 
-.subjects{
-    display: inline-block;
-    margin-right: 10px;
-}
-
 .subject{
     display:inline-block;
     margin-top: 5px;
@@ -215,20 +210,17 @@ input.ng-valid, textarea.ng-valid{
     border-bottom-right-radius: 4px;
 }
 
-/*.module-name{
-    color: #fff;
-    background-color: #AD2A1A;
-    border: 1px solid #9A2617;
+.module-name{
+    background-color: white;
+    border: 1px solid black;
 }
 
 .topic-name{
-    color: #fff;
-    background-color: #DA621E;
-    border: 1px solid #C2571A;
+    background-color: white;
+    border: 1px solid black;
 }
 
 .item-name{
-    color: #fff;
-    background-color: #D3B53D;
-    border: 1px solid #BCA136;
-}*/
+    background-color: white;
+    border: 1px solid black;
+}
