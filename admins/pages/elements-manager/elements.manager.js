@@ -83,6 +83,7 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
 
         $scope.resetTopics = function (reload) {
             $scope.topics.addMode = false;
+            $scope.topics.searchString = "";
             $scope.topics.selected = undefined;
             $scope.topics.content = [];
             if (reload) {
@@ -93,6 +94,7 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
 
         $scope.resetItems = function (reload) {
             $scope.items.addMode = false;
+            $scope.items.searchString = "";
             $scope.items.selected = undefined;
             $scope.items.content = [];
             if (reload) {
@@ -279,7 +281,7 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
                                         $scope.loadTopics($scope.modules.selected, $scope.topics);
                                     } else if (element.type === "item") {
                                         $scope.loadItems($scope.topics.selected);
-                                    }else{
+                                    } else {
                                         $scope.loadModules();
                                     }
                                     swal({
@@ -315,11 +317,11 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
                                             if (element.type === "module") {
                                                 $scope.modules.content.splice($scope.modules.content.indexOf(element), 1);
                                                 $scope.resetTopics(true);
-                                            }else if (element.type === "topic") {
+                                            } else if (element.type === "topic") {
                                                 //TODO: EDIT INDEXOF
                                                 $scope.topics.content.splice($scope.topics.content.indexOf(element), 1);
                                                 $scope.resetItems(true);
-                                            }else if (element.type === "item") {
+                                            } else if (element.type === "item") {
                                                 $scope.items.content.splice($scope.items.content.indexOf(element), 1);
                                             }
                                             swal("Elemento", "eliminato correttamente", "success");
@@ -339,11 +341,13 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
          * @returns {undefined}
          */
         $scope.onSearchModule = function () {
-            $rootScope.$emit('search-object',
-                    {
-                        target: $scope.moduli
-                    });
-            $scope.moduli.selected = undefined;
+            $scope.modules.selected = undefined;
+            $scope.modules.lastKey = new Date().getTime();
+            setTimeout(function () {
+                if ($scope.modules.lastKey + 350 < new Date().getTime()) {
+                    $scope.loadModules();
+                }
+            }, 400);
         };
 
         /**
@@ -351,12 +355,14 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
          * @returns {undefined}
          */
         $scope.onSearchTopic = function () {
-            $rootScope.$emit('search-object',
-                    {
-                        target: $scope.argomenti
-                    });
-            $scope.moduli.selected = undefined;
-            $scope.argomenti.selected = undefined;
+            $scope.modules.selected = undefined;
+            $scope.topics.selected = undefined;
+            $scope.topics.lastKey = new Date().getTime();
+            setTimeout(function () {
+                if ($scope.topics.lastKey + 350 < new Date().getTime()) {
+                    $scope.loadTopics(undefined, $scope.topics);
+                }
+            }, 400);
         };
 
         /**
@@ -364,13 +370,17 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
          * @returns {undefined}
          */
         $scope.onSearchItem = function () {
-            $rootScope.$emit('search-object',
-                    {
-                        target: $scope.voci
-                    });
-            $scope.moduli.selected = undefined;
-            $scope.argomenti.selected = undefined;
-            $scope.voci.selected = undefined;
+            $scope.modules.selected = undefined;
+            $scope.topics.selected = undefined;
+            $scope.items.selected = undefined;
+            console.log($scope.items.lastKey - new Date().getTime());
+            $scope.items.lastKey = new Date().getTime();
+            setTimeout(function () {
+                if ($scope.items.lastKey + 350 < new Date().getTime()) {
+                    console.log("Hello items");
+                    $scope.loadItems();
+                }
+            }, 400);
         };
 
         /**
@@ -491,7 +501,11 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
         };
 
         $scope.loadModules = function () {
-            $http.post('../../../common/php/ajax/load-elements.php', {type: "module"})
+            var data = {
+                type: "module",
+                match: $scope.modules.searchString || undefined
+            };
+            $http.post('../../../common/php/ajax/load-elements.php', data)
                     .then(
                             function (rx) {
                                 $scope.modules.content = rx.data;
@@ -501,8 +515,13 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
                             }
                     );
         };
+
         $scope.loadTopics = function (module, target) {
-            $http.post('../../../common/php/ajax/load-elements.php', {parent: module.id})
+            var data = {
+                parent: module ? module.id : undefined,
+                match: $scope.topics.searchString ? $scope.topics.searchString : undefined
+            };
+            $http.post('../../../common/php/ajax/load-elements.php', data)
                     .then(
                             function (rx) {
                                 target.content = rx.data;
@@ -513,7 +532,11 @@ app.controller("dbController", ['$http', '$scope', '$rootScope', function ($http
                     );
         };
         $scope.loadItems = function (topic) {
-            $http.post('../../../common/php/ajax/load-elements.php', {parent: topic.id})
+            var data = {
+                parent: topic ? topic.id : undefined,
+                match: $scope.items.searchString ? $scope.items.searchString : undefined
+            };
+            $http.post('../../../common/php/ajax/load-elements.php', data)
                     .then(
                             function (rx) {
                                 $scope.items.content = rx.data;
